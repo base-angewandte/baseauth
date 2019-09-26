@@ -1,0 +1,14 @@
+version: '2'
+services:
+
+  cas-redis:
+    ports:
+      - 127.0.0.1:6379:6379
+
+  cas-postgres:
+    ports:
+      - 127.0.0.1:5432:5432
+
+  cas-django:
+    ports:
+      - 127.0.0.1:8000:8000

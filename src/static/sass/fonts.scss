@@ -1,0 +1,29 @@
+$standard-font: "Source Sans Pro", Helvetica Neue, Helvetica, Arial, sans-serif;
+$standard-font-size: 16px - 2px;
+
+$font_path: '../fonts/';
+
+// fonts
+@font-face {
+  font-family: "Source Sans Pro";
+  src: url($font_path + 'source-sans-pro-v11-latin-regular.eot');
+  src: url($font_path + 'source-sans-pro-v11-latin-regular.eot?#iefix') format('embedded-opentype'),
+       url($font_path + 'source-sans-pro-v11-latin-regular.woff2') format('woff2'),
+       url($font_path + 'source-sans-pro-v11-latin-regular.woff') format('woff'),
+       url($font_path + 'source-sans-pro-v11-latin-regular.ttf') format('truetype'),
+       url($font_path + 'source-sans-pro-v11-latin-regular.svg#karmillaregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: "Source Sans Pro";
+    src: url($font_path + 'source-sans-pro-v11-latin-700.eot');
+    src: url($font_path + 'source-sans-pro-v11-latin-700.eot?#iefix') format('embedded-opentype'),
+         url($font_path + 'source-sans-pro-v11-latin-700.woff2') format('woff2'),
+         url($font_path + 'source-sans-pro-v11-latin-700.woff') format('woff'),
+         url($font_path + 'source-sans-pro-v11-latin-700.ttf') format('truetype'),
+         url($font_path + 'source-sans-pro-v11-latin-700.svg#karmillabold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}

@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-26 12:20+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: cas/settings.py:220
+msgid "German"
+msgstr ""
+
+#: cas/settings.py:221
+msgid "English"
+msgstr ""
+
+#: core/forms.py:13 templates/mama_cas/login.html:33
+#: templates/mama_cas/login.html:34
+msgid "Password"
+msgstr ""
+
+#: core/forms.py:15
+msgid "Please enter your password"
+msgstr ""
+
+#: core/views.py:22
+msgid ""
+"Too many failed login attempts. Please enter the letters in the box beneath."
+msgstr ""
+
+#: templates/core/locked_out.html:8
+msgid "Submit"
+msgstr ""
+
+#: templates/mama_cas/login.html:17
+msgid "One login, many possibilities"
+msgstr ""
+
+#: templates/mama_cas/login.html:23
+msgid "Logout"
+msgstr ""
+
+#: templates/mama_cas/login.html:29 templates/mama_cas/login.html:30
+msgid "Username"
+msgstr ""
+
+#: templates/mama_cas/login.html:43
+msgid "Login"
+msgstr ""

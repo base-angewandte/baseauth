@@ -1,0 +1,3 @@
+CAS_DB_NAME=django_cas
+CAS_DB_USER=django_cas
+CAS_DB_PASSWORD=password

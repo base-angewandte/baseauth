@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-09-26 12:20+0200\n"
+"PO-Revision-Date: 2016-06-13 15:36+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.7\n"
+
+#: cas/settings.py:220
+msgid "German"
+msgstr "Deutsch"
+
+#: cas/settings.py:221
+msgid "English"
+msgstr "Englisch"
+
+#: core/forms.py:13 templates/mama_cas/login.html:33
+#: templates/mama_cas/login.html:34
+msgid "Password"
+msgstr "Passwort"
+
+#: core/forms.py:15
+msgid "Please enter your password"
+msgstr "Bitte geben Sie Ihr Passwort ein"
+
+#: core/views.py:22
+msgid ""
+"Too many failed login attempts. Please enter the letters in the box beneath."
+msgstr ""
+"Zu viele fehlgeschlagene Anmeldeversuche. Bitte tragen Sie die abgebildeten "
+"Buchstaben in das untenstehende Feld ein."
+
+#: templates/core/locked_out.html:8
+msgid "Submit"
+msgstr "Absenden"
+
+#: templates/mama_cas/login.html:17
+msgid "One login, many possibilities"
+msgstr "Ein Login, viele Möglichkeiten"
+
+#: templates/mama_cas/login.html:23
+msgid "Logout"
+msgstr ""
+
+#: templates/mama_cas/login.html:29 templates/mama_cas/login.html:30
+msgid "Username"
+msgstr "Benutzername"
+
+#: templates/mama_cas/login.html:43
+msgid "Login"
+msgstr "Anmeldung"

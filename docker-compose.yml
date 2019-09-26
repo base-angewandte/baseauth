@@ -1,0 +1,55 @@
+version: '2'
+services:
+
+  cas-redis:
+    image: redis:5.0-alpine
+    container_name: cas-redis
+    volumes:
+      - ./dockerdata/redis/data:/data
+    networks:
+      - casnet
+    restart: always
+    command: redis-server --appendonly yes
+
+  cas-postgres:
+    image: postgres:11-alpine
+    container_name: cas-postgres
+    environment:
+      - POSTGRES_PASSWORD=$CAS_DB_PASSWORD
+      - POSTGRES_USER=$CAS_DB_USER
+      - POSTGRES_DB=$CAS_DB_NAME
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./dockerdata/postgres/11/data:/var/lib/postgresql/data/pgdata
+    networks:
+      - casnet
+    restart: always
+
+  cas-django:
+    build: ./src
+    container_name: cas-django
+    environment:
+      - POSTGRES_PASSWORD=$CAS_DB_PASSWORD
+      - POSTGRES_USER=$CAS_DB_USER
+      - POSTGRES_DB=$CAS_DB_NAME
+    expose:
+      - 8000
+    volumes:
+      - ./src:/django
+      - ./logs:/logs
+    networks:
+      - casnet
+    restart: always
+
+  cas-cron:
+    image: paradoxon/alpine-cron
+    container_name: cas-cron
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/cron/crontab:/tmp/crontab
+    network_mode: "none"
+    restart: always
+
+
+networks:
+  casnet:

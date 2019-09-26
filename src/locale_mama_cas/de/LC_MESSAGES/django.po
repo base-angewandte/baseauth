@@ -1,0 +1,154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-26 17:55+0100\n"
+"PO-Revision-Date: 2016-06-14 11:12+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.8\n"
+
+#: forms.py:14
+msgid "Username"
+msgstr "Benutzername"
+
+#: forms.py:16
+msgid "Please enter your username"
+msgstr "Bitte geben Sie Ihren Benutzernamen ein"
+
+#: forms.py:17
+msgid "Password"
+msgstr "Passwort"
+
+#: forms.py:19
+msgid "Please enter your password"
+msgstr "Bitte geben Sie Ihr Passwort ein"
+
+#: forms.py:26
+msgid "Warn before automatic login to other services"
+msgstr "Vor der automatischen Anmeldung zu einem anderen Service warnen"
+
+#: forms.py:44
+msgid "Internal error while authenticating user"
+msgstr "Interner Fehler während der Authentifizierung des Benutzers"
+
+#: forms.py:49
+msgid "The username or password is not correct"
+msgstr "Der Benutzername oder das Passwort ist falsch"
+
+#: forms.py:54
+msgid "This user account is disabled"
+msgstr "Dieser Benutzer ist deaktiviert"
+
+#: forms.py:72
+msgid "Invalid username provided"
+msgstr "Ungültiger Benutzername angegeben"
+
+#: mixins.py:192
+msgid "You have been successfully logged out"
+msgstr "Sie wurden erfolgreich abgemeldet"
+
+#: models.py:162
+msgid "ticket"
+msgstr "Ticket"
+
+#: models.py:163
+msgid "user"
+msgstr "Benutzer"
+
+#: models.py:164
+msgid "expires"
+msgstr "läuft ab"
+
+#: models.py:165
+msgid "consumed"
+msgstr "aufgebraucht"
+
+#: models.py:242 models.py:288
+msgid "service"
+msgstr "Service"
+
+#: models.py:243
+msgid "primary"
+msgstr "primär"
+
+#: models.py:248
+msgid "service ticket"
+msgstr "Service Ticket"
+
+#: models.py:249
+msgid "service tickets"
+msgstr "Service Tickets"
+
+#: models.py:290
+msgid "granted by proxy-granting ticket"
+msgstr "durch ein Proxy-Ticket gewährt"
+
+#: models.py:293
+msgid "proxy ticket"
+msgstr "Proxy Ticket"
+
+#: models.py:294
+msgid "proxy tickets"
+msgstr "Proxy Tickets"
+
+#: models.py:369
+msgid "iou"
+msgstr ""
+
+#: models.py:372
+msgid "granted by service ticket"
+msgstr "durch ein Service Ticket gewährt"
+
+#: models.py:375
+msgid "granted by proxy ticket"
+msgstr "durch ein Proxy Ticket gewährt"
+
+#: models.py:380
+msgid "proxy-granting ticket"
+msgstr "Proxy Ticket"
+
+#: models.py:381
+msgid "proxy-granting tickets"
+msgstr "Proxy Tickets"
+
+#: templates/mama_cas/__base.html:13 templates/mama_cas/__login.html:6
+msgid "Central Authentication Service"
+msgstr "Zentrales Authentifizierungsservice"
+
+#: templates/mama_cas/__login.html:23
+msgid "Login"
+msgstr "Anmeldung"
+
+#: templates/mama_cas/__warn.html:9
+msgid "Yes, continue"
+msgstr "Ja, fortfahren"
+
+#: templates/mama_cas/__warn.html:10
+msgid "No, log me out"
+msgstr "Nein, abmelden"
+
+#: views.py:90
+#, python-format
+msgid "You are logged in as %s"
+msgstr "Sie sind angemeldet als %s"
+
+#: views.py:163
+#, python-format
+msgid "Do you want to access %(service)s as %(user)s?"
+msgstr "Möchten Sie %(service)s als %(user)s benutzen?"
+
+#: views.py:201
+#, python-format
+msgid "The application provided this link to follow: %s"
+msgstr "Die Anwendung hat diese Adresse zum Folgen geliefert: %s"

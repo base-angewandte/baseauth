@@ -1,0 +1,10 @@
+{% extends "mama_cas/login.html" %}
+{% load i18n %}
+
+{% block form %}
+<form method="post" onsubmit="submit.disabled=true">
+  {% csrf_token %}
+  {{ form.captcha }}
+  <button type="submit" name="submit">{% trans "Submit" %}</button>
+</form>
+{% endblock %}

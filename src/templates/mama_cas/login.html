@@ -1,0 +1,49 @@
+{% extends "mama_cas/__base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block title %}CAS{% endblock %}
+
+{% block styles %}
+  <link href="{% static "css/main.css" %}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+  <div class="content" role="main">
+    <img src="{% static 'img/SH_base_login.jpg' %}"
+         width="300"
+         title="Stefanie Hilgarth 2017, CC BY-NC-ND 4.0"
+         aria-hidden="true">
+    <h1>{% trans "One login, many possibilities" %}</h1>
+    <div class="with-bg">
+      {% include "mama_cas/messages.html" %}
+      {% block form %}
+        {% if user.is_authenticated %}
+          <form action="{% url "cas_logout" %}">
+            <button class="btn btn-primary btn-block" type="submit" name="submit">{% trans "Logout" %}</button>
+          </form>
+        {% else %}
+          <form method="post" onsubmit="submit.disabled=true">
+            {% csrf_token %}
+            <div>
+              <label class="sr-only" for="id_username">{% trans "Username" %}</label>
+              <input type="text" id="id_username" name="username" placeholder="{% trans "Username" %}" required autofocus>
+            </div>
+            <div>
+              <label class="sr-only" for="id_password">{% trans "Password" %}</label>
+              <input type="password" id="id_password" name="password" placeholder="{% trans "Password" %}" required>
+            </div>
+            {% if form.warn %}
+              <div class="form-group">
+                <label class="checkbox">
+                  <input type="checkbox" id="id_warn" name="warn"> {{ form.warn.label }}
+                </label>
+              </div>
+            {% endif %}
+            <button class="btn btn-primary btn-block" type="submit" name="submit">{% trans "Login" %}</button>
+          </form>
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock content %}

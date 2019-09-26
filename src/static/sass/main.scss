@@ -1,0 +1,147 @@
+@import "normalize";
+@import "variables";
+@import "fonts";
+
+/*! base CAS */
+body {
+  background-color: $bg-color;
+  color: $font-color;
+  font-family: $standard-font;
+  font-size: $standard-font-size;
+  text-rendering: optimizeLegibility;
+}
+
+p {
+  line-height: 1.625;
+}
+
+*:focus {
+  outline: thin dotted $color;
+}
+
+.container {
+  box-sizing: border-box;
+  display: block;
+  margin: 0 auto;
+  max-width: 1400px;
+  min-width: 305px;
+  padding: 55px + 2 * $wrapper-padding $wrapper-padding $wrapper-padding;
+  position: relative;
+
+  @media only screen and (min-width:640px) {
+    $p: $wrapper-padding * 2;
+    padding: 55px + 2 * $p $p $p;
+  }
+}
+
+.content {
+  padding: 20px 0;
+  text-align: center;
+
+  a {
+    color: $color;
+    font-size: $standard-font-size;
+    text-decoration: none;
+  }
+
+  h1 {
+    font-size: 2.3em;
+    line-height: 2.55rem;
+
+    a {
+      font-size: 0.52em;
+      font-weight: normal;
+      line-height: 2.55rem;
+      white-space: nowrap;
+    }
+  }
+
+  .with-bg {
+    background-color: $on-background-color;
+    margin: 0 auto;
+    max-width: 360px;
+    padding: 20px 0;
+  }
+
+  form {
+    input {
+      border: 2px solid $bg-color;
+      box-sizing: border-box;
+      color: $search-active-text;
+      font-family: inherit;
+      margin: 10px 2px;
+      padding: 6px 12px;
+      text-align: center;
+      width: 300px;
+
+      &::placeholder {
+        color: $search-inactive-text;
+      }
+
+      &:focus {
+        outline: 0;
+        border-color: $color;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba($color, .6);
+      }
+    }
+
+    button {
+      background: $color;
+      border: none;
+      box-sizing: border-box;
+      color: $on-background-color;
+      cursor: pointer;
+      font: inherit;
+      margin: 10px 2px;
+      outline: inherit;
+      padding: 8px 14px;
+      width: 300px;
+
+      &:focus {
+        background: darken($color, 10%);
+        box-shadow: 0 0 8px rgba($color, .6);
+      }
+    }
+  }
+
+  @media only screen and (min-width: 360px) {
+    padding: 20px;
+  }
+}
+
+.messages {
+  margin: 10px auto;
+  max-width: 300px;
+
+  ul {
+    list-style-type: none;
+    padding: 10px;
+
+    &.info {
+      background-color: $state-info-bg;
+      border: 1px solid $state-info-border;
+      color: $state-info-text;
+    }
+    &.danger {
+      background-color: $state-danger-bg;
+      border: 1px solid $state-danger-border;
+      color: $state-danger-text;
+    }
+  }
+}
+
+#id_captcha_1 {
+  display: block;
+  margin: 10px auto;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}

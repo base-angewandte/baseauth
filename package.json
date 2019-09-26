@@ -1,0 +1,21 @@
+{
+  "name": "cas",
+  "version": "1.0.0",
+  "author": "Philipp Mayer <philipp.mayer@paradoxon.at>",
+  "private": true,
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.0",
+    "gulp-csso": "^3.0.1",
+    "gulp-image-resize": "^0.13.1",
+    "gulp-imagemin": "^6.1.0",
+    "gulp-sass": "^4.0.2",
+    "normalize.css": "^8.0.1"
+  },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not ie <= 8",
+    "Safari >= 8"
+  ]
+}
