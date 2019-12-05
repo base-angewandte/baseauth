@@ -23,7 +23,7 @@ https://github.com/jbittel/django-mama-cas/archive/03935d97442b46d8127ab9e1cd8de
 django-ranged-response==0.2.0  # via django-simple-captcha
 django-redis==4.10.0
 django-simple-captcha==0.5.12
-django==2.2.5
+django==2.2.8
 gevent==1.4.0
 greenlet==0.4.15          # via gevent
 gunicorn==19.9.0
