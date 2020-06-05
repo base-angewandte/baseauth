@@ -9,42 +9,42 @@ brotli==1.0.7             # via whitenoise
 certifi==2019.9.11        # via requests
 chardet==3.0.4            # via requests
 click==7.0                # via pip-tools
-concurrent-log-handler==0.9.16
-defusedxml==0.6.0
+concurrent-log-handler==0.9.16  # via -r requirements.in
+defusedxml==0.6.0         # via -r requirements.in
 django-appconf==1.0.3     # via django-axes
-django-auth-ldap==2.0.0
-django-axes==5.0.13
-django-cors-headers==3.1.0
-django-debug-toolbar==2.0
-django-environ==0.4.5
-django-htmlmin==0.11.0
+django-auth-ldap==2.0.0   # via -r requirements.in
+django-axes==5.0.13       # via -r requirements.in
+django-cors-headers==3.1.0  # via -r requirements.in
+django-debug-toolbar==2.0  # via -r requirements.in
+django-environ==0.4.5     # via -r requirements.in
+django-htmlmin==0.11.0    # via -r requirements.in
 django-ipware==2.1.0      # via django-axes
-https://github.com/jbittel/django-mama-cas/archive/03935d97442b46d8127ab9e1cd8deb96953fe156.tar.gz
+https://github.com/jbittel/django-mama-cas/archive/03935d97442b46d8127ab9e1cd8deb96953fe156.tar.gz  # via -r requirements.in
 django-ranged-response==0.2.0  # via django-simple-captcha
-django-redis==4.10.0
-django-simple-captcha==0.5.12
-django==2.2.5
-gevent==1.4.0
+django-redis==4.10.0      # via -r requirements.in
+django-simple-captcha==0.5.12  # via -r requirements.in
+django==2.2.13            # via -r requirements.in, django-appconf, django-auth-ldap, django-axes, django-cors-headers, django-debug-toolbar, django-ranged-response, django-redis, django-simple-captcha
+gevent==1.4.0             # via -r requirements.in
 greenlet==0.4.15          # via gevent
-gunicorn==19.9.0
+gunicorn==19.9.0          # via -r requirements.in
 html5lib==1.0.1           # via django-htmlmin
 idna==2.8                 # via requests
-pillow==6.2.0
-pip-tools==4.1.0
+pillow==6.2.0             # via -r requirements.in, django-simple-captcha
+pip-tools==4.1.0          # via -r requirements.in
 portalocker==1.5.1        # via concurrent-log-handler
 psutil==5.6.3             # via rainbow-saddle
-psycopg2-binary==2.8.3
+psycopg2-binary==2.8.3    # via -r requirements.in
 pyasn1-modules==0.2.6     # via python-ldap
 pyasn1==0.4.7             # via pyasn1-modules, python-ldap
 python-ldap==3.2.0        # via django-auth-ldap
 pytz==2019.2              # via django
-rainbow-saddle==0.4.0
+rainbow-saddle==0.4.0     # via -r requirements.in
 redis==3.3.8              # via django-redis
-requests-futures==1.0.0
-requests==2.22.0
+requests-futures==1.0.0   # via -r requirements.in
+requests==2.22.0          # via -r requirements.in, django-mama-cas, requests-futures
 six==1.12.0               # via django-appconf, django-simple-captcha, html5lib, pip-tools
 soupsieve==1.9.3          # via beautifulsoup4
 sqlparse==0.3.0           # via django, django-debug-toolbar
 urllib3==1.25.6           # via requests
 webencodings==0.5.1       # via html5lib
-whitenoise[brotli]==4.1.4
+whitenoise[brotli]==4.1.4  # via -r requirements.in
