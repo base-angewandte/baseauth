@@ -34,5 +34,9 @@ start-dev:
 		cas-postgres
 
 pip-compile:
-	pip-compile src/requirements.in --output-file src/requirements.txt
-	pip-compile src/requirements.in src/requirements-dev.in --output-file src/requirements-dev.txt
+	pip-compile src/requirements.in
+	pip-compile src/requirements-dev.in
+
+pip-compile-upgrade:
+	pip-compile src/requirements.in --upgrade
+	pip-compile src/requirements-dev.in --upgrade
