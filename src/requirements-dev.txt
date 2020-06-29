@@ -38,7 +38,7 @@ idna==2.8                 # via requests
 importlib-metadata==1.7.0  # via importlib-resources, pre-commit, virtualenv
 importlib-resources==2.0.1  # via pre-commit, virtualenv
 nodeenv==1.4.0            # via pre-commit
-pillow==6.2.0
+pillow==6.2.2
 pip-tools==4.1.0
 portalocker==1.7.0        # via concurrent-log-handler
 pre-commit==1.18.3

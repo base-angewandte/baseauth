@@ -29,7 +29,7 @@ greenlet==0.4.16          # via gevent
 gunicorn==19.9.0
 html5lib==1.1             # via django-htmlmin
 idna==2.8                 # via requests
-pillow==6.2.0
+pillow==6.2.2
 pip-tools==4.1.0
 portalocker==1.7.0        # via concurrent-log-handler
 psutil==5.7.0             # via rainbow-saddle
