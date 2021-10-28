@@ -108,6 +108,11 @@ AUTHENTICATION_BACKENDS = [
 
 # LDAP
 try:
+    AUTH_LDAP_CONNECTION_OPTIONS = {
+        ldap.OPT_X_TLS_CACERTFILE: "/etc/ssl/certs/ca-certificates.crt",
+        ldap.OPT_X_TLS_NEWCTX: 0,
+    }
+
     AUTH_LDAP_SERVER_URI = env.str("AUTH_LDAP_SERVER_URI")
     AUTH_LDAP_BIND_DN = env.str("AUTH_LDAP_BIND_DN")
     AUTH_LDAP_BIND_PASSWORD = env.str("AUTH_LDAP_BIND_PASSWORD")
