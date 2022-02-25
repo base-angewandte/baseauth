@@ -5,19 +5,18 @@
 concurrent-log-handler==0.9.16
 django~=2.2
 django-auth-ldap==2.0.0
-django-axes==5.0.13
+django-axes==5.3.5
 django-cors-headers==3.1.0
 django-debug-toolbar==2.0
 django-environ==0.4.5
 django-htmlmin==0.11.0
-# django-mama-cas==2.4.0
-https://github.com/jbittel/django-mama-cas/archive/03935d97442b46d8127ab9e1cd8deb96953fe156.tar.gz
+django-mama-cas==2.5.0
 django-redis==4.10.0
 django-simple-captcha==0.5.12
 defusedxml==0.6.0
 gevent==1.4.0
 Pillow~=6.2
-pip-tools==4.1.0
+pip-tools==6.5.1
 psycopg2-binary==2.8.3
 requests==2.22.0
 requests-futures==1.0.0
