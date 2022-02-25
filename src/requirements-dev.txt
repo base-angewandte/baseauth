@@ -57,6 +57,8 @@ django-ranged-response==0.2.0
     # via django-simple-captcha
 django-redis==4.10.0
     # via -r src/requirements.in
+django-shibboleth-remoteuser==0.12
+    # via -r src/requirements.in
 django-simple-captcha==0.5.12
     # via -r src/requirements.in
 filelock==3.6.0
