@@ -423,6 +423,36 @@ AXES_COOLOFF_TIME = 1  # number in hours
 
 CAPTCHA_FLITE_PATH = "/usr/bin/flite"
 
+SHIBBOLETH_AUTHENTICATION = env.bool("SHIBBOLETH_AUTHENTICATION", default=False)
+
+if SHIBBOLETH_AUTHENTICATION:
+    INSTALLED_APPS.append("shibboleth")
+    AUTHENTICATION_BACKENDS.append("shibboleth.backends.ShibbolethRemoteUserBackend")
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware") + 1,
+        "core.middleware.ShibbolethRemoteUserMiddleware",
+    )
+    LOGIN_URL = env.str("SHIBBOLETH_LOGIN_URL", default="/Shibboleth.sso/Login")
+    LOGOUT_URL = env.str("SHIBBOLETH_LOGOUT_URL", default="/Shibboleth.sso/Logout")
+    SHIBBOLETH_REMOTE_USER_HEADER = env.str(
+        "SHIBBOLETH_REMOTE_USER_HEADER", default="REMOTE_USER"
+    )
+    SHIBBOLETH_ATTRIBUTE_MAP = {
+        env.str("SHIBBOLETH_USERNAME_ATTRIBUTE", default="shib-user"): (
+            True,
+            "username",
+        ),
+        env.str("SHIBBOLETH_FIRST_NAME_ATTRIBUTE", default="shib-given-name"): (
+            True,
+            "first_name",
+        ),
+        env.str("SHIBBOLETH_LAST_NAME_ATTRIBUTE", default="shib-sn"): (
+            True,
+            "last_name",
+        ),
+        env.str("SHIBBOLETH_EMAIL_ATTRIBUTE", default="shib-mail"): (True, "email"),
+    }
+
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE.insert(

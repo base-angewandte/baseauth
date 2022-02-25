@@ -17,7 +17,8 @@ from mama_cas.views import LoginView
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.contrib.auth.decorators import login_required
+from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 
 from core.views import locked_out
@@ -31,13 +32,21 @@ urlpatterns = [
     # admin
     path("admin/", admin.site.urls),
     # views
-    path("login/", LoginView.as_view(), name="cas_login"),
     path("", include("mama_cas.urls")),
     path("captcha/", include("captcha.urls")),
     path("locked/", locked_out, name="locked_out"),
     # i18n
     path("i18n/", include("django.conf.urls.i18n")),
 ]
+
+
+if settings.SHIBBOLETH_AUTHENTICATION:
+    urlpatterns.insert(
+        2, re_path(r"^login/?$", login_required(LoginView.as_view()), name="cas_login")
+    )
+    urlpatterns += [
+        path("shib/", include("shibboleth.urls", namespace="shibboleth")),
+    ]
 
 if settings.DEBUG:
     import debug_toolbar
