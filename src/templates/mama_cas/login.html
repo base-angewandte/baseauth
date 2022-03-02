@@ -19,7 +19,7 @@
       {% include "mama_cas/messages.html" %}
       {% block form %}
         {% if user.is_authenticated %}
-          <form action="{% url "cas_logout" %}">
+          <form action="{% if SHIBBOLETH_AUTHENTICATION %}{{ LOGOUT_URL }}{% else %}{% url "cas_logout" %}{% endif %}">
             <button class="btn btn-primary btn-block" type="submit" name="submit">{% trans "Logout" %}</button>
           </form>
         {% else %}
