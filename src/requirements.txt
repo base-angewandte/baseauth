@@ -4,47 +4,112 @@
 #
 #    pip-compile src/requirements.in
 #
-beautifulsoup4==4.9.1     # via django-htmlmin
-brotli==1.0.7             # via whitenoise
-certifi==2020.6.20        # via requests
-chardet==3.0.4            # via requests
-click==7.1.2              # via pip-tools
+beautifulsoup4==4.9.1
+    # via django-htmlmin
+brotli==1.0.7
+    # via whitenoise
+certifi==2020.6.20
+    # via requests
+chardet==3.0.4
+    # via requests
+click==7.1.2
+    # via pip-tools
 concurrent-log-handler==0.9.16
+    # via -r requirements.in
 defusedxml==0.6.0
-django-appconf==1.0.4     # via django-axes
+    # via -r requirements.in
+django==2.2.28
+    # via
+    #   -r requirements.in
+    #   django-appconf
+    #   django-auth-ldap
+    #   django-axes
+    #   django-cors-headers
+    #   django-debug-toolbar
+    #   django-ranged-response
+    #   django-redis
+    #   django-simple-captcha
+django-appconf==1.0.4
+    # via django-axes
 django-auth-ldap==2.0.0
+    # via -r requirements.in
 django-axes==5.0.13
+    # via -r requirements.in
 django-cors-headers==3.1.0
+    # via -r requirements.in
 django-debug-toolbar==2.0
+    # via -r requirements.in
 django-environ==0.4.5
+    # via -r requirements.in
 django-htmlmin==0.11.0
-django-ipware==2.1.0      # via django-axes
-https://github.com/jbittel/django-mama-cas/archive/03935d97442b46d8127ab9e1cd8deb96953fe156.tar.gz
-django-ranged-response==0.2.0  # via django-simple-captcha
+    # via -r requirements.in
+django-ipware==2.1.0
+    # via django-axes
+django-mama-cas @ https://github.com/jbittel/django-mama-cas/archive/03935d97442b46d8127ab9e1cd8deb96953fe156.tar.gz
+    # via -r requirements.in
+django-ranged-response==0.2.0
+    # via django-simple-captcha
 django-redis==4.10.0
+    # via -r requirements.in
 django-simple-captcha==0.5.12
-django==2.2.13
+    # via -r requirements.in
 gevent==1.4.0
-greenlet==0.4.16          # via gevent
+    # via -r requirements.in
+greenlet==0.4.16
+    # via gevent
 gunicorn==19.9.0
-html5lib==1.1             # via django-htmlmin
-idna==2.8                 # via requests
+    # via -r requirements.in
+html5lib==1.1
+    # via django-htmlmin
+idna==2.8
+    # via requests
 pillow==6.2.2
+    # via
+    #   -r requirements.in
+    #   django-simple-captcha
 pip-tools==4.1.0
-portalocker==1.7.0        # via concurrent-log-handler
-psutil==5.7.0             # via rainbow-saddle
+    # via -r requirements.in
+portalocker==1.7.0
+    # via concurrent-log-handler
+psutil==5.7.0
+    # via rainbow-saddle
 psycopg2-binary==2.8.3
-pyasn1-modules==0.2.8     # via python-ldap
-pyasn1==0.4.8             # via pyasn1-modules, python-ldap
-python-ldap==3.3.0        # via django-auth-ldap
-pytz==2020.1              # via django
+    # via -r requirements.in
+pyasn1==0.4.8
+    # via
+    #   pyasn1-modules
+    #   python-ldap
+pyasn1-modules==0.2.8
+    # via python-ldap
+python-ldap==3.3.0
+    # via django-auth-ldap
+pytz==2020.1
+    # via django
 rainbow-saddle==0.4.0
-redis==3.5.3              # via django-redis
-requests-futures==1.0.0
+    # via -r requirements.in
+redis==3.5.3
+    # via django-redis
 requests==2.22.0
-six==1.15.0               # via django-simple-captcha, html5lib, pip-tools
-soupsieve==2.0.1          # via beautifulsoup4
-sqlparse==0.3.1           # via django, django-debug-toolbar
-urllib3==1.25.9           # via requests
-webencodings==0.5.1       # via html5lib
+    # via
+    #   -r requirements.in
+    #   django-mama-cas
+    #   requests-futures
+requests-futures==1.0.0
+    # via -r requirements.in
+six==1.15.0
+    # via
+    #   django-simple-captcha
+    #   html5lib
+    #   pip-tools
+soupsieve==2.0.1
+    # via beautifulsoup4
+sqlparse==0.3.1
+    # via
+    #   django
+    #   django-debug-toolbar
+urllib3==1.25.9
+    # via requests
+webencodings==0.5.1
+    # via html5lib
 whitenoise[brotli]==4.1.4
+    # via -r requirements.in
