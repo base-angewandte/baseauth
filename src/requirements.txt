@@ -12,7 +12,7 @@ click==7.1.2              # via pip-tools
 concurrent-log-handler==0.9.16
 defusedxml==0.6.0
 django-appconf==1.0.4     # via django-axes
-django-auth-ldap==2.0.0
+#django-auth-ldap==2.0.0
 django-axes==5.0.13
 django-cors-headers==3.1.0
 django-debug-toolbar==2.0
@@ -34,9 +34,9 @@ pip-tools==4.1.0
 portalocker==1.7.0        # via concurrent-log-handler
 psutil==5.7.0             # via rainbow-saddle
 psycopg2-binary==2.8.3
-pyasn1-modules==0.2.8     # via python-ldap
-pyasn1==0.4.8             # via pyasn1-modules, python-ldap
-python-ldap==3.3.0        # via django-auth-ldap
+#pyasn1-modules==0.2.8     # via python-ldap
+#pyasn1==0.4.8             # via pyasn1-modules, python-ldap
+#python-ldap==3.3.0        # via django-auth-ldap
 pytz==2020.1              # via django
 rainbow-saddle==0.4.0
 redis==3.5.3              # via django-redis
