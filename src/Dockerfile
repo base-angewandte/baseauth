@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.11
 
 ENV PYTHONUNBUFFERED 1
 
@@ -14,7 +14,7 @@ VOLUME /logs
 
 WORKDIR /django
 
-RUN pip install --upgrade pip==19.2.3
+RUN pip install --upgrade pip==23.3.1
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 ADD . .
