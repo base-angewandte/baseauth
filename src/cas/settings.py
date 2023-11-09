@@ -283,8 +283,7 @@ LANGUAGE_CODE = "en"
 TIME_ZONE = "Europe/Vienna"
 USE_I18N = True
 USE_L10N = True
-# TODO: activate again, as soon as django is upgraded and we get rid of psycopg2
-#USE_TZ = True
+USE_TZ = True
 
 LANGUAGES = (("de", _("German")), ("en", _("English")))
 
