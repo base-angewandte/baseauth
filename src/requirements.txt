@@ -8,8 +8,6 @@ asgiref==3.7.2
     # via django
 async-timeout==4.0.3
     # via redis
-beautifulsoup4==4.12.2
-    # via django-htmlmin
 brotli==1.1.0
     # via whitenoise
 build==1.0.3
@@ -41,8 +39,6 @@ django-debug-toolbar==4.2.0
     # via -r src/requirements.in
 django-environ==0.4.5
     # via -r src/requirements.in
-django-htmlmin==0.11.0
-    # via -r src/requirements.in
 django-ipware==5.0.2
     # via django-axes
 django-mama-cas==2.5.0
@@ -59,8 +55,6 @@ greenlet==3.0.1
     # via gevent
 gunicorn==19.9.0
     # via -r src/requirements.in
-html5lib==1.1
-    # via django-htmlmin
 idna==2.8
     # via requests
 packaging==23.2
@@ -90,18 +84,12 @@ requests==2.22.0
     #   requests-futures
 requests-futures==1.0.0
     # via -r src/requirements.in
-six==1.16.0
-    # via html5lib
-soupsieve==2.5
-    # via beautifulsoup4
 sqlparse==0.4.4
     # via
     #   django
     #   django-debug-toolbar
 urllib3==1.25.11
     # via requests
-webencodings==0.5.1
-    # via html5lib
 wheel==0.41.3
     # via pip-tools
 whitenoise[brotli]==6.5.0
