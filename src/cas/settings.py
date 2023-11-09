@@ -247,18 +247,16 @@ WSGI_APPLICATION = "{}.wsgi.application".format(PROJECT_NAME)
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("POSTGRES_DB", "django_{}".format(PROJECT_NAME)),
-        "USER": os.environ.get("POSTGRES_USER", "django_{}".format(PROJECT_NAME)),
-        "PASSWORD": os.environ.get(
-            "POSTGRES_PASSWORD", "password_{}".format(PROJECT_NAME)
-        ),
-        "HOST": "{}-postgres".format(PROJECT_NAME) if DOCKER else "localhost",
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('POSTGRES_DB', default=f'django_{PROJECT_NAME}'),
+        'USER': env.str('POSTGRES_USER', default=f'django_{PROJECT_NAME}'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
+        'HOST': f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost',
+        'PORT': env.str('POSTGRES_PORT', default='5432'),
     }
 }
 
