@@ -43,6 +43,8 @@ except ImportError:
         SECRET_KEY = get_random_secret_key()
         f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
