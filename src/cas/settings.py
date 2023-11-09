@@ -24,7 +24,7 @@ import environ
 # from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 env = environ.Env()
 env.read_env()

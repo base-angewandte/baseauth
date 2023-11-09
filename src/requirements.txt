@@ -24,7 +24,7 @@ concurrent-log-handler==0.9.16
     # via -r src/requirements.in
 defusedxml==0.6.0
     # via -r src/requirements.in
-django==3.2.21
+django==4.2.7
     # via
     #   -r src/requirements.in
     #   django-axes
@@ -35,7 +35,7 @@ django==3.2.21
     #   django-simple-captcha
 django-axes[ipware]==6.1.1
     # via -r src/requirements.in
-django-cors-headers==3.1.0
+django-cors-headers==4.3.0
     # via -r src/requirements.in
 django-debug-toolbar==4.2.0
     # via -r src/requirements.in
@@ -51,7 +51,7 @@ django-ranged-response==0.2.0
     # via django-simple-captcha
 django-redis==5.3.0
     # via -r src/requirements.in
-django-simple-captcha==0.5.12
+django-simple-captcha==0.5.20
     # via -r src/requirements.in
 gevent==23.9.1
     # via -r src/requirements.in
@@ -79,8 +79,6 @@ psycopg2-binary==2.9.9
     # via -r src/requirements.in
 pyproject-hooks==1.0.0
     # via build
-pytz==2023.3.post1
-    # via django
 rainbow-saddle==0.4.0
     # via -r src/requirements.in
 redis==5.0.1
@@ -93,9 +91,7 @@ requests==2.22.0
 requests-futures==1.0.0
     # via -r src/requirements.in
 six==1.16.0
-    # via
-    #   django-simple-captcha
-    #   html5lib
+    # via html5lib
 soupsieve==2.5
     # via beautifulsoup4
 sqlparse==0.4.4
