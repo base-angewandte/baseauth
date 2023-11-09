@@ -2,7 +2,7 @@ from captcha.fields import CaptchaField
 from mama_cas.forms import LoginForm as MamaCasLoginForm
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class AxesCaptchaForm(forms.Form):

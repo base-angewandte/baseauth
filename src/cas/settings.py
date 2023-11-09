@@ -20,11 +20,11 @@ from email.utils import getaddresses
 from urllib.parse import urlparse
 
 import environ
-import ldap
-from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
+# import ldap
+# from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 env = environ.Env()
 env.read_env()
@@ -42,6 +42,8 @@ except ImportError:
     with open(os.path.join(BASE_DIR, PROJECT_NAME, "secret_key.py"), "w+") as f:
         SECRET_KEY = get_random_secret_key()
         f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
@@ -69,7 +71,9 @@ SITE_URL = env.str("SITE_URL")
 
 FORCE_SCRIPT_NAME = env.str("FORCE_SCRIPT_NAME", default="/cas")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[urlparse(SITE_URL).hostname])
+SITE_HOSTNAME = urlparse(SITE_URL).hostname
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[SITE_HOSTNAME])
 
 BEHIND_PROXY = env.bool("BEHIND_PROXY", default=True)
 
@@ -106,53 +110,54 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-# LDAP
-try:
-    AUTH_LDAP_CONNECTION_OPTIONS = {
-        ldap.OPT_X_TLS_CACERTFILE: "/etc/ssl/certs/ca-certificates.crt",
-        ldap.OPT_X_TLS_NEWCTX: 0,
-    }
-
-    AUTH_LDAP_SERVER_URI = env.str("AUTH_LDAP_SERVER_URI")
-    AUTH_LDAP_BIND_DN = env.str("AUTH_LDAP_BIND_DN")
-    AUTH_LDAP_BIND_PASSWORD = env.str("AUTH_LDAP_BIND_PASSWORD")
-    try:
-        AUTH_LDAP_USER_DN_TEMPLATE = env.str("AUTH_LDAP_USER_DN_TEMPLATE")
-    except environ.ImproperlyConfigured:
-        AUTH_LDAP_USER_SEARCH_USER_TEMPLATE = env.str(
-            "AUTH_LDAP_USER_SEARCH_USER_TEMPLATE"
-        )
-        try:
-            AUTH_LDAP_USER_SEARCH_BASE = env.str("AUTH_LDAP_USER_SEARCH_BASE")
-            AUTH_LDAP_USER_SEARCH = LDAPSearch(
-                AUTH_LDAP_USER_SEARCH_BASE,
-                ldap.SCOPE_SUBTREE,
-                AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
-            )
-        except environ.ImproperlyConfigured:
-            AUTH_LDAP_USER_SEARCH_BASE_LIST = env.list(
-                "AUTH_LDAP_USER_SEARCH_BASE_LIST"
-            )
-            searches = [
-                LDAPSearch(x, ldap.SCOPE_SUBTREE, AUTH_LDAP_USER_SEARCH_USER_TEMPLATE)
-                for x in AUTH_LDAP_USER_SEARCH_BASE_LIST
-            ]
-            AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*searches)
-
-    AUTH_LDAP_USER_ATTR_MAP = env.dict(
-        "AUTH_LDAP_USER_ATTR_MAP",
-        default={"first_name": "givenName", "last_name": "sn", "email": "mail"},
-    )
-
-    AUTH_LDAP_ALWAYS_UPDATE_USER = True
-    AUTH_LDAP_CACHE_TIMEOUT = 0
-
-    AUTHENTICATION_BACKENDS.insert(
-        AUTHENTICATION_BACKENDS.index("django.contrib.auth.backends.ModelBackend"),
-        "django_auth_ldap.backend.LDAPBackend",
-    )
-except environ.ImproperlyConfigured:
-    pass
+# TODO: this will be reworked, once the CAS in front of CAS setup is working
+# # LDAP
+# try:
+#     AUTH_LDAP_CONNECTION_OPTIONS = {
+#         ldap.OPT_X_TLS_CACERTFILE: "/etc/ssl/certs/ca-certificates.crt",
+#         ldap.OPT_X_TLS_NEWCTX: 0,
+#     }
+#
+#     AUTH_LDAP_SERVER_URI = env.str("AUTH_LDAP_SERVER_URI")
+#     AUTH_LDAP_BIND_DN = env.str("AUTH_LDAP_BIND_DN")
+#     AUTH_LDAP_BIND_PASSWORD = env.str("AUTH_LDAP_BIND_PASSWORD")
+#     try:
+#         AUTH_LDAP_USER_DN_TEMPLATE = env.str("AUTH_LDAP_USER_DN_TEMPLATE")
+#     except environ.ImproperlyConfigured:
+#         AUTH_LDAP_USER_SEARCH_USER_TEMPLATE = env.str(
+#             "AUTH_LDAP_USER_SEARCH_USER_TEMPLATE"
+#         )
+#         try:
+#             AUTH_LDAP_USER_SEARCH_BASE = env.str("AUTH_LDAP_USER_SEARCH_BASE")
+#             AUTH_LDAP_USER_SEARCH = LDAPSearch(
+#                 AUTH_LDAP_USER_SEARCH_BASE,
+#                 ldap.SCOPE_SUBTREE,
+#                 AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
+#             )
+#         except environ.ImproperlyConfigured:
+#             AUTH_LDAP_USER_SEARCH_BASE_LIST = env.list(
+#                 "AUTH_LDAP_USER_SEARCH_BASE_LIST"
+#             )
+#             searches = [
+#                 LDAPSearch(x, ldap.SCOPE_SUBTREE, AUTH_LDAP_USER_SEARCH_USER_TEMPLATE)
+#                 for x in AUTH_LDAP_USER_SEARCH_BASE_LIST
+#             ]
+#             AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*searches)
+#
+#     AUTH_LDAP_USER_ATTR_MAP = env.dict(
+#         "AUTH_LDAP_USER_ATTR_MAP",
+#         default={"first_name": "givenName", "last_name": "sn", "email": "mail"},
+#     )
+#
+#     AUTH_LDAP_ALWAYS_UPDATE_USER = True
+#     AUTH_LDAP_CACHE_TIMEOUT = 0
+#
+#     AUTHENTICATION_BACKENDS.insert(
+#         AUTHENTICATION_BACKENDS.index("django.contrib.auth.backends.ModelBackend"),
+#         "django_auth_ldap.backend.LDAPBackend",
+#     )
+# except environ.ImproperlyConfigured:
+#     pass
 
 # CAS
 MAMA_CAS_SERVICES = [
@@ -207,8 +212,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "htmlmin.middleware.HtmlMinifyMiddleware",
-    "htmlmin.middleware.MarkRequestMiddleware",
     "axes.middleware.AxesMiddleware",
 ]
 
@@ -244,18 +247,16 @@ WSGI_APPLICATION = "{}.wsgi.application".format(PROJECT_NAME)
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("POSTGRES_DB", "django_{}".format(PROJECT_NAME)),
-        "USER": os.environ.get("POSTGRES_USER", "django_{}".format(PROJECT_NAME)),
-        "PASSWORD": os.environ.get(
-            "POSTGRES_PASSWORD", "password_{}".format(PROJECT_NAME)
-        ),
-        "HOST": "{}-postgres".format(PROJECT_NAME) if DOCKER else "localhost",
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('POSTGRES_DB', default=f'django_{PROJECT_NAME}'),
+        'USER': env.str('POSTGRES_USER', default=f'django_{PROJECT_NAME}'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
+        'HOST': f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost',
+        'PORT': env.str('POSTGRES_PORT', default='5432'),
     }
 }
 

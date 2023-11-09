@@ -2,7 +2,7 @@ version: '2'
 services:
 
   cas-redis:
-    image: redis:5.0-alpine
+    image: redis:7-alpine
     container_name: cas-redis
     volumes:
       - ./dockerdata/redis/data:/data
@@ -12,7 +12,7 @@ services:
     command: redis-server --appendonly yes
 
   cas-postgres:
-    image: postgres:11-alpine
+    image: postgres:16-alpine
     container_name: cas-postgres
     environment:
       - POSTGRES_PASSWORD=$CAS_DB_PASSWORD
@@ -20,7 +20,7 @@ services:
       - POSTGRES_DB=$CAS_DB_NAME
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./dockerdata/postgres/11/data:/var/lib/postgresql/data/pgdata
+      - ./dockerdata/postgres/16/data:/var/lib/postgresql/data/pgdata
     networks:
       - casnet
     restart: always
