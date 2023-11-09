@@ -71,7 +71,9 @@ SITE_URL = env.str("SITE_URL")
 
 FORCE_SCRIPT_NAME = env.str("FORCE_SCRIPT_NAME", default="/cas")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[urlparse(SITE_URL).hostname])
+SITE_HOSTNAME = urlparse(SITE_URL).hostname
+
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[SITE_HOSTNAME])
 
 BEHIND_PROXY = env.bool("BEHIND_PROXY", default=True)
 
