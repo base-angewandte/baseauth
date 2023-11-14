@@ -2,111 +2,110 @@
 
 ## Development
 
-* Install docker and docker-compose for your system
+- Install docker and docker-compose for your system
 
-* Clone git repository and checkout branch `develop`:
+- Clone git repository and checkout branch `develop`:
 
-    ```bash
-    git clone https://github.com/base-angewandte/cas.git
-    cd cas
-    ```
+  ```bash
+  git clone https://github.com/base-angewandte/cas.git
+  cd cas
+  ```
 
-* Check and adapt settings:
+- Check and adapt settings:
 
-    ```bash
-    # env
-    cp env-skel .env
-    vi .env
-    
-    # django env
-    cp ./src/cas/env-skel ./src/cas/.env
-    vi ./src/cas/.env
-    ```
+  ```bash
+  # env
+  cp env-skel .env
+  vi .env
 
-* Create docker-compose override file:
+  # django env
+  cp ./src/cas/env-skel ./src/cas/.env
+  vi ./src/cas/.env
+  ```
 
-    ```bash
-    cp docker-compose.override.dev.yml docker-compose.override.yml
-    ```
+- Create docker-compose override file:
 
-* Install latest python 3 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`
+  ```bash
+  cp docker-compose.override.dev.yml docker-compose.override.yml
+  ```
 
-* Install pip-tools and requirements in your virtualenv:
+- Install latest python 3 and create virtualenv e.g. via `pyenv` and `pyenv-virtualenv`
 
-    ```bash
-    pip install pip-tools
-    cd src
-    pip-sync requirements-dev.txt
-    cd ..
-    ```
+- Install pip-tools and requirements in your virtualenv:
 
-* Install pre-commit hooks:
+  ```bash
+  pip install pip-tools
+  cd src
+  pip-sync requirements-dev.txt
+  cd ..
+  ```
 
-    ```bash
-    pre-commit install
-    ```
+- Install pre-commit hooks:
 
-* Start required services:
+  ```bash
+  pre-commit install
+  ```
 
-    ```bash
-    make start-dev
-    ```
-    
-* Run migration:
+- Start required services:
 
-    ```bash
-    cd src
-    python manage.py migrate
-    ```
+  ```bash
+  make start-dev
+  ```
 
-* Start development server:
+- Run migration:
 
-    ```bash
-    python manage.py runserver 8000
-    ```
+  ```bash
+  cd src
+  python manage.py migrate
+  ```
 
+- Start development server:
+
+  ```bash
+  python manage.py runserver 8000
+  ```
 
 ## Production
 
-* Update package index:
+- Update package index:
 
-    ```bash
-    # RHEL
-    sudo yum update
+  ```bash
+  # RHEL
+  sudo yum update
 
-    # Debian
-    sudo apt-get update
-    ```
+  # Debian
+  sudo apt-get update
+  ```
 
-* Install docker and docker-compose
+- Install docker and docker-compose
 
-* Change to user `base`
+- Change to user `base`
 
-* Change to `/opt/base`
+- Change to `/opt/base`
 
-* Clone git repository:
+- Clone git repository:
 
-    ```bash
-    git clone https://github.com/base-angewandte/cas.git
-    cd cas
-    ```
+  ```bash
+  git clone https://github.com/base-angewandte/cas.git
+  cd cas
+  ```
 
-* Check and adapt settings:
+- Check and adapt settings:
 
-    ```bash
-    # env
-    cp env-skel .env
-    vi .env
-    
-    # django env
-    cp ./src/cas/env-skel ./src/cas/.env
-    vi ./src/cas/.env
-    ```
+  ```bash
+  # env
+  cp env-skel .env
+  vi .env
 
-* Use `Makefile` to initialize and run project:
+  # django env
+  cp ./src/cas/env-skel ./src/cas/.env
+  vi ./src/cas/.env
+  ```
 
-    ```bash
-    make start init init-static restart-gunicorn
-    ```
+- Use `Makefile` to initialize and run project:
 
-* Install nginx and configure it accordingly
+  ```bash
+  make start init init-static restart-gunicorn
+  ```
+
+- Install nginx and configure it accordingly

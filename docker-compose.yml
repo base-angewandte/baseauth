@@ -1,6 +1,5 @@
-version: '2'
+version: "2"
 services:
-
   cas-redis:
     image: redis:7-alpine
     container_name: cas-redis
@@ -49,7 +48,6 @@ services:
       - ./docker/cron/crontab:/tmp/crontab
     network_mode: "none"
     restart: always
-
 
 networks:
   casnet:

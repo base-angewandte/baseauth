@@ -12,8 +12,8 @@ class AxesCaptchaForm(forms.Form):
 # TODO remove as soon as this is fixed in MamaCAS
 class LoginForm(MamaCasLoginForm):
     password = forms.CharField(
-        label=_("Password"),
+        label=_('Password'),
         widget=forms.PasswordInput,
         strip=False,
-        error_messages={"required": _("Please enter your password")},
+        error_messages={'required': _('Please enter your password')},
     )

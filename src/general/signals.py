@@ -3,7 +3,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 
 
-@receiver(user_logged_in, dispatch_uid="process_user_attributes")
+@receiver(user_logged_in, dispatch_uid='process_user_attributes')
 def process_user_attributes(sender, user, *args, **kwargs):
     if not user:
         return

@@ -7,4 +7,4 @@ class AbstractBaseModel(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ("-date_created",)
+        ordering = ('-date_created',)
