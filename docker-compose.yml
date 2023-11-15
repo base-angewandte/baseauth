@@ -1,4 +1,4 @@
-version: "2"
+version: "2.3"
 services:
   cas-redis:
     image: redis:7-alpine
