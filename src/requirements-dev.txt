@@ -36,7 +36,9 @@ django==4.2.7
     #   django-redis
     #   django-simple-captcha
 django-axes[ipware]==6.1.1
-    # via -r src/requirements.in
+    # via
+    #   -r src/requirements.in
+    #   django-axes
 django-cors-headers==4.3.0
     # via -r src/requirements.in
 django-debug-toolbar==4.2.0
@@ -86,7 +88,9 @@ pre-commit==3.5.0
 psutil==5.9.6
     # via rainbow-saddle
 psycopg[binary]==3.1.12
-    # via -r src/requirements.in
+    # via
+    #   -r src/requirements.in
+    #   psycopg
 psycopg-binary==3.1.12
     # via psycopg
 pyproject-hooks==1.0.0
@@ -117,7 +121,9 @@ virtualenv==20.24.6
 wheel==0.41.3
     # via pip-tools
 whitenoise[brotli]==6.6.0
-    # via -r src/requirements.in
+    # via
+    #   -r src/requirements.in
+    #   whitenoise
 zope-event==5.0
     # via gevent
 zope-interface==6.1
