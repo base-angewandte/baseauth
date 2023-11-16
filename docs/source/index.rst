@@ -14,6 +14,7 @@ and identity providers based on LDAP, Shibboleth, or other CAS servers.
    :maxdepth: 2
    :caption: Contents:
 
+   requirements
    install
 
 .. Indices and tables
