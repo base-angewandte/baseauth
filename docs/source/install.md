@@ -8,7 +8,7 @@
 
   ```bash
   git clone https://github.com/base-angewandte/cas.git
-  cd cas
+  cd baseauth
   ```
 
 - Check and adapt settings:
@@ -19,8 +19,8 @@
   vi .env
 
   # django env
-  cp ./src/cas/env-skel ./src/cas/.env
-  vi ./src/cas/.env
+  cp ./src/baseauth/env-skel ./src/baseauth/.env
+  vi ./src/baseauth/.env
   ```
 
 - Create docker-compose override file:
@@ -87,7 +87,7 @@
 
   ```bash
   git clone https://github.com/base-angewandte/cas.git
-  cd cas
+  cd baseauth
   ```
 
 - Check and adapt settings:
@@ -98,8 +98,8 @@
   vi .env
 
   # django env
-  cp ./src/cas/env-skel ./src/cas/.env
-  vi ./src/cas/.env
+  cp ./src/baseauth/env-skel ./src/baseauth/.env
+  vi ./src/baseauth/.env
   ```
 
 - Use `Makefile` to initialize and run project:

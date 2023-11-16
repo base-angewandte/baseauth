@@ -1,27 +1,27 @@
 version: "2.3"
 services:
-  # Uncomment the cas-redis and cas-postgres sections below if you need direct access to
+  # Uncomment the baseauth-redis and baseauth-postgres sections below if you need direct access to
   # these databases (e.g. for local development). If you are running several base applications
   # in parallel you might also have to adapt your local port, if the default ports are already
   # in use by another app
 
   # Mounting the Redis port of the container to your localhost
-  #cas-redis:
+  #baseauth-redis:
   #  ports:
   #    - "127.0.0.1:6379:6379"
 
   # Mounting the Postgres port of the container to your localhost
-  #cas-postgres:
+  #baseauth-postgres:
   #  ports:
   #    - "127.0.0.1:5432:5432"
 
-  # Using the dev target of for the cas-django container and mounting
+  # Using the dev target of for the baseauth-django container and mounting
   # the port of the Django dev server to your localhost
-  cas-django:
+  baseauth-django:
     build:
       context: ./src
       target: dev
-    image: cas-django-dev
-    container_name: cas-django
+    image: baseauth-django-dev
+    container_name: baseauth-django
     ports:
       - "127.0.0.1:8000:8000"

@@ -10,6 +10,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cas.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'baseauth.settings')
 
 application = get_wsgi_application()
