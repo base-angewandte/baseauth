@@ -4,8 +4,7 @@
 
 concurrent-log-handler==0.9.24
 django==4.2.7
-# LDAP is deactivated until we need it again later (in more current version)
-#django-auth-ldap==2.0.0
+django-auth-ldap==4.6.0
 django-axes[ipware]==6.1.1
 django-cors-headers==4.3.0
 django-debug-toolbar==4.2.0

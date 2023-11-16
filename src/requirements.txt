@@ -25,12 +25,15 @@ defusedxml==0.7.1
 django==4.2.7
     # via
     #   -r src/requirements.in
+    #   django-auth-ldap
     #   django-axes
     #   django-cors-headers
     #   django-debug-toolbar
     #   django-ranged-response
     #   django-redis
     #   django-simple-captcha
+django-auth-ldap==4.6.0
+    # via -r src/requirements.in
 django-axes[ipware]==6.1.1
     # via
     #   -r src/requirements.in
@@ -79,8 +82,16 @@ psycopg[binary]==3.1.12
     #   psycopg
 psycopg-binary==3.1.12
     # via psycopg
+pyasn1==0.5.0
+    # via
+    #   pyasn1-modules
+    #   python-ldap
+pyasn1-modules==0.3.0
+    # via python-ldap
 pyproject-hooks==1.0.0
     # via build
+python-ldap==3.4.3
+    # via django-auth-ldap
 rainbow-saddle==0.4.0
     # via -r src/requirements.in
 redis==5.0.1
