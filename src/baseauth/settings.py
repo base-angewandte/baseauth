@@ -143,12 +143,14 @@ for backend in AUTH_BACKENDS_TO_USE:
                     AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
                 )
             except environ.ImproperlyConfigured:
-                AUTH_LDAP_USER_SEARCH_BASE_LIST = env.list(
+                AUTH_LDAP_USER_SEARCH_BASE_LIST = env.str(
                     'AUTH_LDAP_USER_SEARCH_BASE_LIST'
-                )
+                ).split(';')
                 searches = [
                     LDAPSearch(
-                        x, ldap.SCOPE_SUBTREE, AUTH_LDAP_USER_SEARCH_USER_TEMPLATE
+                        x.strip(),
+                        ldap.SCOPE_SUBTREE,
+                        AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
                     )
                     for x in AUTH_LDAP_USER_SEARCH_BASE_LIST
                 ]
