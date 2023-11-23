@@ -1,7 +1,7 @@
 include .env
 export
 
-PROJECT_NAME ?= cas
+PROJECT_NAME ?= baseauth
 
 include config/base.mk
 

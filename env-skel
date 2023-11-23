@@ -1,3 +1,7 @@
+## These settings are used to set up the DB in the basauth-postgres container.
 CAS_DB_NAME=django_cas
 CAS_DB_USER=django_cas
+## Make sure to change this to a strong password on any production/public server.
+## If you change it here for local development, make sure to also set the POSTGRES_PASSWORD
+## in src/basauth/.env accordingly
 CAS_DB_PASSWORD=password

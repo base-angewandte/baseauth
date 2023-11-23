@@ -14,7 +14,7 @@ def locked_out(request):
     if request.POST:
         form = AxesCaptchaForm(request.POST)
         if form.is_valid():
-            ip = get_client_ip(request)
+            ip, is_routable = get_client_ip(request)
             reset(ip=ip)
             return HttpResponseRedirect(reverse_lazy('cas_login'))
     else:

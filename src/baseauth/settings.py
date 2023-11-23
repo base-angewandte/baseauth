@@ -19,13 +19,11 @@ from email.utils import getaddresses
 from urllib.parse import urlparse
 
 import environ
+import ldap
+from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-
-# import ldap
-# from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
-
 
 env = environ.Env()
 env.read_env()
@@ -106,59 +104,67 @@ INSTALLED_APPS = [
     'general',
 ]
 
+# Authentication Backends
+AUTH_BACKENDS_TO_USE = env.list('AUTHENTICATION_BACKENDS', default=['django'])
+
+# Axes is always used to prevent brute-force attacks
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
-    'django.contrib.auth.backends.ModelBackend',
 ]
 
-# TODO: this will be reworked, once the CAS in front of CAS setup is working
-# # LDAP
-# try:
-#     AUTH_LDAP_CONNECTION_OPTIONS = {
-#         ldap.OPT_X_TLS_CACERTFILE: "/etc/ssl/certs/ca-certificates.crt",
-#         ldap.OPT_X_TLS_NEWCTX: 0,
-#     }
-#
-#     AUTH_LDAP_SERVER_URI = env.str("AUTH_LDAP_SERVER_URI")
-#     AUTH_LDAP_BIND_DN = env.str("AUTH_LDAP_BIND_DN")
-#     AUTH_LDAP_BIND_PASSWORD = env.str("AUTH_LDAP_BIND_PASSWORD")
-#     try:
-#         AUTH_LDAP_USER_DN_TEMPLATE = env.str("AUTH_LDAP_USER_DN_TEMPLATE")
-#     except environ.ImproperlyConfigured:
-#         AUTH_LDAP_USER_SEARCH_USER_TEMPLATE = env.str(
-#             "AUTH_LDAP_USER_SEARCH_USER_TEMPLATE"
-#         )
-#         try:
-#             AUTH_LDAP_USER_SEARCH_BASE = env.str("AUTH_LDAP_USER_SEARCH_BASE")
-#             AUTH_LDAP_USER_SEARCH = LDAPSearch(
-#                 AUTH_LDAP_USER_SEARCH_BASE,
-#                 ldap.SCOPE_SUBTREE,
-#                 AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
-#             )
-#         except environ.ImproperlyConfigured:
-#             AUTH_LDAP_USER_SEARCH_BASE_LIST = env.list(
-#                 "AUTH_LDAP_USER_SEARCH_BASE_LIST"
-#             )
-#             searches = [
-#                 LDAPSearch(x, ldap.SCOPE_SUBTREE, AUTH_LDAP_USER_SEARCH_USER_TEMPLATE)
-#                 for x in AUTH_LDAP_USER_SEARCH_BASE_LIST
-#             ]
-#             AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*searches)
-#
-#     AUTH_LDAP_USER_ATTR_MAP = env.dict(
-#         "AUTH_LDAP_USER_ATTR_MAP",
-#         default={"first_name": "givenName", "last_name": "sn", "email": "mail"},
-#     )
-#
-#     AUTH_LDAP_ALWAYS_UPDATE_USER = True
-#     AUTH_LDAP_CACHE_TIMEOUT = 0
-#
-#     AUTHENTICATION_BACKENDS.insert(
-#         AUTHENTICATION_BACKENDS.index("django.contrib.auth.backends.ModelBackend"),
-#         "django_auth_ldap.backend.LDAPBackend",
-#     )
-# except environ.ImproperlyConfigured:
-#     pass
+# Now all configurable authentication backends are added
+for backend in AUTH_BACKENDS_TO_USE:
+    # The default django user model backend
+    if backend == 'django':
+        AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.ModelBackend')
+
+    # A generically configurable LDAP authentication backend
+    # See https://django-auth-ldap.readthedocs.io/en/latest/authentication.html for details
+    if backend == 'ldap':
+        AUTH_LDAP_CONNECTION_OPTIONS = {
+            ldap.OPT_X_TLS_CACERTFILE: '/etc/ssl/certs/ca-certificates.crt',
+            ldap.OPT_X_TLS_NEWCTX: 0,
+        }
+
+        AUTH_LDAP_SERVER_URI = env.str('AUTH_LDAP_SERVER_URI')
+        AUTH_LDAP_BIND_DN = env.str('AUTH_LDAP_BIND_DN')
+        AUTH_LDAP_BIND_PASSWORD = env.str('AUTH_LDAP_BIND_PASSWORD')
+        try:
+            AUTH_LDAP_USER_DN_TEMPLATE = env.str('AUTH_LDAP_USER_DN_TEMPLATE')
+        except environ.ImproperlyConfigured:
+            AUTH_LDAP_USER_SEARCH_USER_TEMPLATE = env.str(
+                'AUTH_LDAP_USER_SEARCH_USER_TEMPLATE'
+            )
+            try:
+                AUTH_LDAP_USER_SEARCH_BASE = env.str('AUTH_LDAP_USER_SEARCH_BASE')
+                AUTH_LDAP_USER_SEARCH = LDAPSearch(
+                    AUTH_LDAP_USER_SEARCH_BASE,
+                    ldap.SCOPE_SUBTREE,
+                    AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
+                )
+            except environ.ImproperlyConfigured:
+                AUTH_LDAP_USER_SEARCH_BASE_LIST = env.str(
+                    'AUTH_LDAP_USER_SEARCH_BASE_LIST'
+                ).split(';')
+                searches = [
+                    LDAPSearch(
+                        x.strip(),
+                        ldap.SCOPE_SUBTREE,
+                        AUTH_LDAP_USER_SEARCH_USER_TEMPLATE,
+                    )
+                    for x in AUTH_LDAP_USER_SEARCH_BASE_LIST
+                ]
+                AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*searches)
+
+        AUTH_LDAP_USER_ATTR_MAP = env.dict(
+            'AUTH_LDAP_USER_ATTR_MAP',
+            default={'first_name': 'givenName', 'last_name': 'sn', 'email': 'mail'},
+        )
+
+        AUTH_LDAP_ALWAYS_UPDATE_USER = True
+        AUTH_LDAP_CACHE_TIMEOUT = 0
+
+        AUTHENTICATION_BACKENDS.append('django_auth_ldap.backend.LDAPBackend')
 
 # CAS
 MAMA_CAS_SERVICES = [
@@ -388,8 +394,9 @@ LOGGING = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://{}:6379/0'.format(
-            f'{PROJECT_NAME}-redis' if DOCKER else 'localhost'
+        'LOCATION': 'redis://{}:{}/0'.format(
+            f'{PROJECT_NAME}-redis' if DOCKER else 'localhost',
+            env.str('REDIS_PORT', default='6379'),
         ),
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     }
@@ -406,9 +413,8 @@ CSRF_COOKIE_DOMAIN = env.str('CSRF_COOKIE_DOMAIN', default=None)
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 
 CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=False)
-CORS_ORIGIN_ALLOW_ALL = env.bool('CORS_ORIGIN_ALLOW_ALL', default=False)
-CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST', default=[])
-# CORS_URLS_REGEX = r'^/()/.*$'
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
 HOME_REDIRECT = reverse_lazy('cas_login')
 
@@ -425,3 +431,9 @@ if DEBUG:
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     )
     INTERNAL_IPS = ('127.0.0.1',)
+
+    if 'ldap' in AUTH_BACKENDS_TO_USE:
+        LOGGING['loggers']['django_auth_ldap'] = {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        }
