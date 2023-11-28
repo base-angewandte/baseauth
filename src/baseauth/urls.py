@@ -13,7 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from mama_cas.views import LoginView
+from mama_cas.views import (
+    LoginView,
+    LogoutView,
+    ProxyValidateView,
+    ProxyView,
+    SamlValidateView,
+    ServiceValidateView,
+    ValidateView,
+    WarnView,
+)
 
 from django.conf import settings
 from django.contrib import admin
@@ -30,9 +39,29 @@ urlpatterns = [
     ),
     # admin
     path('admin/', admin.site.urls),
-    # views
+    # cas views
     path('login/', LoginView.as_view(), name='cas_login'),
-    path('', include('mama_cas.urls')),
+    path('logout/', LogoutView.as_view(), name='cas_logout'),
+    path('validate/', ValidateView.as_view(), name='cas_validate'),
+    path(
+        'serviceValidate/',
+        ServiceValidateView.as_view(),
+        name='cas_service_validate',
+    ),
+    path('proxyValidate/', ProxyValidateView.as_view(), name='cas_proxy_validate'),
+    path('proxy/', ProxyView.as_view(), name='cas_proxy'),
+    path(
+        'p3/serviceValidate/',
+        ServiceValidateView.as_view(),
+        name='cas_p3_service_validate',
+    ),
+    path(
+        'p3/proxyValidate/',
+        ProxyValidateView.as_view(),
+        name='cas_p3_proxy_validate',
+    ),
+    path('warn/', WarnView.as_view(), name='cas_warn'),
+    path('samlValidate/', SamlValidateView.as_view(), name='cas_saml_validate'),
     path('captcha/', include('captcha.urls')),
     path('locked/', locked_out, name='locked_out'),
     # i18n
