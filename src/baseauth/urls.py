@@ -26,7 +26,8 @@ from mama_cas.views import (
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.contrib.auth.decorators import login_required
+from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView
 
 from core.views import locked_out
@@ -39,9 +40,7 @@ urlpatterns = [
     ),
     # admin
     path('admin/', admin.site.urls),
-    # cas views
-    path('login/', LoginView.as_view(), name='cas_login'),
-    path('logout/', LogoutView.as_view(), name='cas_logout'),
+    # mama-cas views
     path('validate/', ValidateView.as_view(), name='cas_validate'),
     path(
         'serviceValidate/',
@@ -67,6 +66,41 @@ urlpatterns = [
     # i18n
     path('i18n/', include('django.conf.urls.i18n')),
 ]
+
+# if cas-auth (based on django-cas-ng) is not used, we provide standard mama-cas paths
+if 'cas' not in settings.AUTH_BACKENDS_TO_USE:
+    urlpatterns += [
+        path('login/', LoginView.as_view(), name='cas_login'),
+        path('logout/', LogoutView.as_view(), name='cas_logout'),
+    ]
+
+# otherwise django-cas-ng is used to authenticate against another CAS server
+else:
+    import django_cas_ng.views
+
+    urlpatterns += [
+        path('login/', login_required(LoginView.as_view()), name='cas_login'),
+        path(
+            'logout/',
+            RedirectView.as_view(url=reverse_lazy('cas_ng_logout')),
+            name='cas_logout',
+        ),
+        path(
+            'accounts/login/',
+            django_cas_ng.views.LoginView.as_view(),
+            name='cas_ng_login',
+        ),
+        path(
+            'accounts/logout/',
+            django_cas_ng.views.LogoutView.as_view(),
+            name='cas_ng_logout',
+        ),
+        path(
+            'accounts/callback/',
+            django_cas_ng.views.CallbackView.as_view(),
+            name='cas_ng_proxy_callback',
+        ),
+    ]
 
 if settings.DEBUG:
     import debug_toolbar
