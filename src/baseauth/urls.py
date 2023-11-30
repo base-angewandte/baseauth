@@ -78,11 +78,28 @@ if 'cas' not in settings.AUTH_BACKENDS_TO_USE:
 else:
     import django_cas_ng.views
 
+    class LogoutRedirectView(RedirectView):
+        """A special RedirectView transforming the service to a next
+        parameter."""
+
+        def get_redirect_url(self, *args, **kwargs):
+            """Provide the redirect url with an optional service parameter
+            rewritten to next."""
+            if self.url:
+                url = self.url % kwargs
+            else:
+                return None
+
+            service_url = self.request.GET.get('service')
+            if service_url:
+                url = f'{url}?&next={service_url}'
+            return url
+
     urlpatterns += [
         path('login/', login_required(LoginView.as_view()), name='cas_login'),
         path(
             'logout/',
-            RedirectView.as_view(url=reverse_lazy('cas_ng_logout')),
+            LogoutRedirectView.as_view(url=reverse_lazy('cas_ng_logout')),
             name='cas_logout',
         ),
         path(
