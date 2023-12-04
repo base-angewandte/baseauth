@@ -118,8 +118,10 @@ Currently available options are:
 
 - `django` - the internal user model authentication backend of Django
 - `ldap` - a generic LDAP-based authentication
+- `cas` - redirect all auth to an upstream CAS server
 
-If you combine different backends, they will be checked in order of listing. So if
+While `cas` will overrule other authentication backends, generally you can combine
+different backends, so they will be checked in order of listing. So if
 you for example use:
 
 ```
@@ -165,3 +167,30 @@ Now depending on your setup you can use three different ways to query your users
    list of distinguished names. E.g.:
    `ou=unit1,ou=users,dc=example,dc=com;ou=unit2,ou=users,dc=example,dc=com`
    This will only work, if `AUTH_LDAP_USER_SEARCH_BASE` is not set.
+
+#### CAS
+
+```{note}
+This authentication backend will overrule all other backends you might have configured.
+All login and logout routes will be redirected to the upstream CAS server.
+```
+
+If `cas` is used in the `AUTHENTICATION_BACKENDS`, you also have to set the following:
+
+- `CAS_SERVER` has to point to an upstream CAS server, which all login and logout
+  attempts will be redirected to.
+
+All other `CAS_` settings are optional (for details see the
+[django-cas-ng config docs](https://djangocas.dev/docs/4.0/configuration.html)):
+
+- `CAS_VERSION` : specifies the version of the CAS protocol and defaults to `3`
+- `CAS_REDIRECT_URL` : specifies the redirect to happen after successful login and
+  defaults to `/`. This only affects logins directly on baseauth. Logins coming
+  from one of the apps already have their redirect URL set.
+- `CAS_VERIFY_SSL_CERTIFICATE` : defaults to `True` and should not be changed in any
+  production context. For local testing you can disable the SSL certificate check
+  (e.g. if case of a self-signed certificate).
+- `CAS_RENAME_ATTRIBUTES` : a dictionary used to rename the (key of the) attributes
+  that the upstream CAS server may return. Is empty by default, so no renaming happens.
+  For example, if `CAS_RENAME_ATTRIBUTES=ln=last_name,fn=first_name` the `ln` attribute
+  returned by the cas server will be renamed as `last_name` and `fn` to `first_name`.
