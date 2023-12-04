@@ -131,8 +131,9 @@ for backend in AUTH_BACKENDS_TO_USE:
         CAS_VERSION = env.str('CAS_VERSION', default='3')
         CAS_APPLY_ATTRIBUTES_TO_USER = True
         CAS_REDIRECT_URL = env.str('CAS_REDIRECT_URL', default=FORCE_SCRIPT_NAME or '/')
-        CAS_CHECK_NEXT = env.bool('CAS_CHECK_NEXT', default=True)
-        CAS_VERIFY_CERTIFICATE = env.bool('CAS_VERIFY_CERTIFICATE', default=True)
+        CAS_VERIFY_SSL_CERTIFICATE = env.bool(
+            'CAS_VERIFY_SSL_CERTIFICATE', default=True
+        )
         CAS_RENAME_ATTRIBUTES = env.dict('CAS_RENAME_ATTRIBUTES', default={})
 
     # A generically configurable LDAP authentication backend
