@@ -70,6 +70,13 @@ class UserPreferencesData(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, editable=False)
     date_changed = models.DateTimeField(auto_now=True, editable=False)
 
+    class Meta:
+        verbose_name_plural = 'user preferences data'
+
+    def __str__(self):
+        sr_id = f' (showroom_id: {self.showroom_id})' if self.showroom_id else ''
+        return f'User preferences data for {self.user}{sr_id}'
+
     @property
     def location_object(self):
         if self.street_address:
@@ -197,6 +204,9 @@ class UserSettingsApp(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True, unique=True)
     icon = models.URLField(max_length=255, blank=True, null=True, default=None)
 
+    def __str__(self):
+        return f'{self.name} app (id: {self.id})'
+
 
 class UserSettings(models.Model):
     VALUE_TYPE = (
@@ -210,6 +220,12 @@ class UserSettings(models.Model):
     title = JSONField(blank=True, null=True)
     value_type = models.CharField(max_length=255, choices=VALUE_TYPE, default='boolean')
     default_value = JSONField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'user settings'
+
+    def __str__(self):
+        return f'{self.id} ({self.app.name} setting)'
 
     @property
     def value_schema(self):
@@ -233,6 +249,9 @@ class UserSettingsValue(models.Model):
     value = JSONField(blank=True, null=True)
     user_settings = models.ForeignKey(UserSettings, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user_settings.id} : {self.value} (user: {self.user})'
 
     @property
     def value_schema(self):

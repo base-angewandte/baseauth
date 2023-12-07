@@ -9,19 +9,27 @@ from .models import (
 
 
 class UserPreferencesDataAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'user',
+        'showroom_id',
+        'email',
+        'affiliation',
+        'organisational_unit',
+        'complementary_email',
+        'urls',
+    )
 
 
 class UserSettingsAppAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'name', 'icon')
 
 
 class UserSettingsAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'app', 'title', 'value_type', 'default_value')
 
 
 class UserSettingsValueAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('value', 'user_settings', 'user')
 
 
 admin.site.register(UserPreferencesData, UserPreferencesDataAdmin)
