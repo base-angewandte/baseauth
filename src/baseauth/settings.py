@@ -99,9 +99,11 @@ INSTALLED_APPS = [
     'axes',
     'captcha',
     'corsheaders',
+    'easy_thumbnails',
     # Project apps
     'core',
     'general',
+    'user_preferences',
 ]
 
 # Authentication Backends
@@ -457,3 +459,21 @@ if DEBUG:
             'level': 'DEBUG',
             'handlers': ['console'],
         }
+
+# User preferences settings profiles for apps
+SETTINGS_DATA = {
+    'showroom': {
+        'title': 'Showroom',
+        'icon': 'https://base.uni-ak.ac.at/bs/img/icons/showroom.svg',
+        'settings': {
+            'activate_profile': {
+                'title': {
+                    'de': 'Aktivieren Sie Ihre persönliche Showroom Seite',
+                    'en': 'Activate your personal Showroom page',
+                },
+                'type': 'boolean',
+                'default_value': False,
+            },
+        },
+    },
+}
