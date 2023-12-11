@@ -18,7 +18,7 @@ There are two supported ways to start the development server:
 - Clone git repository and checkout branch `develop`:
 
   ```bash
-  git clone https://github.com/base-angewandte/cas.git
+  git clone https://github.com/base-angewandte/baseauth.git
   cd baseauth
   ```
 
@@ -139,7 +139,7 @@ automagically. Take a look at the [](./configuration.md) section for details.
 - Clone git repository:
 
   ```bash
-  git clone https://github.com/base-angewandte/cas.git
+  git clone https://github.com/base-angewandte/baseauth.git
   cd baseauth
   ```
 
