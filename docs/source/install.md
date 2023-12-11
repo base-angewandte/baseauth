@@ -158,7 +158,7 @@ automagically. Take a look at the [](./configuration.md) section for details.
 - Use `Makefile` to initialize and run project:
 
   ```bash
-  make start init init-static restart-gunicorn
+  make start init restart-gunicorn
   ```
 
 - Install nginx and configure it accordingly
