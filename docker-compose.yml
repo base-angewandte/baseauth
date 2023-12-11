@@ -6,7 +6,7 @@ services:
     volumes:
       - ./dockerdata/redis/data:/data
     networks:
-      - casnet
+      - baseauthnet
     restart: always
     command: redis-server --appendonly yes
 
@@ -21,7 +21,7 @@ services:
     volumes:
       - ./dockerdata/postgres/16/data:/var/lib/postgresql/data/pgdata
     networks:
-      - casnet
+      - baseauthnet
     restart: always
 
   baseauth-django:
@@ -37,7 +37,7 @@ services:
       - ./src:/django
       - ./logs:/logs
     networks:
-      - casnet
+      - baseauthnet
     restart: always
 
   baseauth-cron:
@@ -50,4 +50,4 @@ services:
     restart: always
 
 networks:
-  casnet:
+  baseauthnet:
