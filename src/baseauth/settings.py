@@ -68,7 +68,7 @@ DOCKER = env.bool('DOCKER', default=True)
 
 SITE_URL = env.str('SITE_URL')
 
-FORCE_SCRIPT_NAME = env.str('FORCE_SCRIPT_NAME', default='/cas')
+FORCE_SCRIPT_NAME = env.str('FORCE_SCRIPT_NAME', default='/auth')
 
 SITE_HOSTNAME = urlparse(SITE_URL).hostname
 

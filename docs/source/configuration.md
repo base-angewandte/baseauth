@@ -38,7 +38,7 @@ sharing one domain or running _baseauth_ on a separate domain, or if you run it 
 For local development setups you can choose `http://127.0.0.1:8000/`. For an online
 deployment choose the base path (protocol and domain), e.g. `https://base.uni-ak.ac.at/`.
 
-Additionally, `FORCE_SCRIPT_NAME` (which defaults to `/cas`) will be used to
+Additionally, `FORCE_SCRIPT_NAME` (which defaults to `/auth`) will be used to
 determine the actual PATH to your _baseauth_ instance, by prefixing it with the
 `SITE_URL`. So for a local development setup (where Django is actually running on
 127.0.0.1:8300) make sure to remove the comment and explicitly set this to an empty
@@ -49,7 +49,7 @@ FORCE_SCRIPT_NAME=
 ```
 
 Do the same if _baseauth_ runs on the root of a dedicated domain, and leave the
-default if it runs on a shared domain where it runs on the _/cas_ path.
+default if it runs on a shared domain where it runs on the _/auth_ path.
 
 ### BEHIND_PROXY
 
