@@ -9,7 +9,7 @@ SITE_URL=https://url/
 
 ## In a production deployment with other base components, this base path should
 ## be set for image. For local development set this explicitly to an empty string.
-# FORCE_SCRIPT_NAME=/cas
+# FORCE_SCRIPT_NAME=/auth
 
 ## The accepted HTTP Host headers, Django will serve. Defaults to urlparse(SITE_URL).hostname
 # ALLOWED_HOSTS=
