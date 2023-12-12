@@ -1,4 +1,4 @@
-# base CAS
+# baseauth - authentication service for base applications
 
 ## Documentation
 
