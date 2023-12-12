@@ -70,7 +70,7 @@ subsections.
 
 ```{note}
 Make sure to explicitly set the relevant `POSTGRES_*` variables in your
-./src/baseauth/.env file, if you have changed any of the corresponding `CAS_DB_*`
+./src/baseauth/.env file, if you have changed any of the corresponding `BASEAUTH_DB_*`
 parameters in your .env file. This is not necessary for dockerised setups, but in your
 local django dev server those environment variables are not assigned
 automagically. Take a look at the [](./configuration.md) section for details.
