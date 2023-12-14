@@ -99,6 +99,9 @@ INSTALLED_APPS = [
     'axes',
     'captcha',
     'corsheaders',
+    'rest_framework',
+    'rest_framework_api_key',
+    'drf_spectacular',
     'easy_thumbnails',
     # Project apps
     'core',
@@ -460,6 +463,22 @@ if DEBUG:
             'handlers': ['console'],
         }
 
+"""User preferences specific settings"""
+# User profile picture thumbnail settings
+THUMBNAIL_NAMER = 'easy_thumbnails.namers.hashed'
+THUMBNAIL_DIR = 'tn'
+THUMBNAIL_MEDIA_ROOT = (
+    f'{os.path.normpath(os.path.join(MEDIA_ROOT, THUMBNAIL_DIR))}{os.sep}'
+)
+THUMBNAIL_MEDIA_URL = f'{MEDIA_URL}/{THUMBNAIL_DIR}/'
+THUMBNAIL_QUALITY = 95
+THUMBNAIL_OPTIONS = {
+    'size': (625, 625),
+    'crop': 'smart',
+}
+
+MAX_IMAGE_SIZE = 10485760  # 10mb
+
 # User preferences settings profiles for apps
 SETTINGS_DATA = {
     'showroom': {
@@ -476,4 +495,47 @@ SETTINGS_DATA = {
             },
         },
     },
+}
+"""API specific settings."""
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'X-Api-Key': {'type': 'apiKey', 'in': 'header', 'name': 'X-Api-Key'}
+    },
+}
+
+API_KEY_CUSTOM_HEADER = 'HTTP_X_API_KEY'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ORDERING_PARAM': 'sort',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+# drf-spectacular
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'baseauth',
+    'DESCRIPTION': '',
+    'VERSION': '1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'TAGS': ['user', 'autosuggest', 'user-data-agent', 'api'],
+    'SERVERS': [
+        {
+            'url': env.str(
+                'OPENAPI_SERVER_URL',
+                default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
+            ),
+            'description': env.str(
+                'OPENAPI_SERVER_DESCRIPTION', default='User Preferences'
+            ),
+        },
+    ],
 }

@@ -10,9 +10,13 @@ django-cas-ng==5.0.1
 django-cors-headers==4.3.0
 django-debug-toolbar==4.2.0
 django-environ==0.11.2
+django-filter==23.5
 django-mama-cas==2.5.0
 django-redis==5.4.0
 django-simple-captcha==0.5.20
+djangorestframework==3.14.0
+djangorestframework-api-key==3.0.0
+drf-spectacular==0.27.0
 defusedxml==0.7.1
 gevent==23.9.1
 easy-thumbnails==2.8.5
@@ -20,8 +24,8 @@ Pillow==10.1.0
 pip-tools==7.3.0
 psycopg[binary]==3.1.12
 requests==2.31.0
-requests-futures==1.0.1
 shortuuid==1.0.11
+skosmos-client==0.3.0
 whitenoise[brotli]==6.6.0
 
 # Server

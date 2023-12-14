@@ -38,8 +38,12 @@ urlpatterns = [
         RedirectView.as_view(url=settings.HOME_REDIRECT, permanent=False),
         name='index',
     ),
+    # api
+    path('api/', include('api.urls')),
     # admin
     path('admin/', admin.site.urls),
+    # user preferences
+    path('', include('user_preferences.urls')),
     # mama-cas views
     path('validate/', ValidateView.as_view(), name='cas_validate'),
     path(
@@ -123,3 +127,7 @@ if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [path('__debug__/', include(debug_toolbar.urls))] + urlpatterns
+
+    from django.conf.urls.static import static
+
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
