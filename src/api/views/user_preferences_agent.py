@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from api import get_user_preferences_attributes
-from api.serializers.user_page import UserPreferencesDataSerializer
+from api.serializers.user_preferences_data import UserPreferencesDataSerializer
 from user_preferences.models import UserPreferencesData
 
 

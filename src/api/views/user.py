@@ -5,7 +5,7 @@ from rest_framework.viewsets import GenericViewSet
 from django.conf import settings
 
 from api import get_user_preferences_attributes
-from api.serializers.user_page import UserSerializer
+from api.serializers.user import UserSerializer
 
 
 class UserViewSet(GenericViewSet):

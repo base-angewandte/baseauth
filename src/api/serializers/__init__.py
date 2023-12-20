@@ -1,5 +1,32 @@
+import json
+
+import jsonschema
+from jsonschema import validate
 from rest_framework import serializers
 from rest_framework.fields import empty
+
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+
+def validate_json_field(value, schema):
+    try:
+        if not isinstance(value, list):
+            value = [value]
+
+        for v in value:
+            validate(v, schema)
+    except jsonschema.exceptions.ValidationError as e:
+        raise ValidationError(_(f'Well-formed but invalid JSON: {e}')) from e
+    except json.decoder.JSONDecodeError as e:
+        raise ValidationError(_(f'Poorly-formed text, not JSON: {e}')) from e
+    except TypeError as e:
+        raise ValidationError(f'Invalid characters: {e}') from e
+
+    if len(value) > len({json.dumps(d, sort_keys=True) for d in value}):
+        raise ValidationError(_('Data contains duplicate entries'))
+
+    return value
 
 
 class CleanModelSerializer(serializers.ModelSerializer):

@@ -11,7 +11,7 @@ from rest_framework.viewsets import GenericViewSet
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
-from api.serializers.user_page import UserSettingsSerializer
+from api.serializers.user_settings import UserSettingsSerializer
 from user_preferences.models import UserSettings, UserSettingsValue, settings_dict
 
 
