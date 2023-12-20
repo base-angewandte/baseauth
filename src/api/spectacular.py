@@ -9,3 +9,11 @@ language_header_parameter = OpenApiParameter(
     required=False,
     enum=list(settings.LANGUAGES_DICT.keys()),
 )
+
+fieldname_parameter = OpenApiParameter(
+    name='fieldname',
+    type=OpenApiTypes.STR,
+    location=OpenApiParameter.PATH,
+    required=True,
+    enum=list(settings.ACTIVE_SOURCES.keys()),
+)

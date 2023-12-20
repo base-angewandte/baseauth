@@ -7,8 +7,11 @@ from rest_framework import routers
 
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import include, path
+from django.urls import include, path, re_path
 
+from .views.autosuggest_lookup import lookup_view
+from .views.autosuggest_lookup_search import lookup_view_search
+from .views.autosuggest_user import autosuggest_user
 from .views.user import UserViewSet
 from .views.user_image import UserImageViewSet
 from .views.user_preferences_agent import UserPreferencesAgentViewSet
@@ -49,8 +52,27 @@ urlpatterns = [
         UserImageViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'delete'}),
         name='user_image',
     ),
-    # TODO: integrate from autosuggest package in cas repo
-    # path('autosuggest/', include('autosuggest.urls')),
+    # Autosuggest routes
+    re_path(
+        r'^autosuggest/(?P<fieldname>({}))/$'.format(
+            '|'.join(settings.ACTIVE_SOURCES.keys())
+        ),
+        lookup_view,
+        name='lookup_all',
+    ),
+    re_path(
+        r'^autosuggest/(?P<fieldname>({}))/(?P<searchstr>(.*))/$'.format(
+            '|'.join(settings.ACTIVE_SOURCES.keys())
+        ),
+        lookup_view_search,
+        name='lookup',
+    ),
+    re_path(
+        r'^autosuggest/(?P<user>(.*))/$',
+        autosuggest_user,
+        name='autosuggest_user',
+    ),
+    # Open API routes
     path('schema/openapi3.yaml', SpectacularAPIView.as_view(), name='schema-yaml'),
     path('schema/openapi3.json', SpectacularJSONAPIView.as_view(), name='schema-json'),
     path(

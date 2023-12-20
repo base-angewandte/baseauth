@@ -4,6 +4,8 @@
 #
 #    pip-compile src/requirements-dev.in
 #
+apimapper==0.7.9
+    # via -r src/requirements.in
 asgiref==3.7.2
     # via django
 async-timeout==4.0.3
@@ -103,6 +105,8 @@ jsonschema-specifications==2023.11.2
     # via jsonschema
 lxml==4.9.3
     # via python-cas
+markdown==3.5.1
+    # via apimapper
 nodeenv==1.8.0
     # via pre-commit
 packaging==23.2
@@ -164,6 +168,7 @@ referencing==0.32.0
 requests==2.31.0
     # via
     #   -r src/requirements.in
+    #   apimapper
     #   django-mama-cas
     #   python-cas
     #   skosmos-client
