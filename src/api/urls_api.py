@@ -9,18 +9,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 
-from . import views
+from .views.user import UserViewSet
+from .views.user_image import UserImageViewSet
+from .views.user_preferences_agent import UserPreferencesAgentViewSet
+from .views.user_preferences_data import UserPreferencesDataViewSet
+from .views.user_settings import UserSettingsViewSet
 
 router = routers.DefaultRouter()
 
-router.register(r'users', views.UserPreferencesAgentViewSet, basename='users')
+router.register(r'users', UserPreferencesAgentViewSet, basename='users')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('user/', views.UserViewSet.as_view({'get': 'retrieve'}), name='user'),
+    path('user/', UserViewSet.as_view({'get': 'retrieve'}), name='user'),
     path(
         'user/data/',
-        views.UserPreferencesDataViewSet.as_view(
+        UserPreferencesDataViewSet.as_view(
             {
                 'get': 'retrieve',
                 'put': 'update',
@@ -31,7 +35,7 @@ urlpatterns = [
     ),
     path(
         'user/settings/',
-        views.UserSettingsViewSet.as_view(
+        UserSettingsViewSet.as_view(
             {
                 'get': 'retrieve',
                 'put': 'update',
@@ -42,9 +46,7 @@ urlpatterns = [
     ),
     path(
         'user/image/',
-        views.UserImageViewSet.as_view(
-            {'get': 'list', 'post': 'create', 'delete': 'delete'}
-        ),
+        UserImageViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'delete'}),
         name='user_image',
     ),
     # TODO: integrate from autosuggest package in cas repo
