@@ -20,9 +20,11 @@ from django.db.models import Q
     operation_id='autosuggest_user_all',
 )
 @api_view(['GET'])
-def autosuggest_user(request, searchstr='', *args, **kwargs):
+def autosuggest_user(request, user, *args, **kwargs):
     """Get autosuggest results for query."""
     UserModel = get_user_model()
+    # the user parameter of this endpoint is the actual string to search for
+    searchstr = user
 
     # TODO: add search for ldap users if ldap is enabled
 
