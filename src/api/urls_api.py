@@ -73,10 +73,10 @@ urlpatterns = [
         name='autosuggest_user',
     ),
     # Open API routes
-    path('schema/openapi3.yaml', SpectacularAPIView.as_view(), name='schema-yaml'),
-    path('schema/openapi3.json', SpectacularJSONAPIView.as_view(), name='schema-json'),
+    path('openapi.yaml', SpectacularAPIView.as_view(), name='schema-yaml'),
+    path('openapi.json', SpectacularJSONAPIView.as_view(), name='schema-json'),
     path(
-        'schema/swagger-ui',
+        'docs/',
         SpectacularSwaggerView.as_view(url_name='schema-json'),
         name='swagger-ui',
     ),
