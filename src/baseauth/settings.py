@@ -531,7 +531,7 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
-    'TAGS': ['user', 'autosuggest', 'user-data-agent', 'api'],
+    'TAGS': ['autosuggest', 'user', 'users'],
     'SERVERS': [
         {
             'url': env.str(

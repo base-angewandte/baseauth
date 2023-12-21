@@ -22,7 +22,7 @@ class UserPreferencesAgentViewSet(GenericViewSet):
     permission_classes = [HasAPIKey | IsAuthenticated]
 
     @extend_schema(
-        tags=['user'],
+        tags=['users'],
         parameters=[
             OpenApiParameter(
                 name='X-Api-Key',
