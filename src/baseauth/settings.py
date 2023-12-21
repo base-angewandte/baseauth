@@ -527,7 +527,11 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'baseauth',
-    'DESCRIPTION': '',
+    'DESCRIPTION': """Provides authenticated access only to a user's preferences and
+    profile data, as well as API-Key based authenticated access to user data for user
+    data agents (e.g. in Showroom). The repo and further documentation are at
+    [https://github.com/base-angewandte/baseauth](https://github.com/base-angewandte/baseauth).
+    """,
     'VERSION': '1.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
@@ -539,10 +543,15 @@ SPECTACULAR_SETTINGS = {
                 default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
             ),
             'description': env.str(
-                'OPENAPI_SERVER_DESCRIPTION', default='User Preferences'
+                'OPENAPI_SERVER_DESCRIPTION', default='baseauth / User Preferences'
             ),
         },
     ],
+    # available SwaggerUI configuration parameters
+    # https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
+    'SWAGGER_UI_SETTINGS': {
+        'displayOperationId': True,
+    },
 }
 
 # Autosuggest
