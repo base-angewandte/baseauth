@@ -74,3 +74,11 @@ SITE_URL=https://url/
 # AUTH_LDAP_USER_SEARCH_BASE=
 # AUTH_LDAP_USER_SEARCH_BASE_LIST=
 # AUTH_LDAP_USER_SEARCH_USER_TEMPLATE=
+
+## CAS authentication (only needed if cas occurs in AUTHENTICATION_BACKENDS above)
+## See the configuration section in the docs for details.
+# CAS_SERVER=
+# CAS_VERSION=3
+# CAS_REDIRECT_URL=/
+# CAS_VERIFY_SSL_CERTIFICATE=True
+# CAS_RENAME_ATTRIBUTES=

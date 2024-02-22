@@ -13,11 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from mama_cas.views import LoginView
+from mama_cas.views import (
+    LoginView,
+    LogoutView,
+    ProxyValidateView,
+    ProxyView,
+    SamlValidateView,
+    ServiceValidateView,
+    ValidateView,
+    WarnView,
+)
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
+from django.contrib.auth.decorators import login_required
+from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView
 
 from core.views import locked_out
@@ -30,14 +40,84 @@ urlpatterns = [
     ),
     # admin
     path('admin/', admin.site.urls),
-    # views
-    path('login/', LoginView.as_view(), name='cas_login'),
-    path('', include('mama_cas.urls')),
+    # mama-cas views
+    path('validate/', ValidateView.as_view(), name='cas_validate'),
+    path(
+        'serviceValidate/',
+        ServiceValidateView.as_view(),
+        name='cas_service_validate',
+    ),
+    path('proxyValidate/', ProxyValidateView.as_view(), name='cas_proxy_validate'),
+    path('proxy/', ProxyView.as_view(), name='cas_proxy'),
+    path(
+        'p3/serviceValidate/',
+        ServiceValidateView.as_view(),
+        name='cas_p3_service_validate',
+    ),
+    path(
+        'p3/proxyValidate/',
+        ProxyValidateView.as_view(),
+        name='cas_p3_proxy_validate',
+    ),
+    path('warn/', WarnView.as_view(), name='cas_warn'),
+    path('samlValidate/', SamlValidateView.as_view(), name='cas_saml_validate'),
     path('captcha/', include('captcha.urls')),
     path('locked/', locked_out, name='locked_out'),
     # i18n
     path('i18n/', include('django.conf.urls.i18n')),
 ]
+
+# if cas-auth (based on django-cas-ng) is not used, we provide standard mama-cas paths
+if 'cas' not in settings.AUTH_BACKENDS_TO_USE:
+    urlpatterns += [
+        path('login/', LoginView.as_view(), name='cas_login'),
+        path('logout/', LogoutView.as_view(), name='cas_logout'),
+    ]
+
+# otherwise django-cas-ng is used to authenticate against another CAS server
+else:
+    import django_cas_ng.views
+
+    class LogoutRedirectView(RedirectView):
+        """A special RedirectView transforming the service to a next
+        parameter."""
+
+        def get_redirect_url(self, *args, **kwargs):
+            """Provide the redirect url with an optional service parameter
+            rewritten to next."""
+            if self.url:
+                url = self.url % kwargs
+            else:
+                return None
+
+            service_url = self.request.GET.get('service')
+            if service_url:
+                url = f'{url}?&next={service_url}'
+            return url
+
+    urlpatterns += [
+        path('login/', login_required(LoginView.as_view()), name='cas_login'),
+        path(
+            'logout/',
+            LogoutRedirectView.as_view(url=reverse_lazy('cas_ng_logout')),
+            name='cas_logout',
+        ),
+        path(
+            'accounts/login/',
+            django_cas_ng.views.LoginView.as_view(),
+            name='cas_ng_login',
+        ),
+        path(
+            'accounts/logout/',
+            django_cas_ng.views.LogoutView.as_view(),
+            name='cas_ng_logout',
+        ),
+        path(
+            'accounts/callback/',
+            django_cas_ng.views.CallbackView.as_view(),
+            name='cas_ng_proxy_callback',
+        ),
+    ]
 
 if settings.DEBUG:
     import debug_toolbar

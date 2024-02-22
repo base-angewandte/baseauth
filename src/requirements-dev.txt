@@ -31,6 +31,7 @@ django==4.2.7
     #   -r src/requirements.in
     #   django-auth-ldap
     #   django-axes
+    #   django-cas-ng
     #   django-cors-headers
     #   django-debug-toolbar
     #   django-ranged-response
@@ -42,6 +43,8 @@ django-axes[ipware]==6.1.1
     # via
     #   -r src/requirements.in
     #   django-axes
+django-cas-ng==5.0.1
+    # via -r src/requirements.in
 django-cors-headers==4.3.0
     # via -r src/requirements.in
 django-debug-toolbar==4.2.0
@@ -70,6 +73,8 @@ identify==2.5.31
     # via pre-commit
 idna==3.4
     # via requests
+lxml==4.9.3
+    # via python-cas
 nodeenv==1.8.0
     # via pre-commit
 packaging==23.2
@@ -104,6 +109,8 @@ pyasn1-modules==0.3.0
     # via python-ldap
 pyproject-hooks==1.0.0
     # via build
+python-cas==1.6.0
+    # via django-cas-ng
 python-ldap==3.4.3
     # via django-auth-ldap
 pyyaml==6.0.1
@@ -116,9 +123,12 @@ requests==2.31.0
     # via
     #   -r src/requirements.in
     #   django-mama-cas
+    #   python-cas
     #   requests-futures
 requests-futures==1.0.1
     # via -r src/requirements.in
+six==1.16.0
+    # via python-cas
 sqlparse==0.4.4
     # via
     #   django

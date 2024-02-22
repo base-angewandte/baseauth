@@ -118,6 +118,24 @@ for backend in AUTH_BACKENDS_TO_USE:
     if backend == 'django':
         AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.ModelBackend')
 
+    if backend == 'cas':
+        INSTALLED_APPS.append('django_cas_ng')
+        AUTHENTICATION_BACKENDS.append('django_cas_ng.backends.CASBackend')
+
+        CAS_SERVER_URL = env.str('CAS_SERVER', default=f'{SITE_URL}cas/')
+        CAS_LOGIN_MSG = None
+        CAS_LOGGED_MSG = None
+        CAS_RENEW = False
+        CAS_LOGOUT_COMPLETELY = True
+        CAS_RETRY_LOGIN = True
+        CAS_VERSION = env.str('CAS_VERSION', default='3')
+        CAS_APPLY_ATTRIBUTES_TO_USER = True
+        CAS_REDIRECT_URL = env.str('CAS_REDIRECT_URL', default=FORCE_SCRIPT_NAME or '/')
+        CAS_VERIFY_SSL_CERTIFICATE = env.bool(
+            'CAS_VERIFY_SSL_CERTIFICATE', default=True
+        )
+        CAS_RENAME_ATTRIBUTES = env.dict('CAS_RENAME_ATTRIBUTES', default={})
+
     # A generically configurable LDAP authentication backend
     # See https://django-auth-ldap.readthedocs.io/en/latest/authentication.html for details
     if backend == 'ldap':
@@ -219,6 +237,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
 ]
+if 'cas' in AUTH_BACKENDS_TO_USE:
+    MIDDLEWARE.append('django_cas_ng.middleware.CASMiddleware')
 
 AXES_LOCKOUT_URL = reverse_lazy('locked_out')
 AXES_VERBOSE = DEBUG
