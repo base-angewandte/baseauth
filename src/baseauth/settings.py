@@ -622,3 +622,11 @@ ACTIVE_SOURCES = {
 }
 
 REQUESTS_TIMEOUT = 60
+
+# Showroom connection settings
+SYNC_TO_SHOWROOM = env.bool('SYNC_TO_SHOWROOM', default=False)
+SHOWROOM_BASE_URL = env.str('SHOWROOM_BASE_URL', default=f'{SITE_URL}showroom/')
+SHOWROOM_API_PATH = env.str('SHOWROOM_API_PATH', default='api/v1/')
+SHOWROOM_API_BASE = f'{SHOWROOM_BASE_URL}{SHOWROOM_API_PATH}'
+SHOWROOM_API_KEY = env.str('SHOWROOM_API_KEY', default=None)
+WORKER_DELAY = 3
