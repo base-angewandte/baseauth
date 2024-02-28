@@ -114,7 +114,7 @@ packaging==23.2
     #   build
     #   djangorestframework-api-key
     #   gunicorn
-pillow==10.1.0
+pillow==10.2.0
     # via
     #   -r src/requirements.in
     #   django-simple-captcha
