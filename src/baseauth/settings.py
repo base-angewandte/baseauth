@@ -105,6 +105,7 @@ INSTALLED_APPS = [
     'rest_framework_api_key',
     'drf_spectacular',
     'easy_thumbnails',
+    'django_rq',
     # Project apps
     'core',
     'general',
@@ -436,6 +437,20 @@ CACHES = {
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     }
 }
+
+
+# RQ worker settings
+RQ_QUEUES = {
+    'default': {'USE_REDIS_CACHE': 'default', 'DEFAULT_TIMEOUT': 500},
+}
+
+if DEBUG or TESTING:
+    for queueConfig in iter(RQ_QUEUES.values()):
+        queueConfig['ASYNC'] = False
+
+RQ_EXCEPTION_HANDLERS = ['core.rq.handlers.exception_handler']
+
+RQ_FAILURE_TTL = 2628288  # approx. 3 month
 
 
 # Session settings
