@@ -35,7 +35,7 @@ def push_user(user):
     # ensure we always push the latest data
     user.refresh_from_db()
 
-    data = get_user_preferences_attributes(user, '')
+    data = get_user_preferences_attributes(user)
 
     r = requests.put(
         f'{settings.SHOWROOM_API_BASE}entities/{user.username}/',
