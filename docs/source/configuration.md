@@ -110,7 +110,10 @@ environment variable will already be set by docker based on the root _.env_ file
 These settings are only required, if a _Showroom_ instance is active, and syncing of
 user profiles & preferences to _Showroom_ is activated. In order to activate syncing,
 set `SYNC_TO_SHOWROOM` to `True`. Additionally, the `SHOWROOM_API_KEY` has to be
-set to a key that can be generated in the Django admin interface of _baseauth_.
+set to a key that has to be generated with the
+[`create-source-repository`](https://showroom-backend.readthedocs.io/en/latest/management_commands.html#create-source-repository)
+command, when _Showroom_ is set up. This key then can be used for _Portfolio_ and _baseauth_
+to push new and updated activities and entities.
 
 The other values only have to be set, if we deviate from a default single-domain
 setup:
