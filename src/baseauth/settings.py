@@ -20,10 +20,12 @@ from urllib.parse import urlparse
 
 import environ
 import ldap
+from apimapper import config as apiconfig
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
+from django.utils.functional import lazy
+from django.utils.translation import get_language, gettext_lazy as _
 
 env = environ.Env()
 env.read_env()
@@ -99,9 +101,14 @@ INSTALLED_APPS = [
     'axes',
     'captcha',
     'corsheaders',
+    'rest_framework',
+    'rest_framework_api_key',
+    'drf_spectacular',
+    'easy_thumbnails',
     # Project apps
     'core',
     'general',
+    'user_preferences',
 ]
 
 # Authentication Backends
@@ -319,6 +326,9 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale_mama_cas'),
 ]
 
+get_language_lazy = lazy(get_language, str)
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
@@ -457,3 +467,166 @@ if DEBUG:
             'level': 'DEBUG',
             'handlers': ['console'],
         }
+
+"""User preferences specific settings"""
+# User profile picture thumbnail settings
+THUMBNAIL_NAMER = 'easy_thumbnails.namers.hashed'
+THUMBNAIL_DIR = 'tn'
+THUMBNAIL_MEDIA_ROOT = (
+    f'{os.path.normpath(os.path.join(MEDIA_ROOT, THUMBNAIL_DIR))}{os.sep}'
+)
+THUMBNAIL_MEDIA_URL = f'{MEDIA_URL}/{THUMBNAIL_DIR}/'
+THUMBNAIL_QUALITY = 95
+THUMBNAIL_OPTIONS = {
+    'size': (625, 625),
+    'crop': 'smart',
+}
+
+MAX_IMAGE_SIZE = 10485760  # 10mb
+
+# User preferences settings profiles for apps
+SETTINGS_DATA = {
+    'showroom': {
+        'title': 'Showroom',
+        'icon': 'https://base.uni-ak.ac.at/bs/img/icons/showroom.svg',
+        'settings': {
+            'activate_profile': {
+                'title': {
+                    'de': 'Aktivieren Sie Ihre persönliche Showroom Seite',
+                    'en': 'Activate your personal Showroom page',
+                },
+                'type': 'boolean',
+                'default_value': False,
+            },
+        },
+    },
+}
+"""API specific settings."""
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'X-Api-Key': {'type': 'apiKey', 'in': 'header', 'name': 'X-Api-Key'}
+    },
+}
+
+API_KEY_CUSTOM_HEADER = 'HTTP_X_API_KEY'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ORDERING_PARAM': 'sort',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+# drf-spectacular
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'baseauth',
+    'DESCRIPTION': """Provides authenticated access only to a user's preferences and
+    profile data, as well as API-Key based authenticated access to user data for user
+    data agents (e.g. in Showroom). The repo and further documentation are at
+    [https://github.com/base-angewandte/baseauth](https://github.com/base-angewandte/baseauth).
+    """,
+    'VERSION': '1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'TAGS': ['autosuggest', 'user', 'users'],
+    'SERVERS': [
+        {
+            'url': env.str(
+                'OPENAPI_SERVER_URL',
+                default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
+            ),
+            'description': env.str(
+                'OPENAPI_SERVER_DESCRIPTION', default='baseauth / User Preferences'
+            ),
+        },
+    ],
+    # available SwaggerUI configuration parameters
+    # https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
+    'SWAGGER_UI_SETTINGS': {
+        'displayOperationId': True,
+    },
+}
+
+# Autosuggest
+
+SKOSMOS_API = 'https://voc.uni-ak.ac.at/skosmos/rest/v1/'
+TAX_ID = 'potax'
+TAX_GRAPH = 'http://base.uni-ak.ac.at/portfolio/taxonomy/'
+VOC_ID = 'povoc'
+VOC_GRAPH = 'http://base.uni-ak.ac.at/portfolio/vocabulary/'
+LANGUAGES_VOCID = 'languages'
+
+ACCEPT_LANGUAGE_HEADER = {'Accept-Language': get_language_lazy()}
+
+SOURCES = {
+    'GND_PERSON': {
+        apiconfig.URL: 'https://lobid.org/gnd/search',
+        apiconfig.QUERY_FIELD: 'q',
+        apiconfig.PAYLOAD: {'format': 'json:suggest', 'filter': 'type:Person'},
+        apiconfig.HEADER: ACCEPT_LANGUAGE_HEADER,
+    },
+    'VIAF_PERSON': {
+        apiconfig.URL: 'http://www.viaf.org/viaf/AutoSuggest',
+        apiconfig.QUERY_FIELD: 'query',
+        apiconfig.PAYLOAD: None,
+    },
+}
+
+GND_MAPPING = {
+    'source': 'id',  # common_schema: GND schema
+    'label': 'label',
+}
+
+VIAF_CONTRIBUTORS_MAPPING = {
+    'label': 'displayForm',
+}
+
+RESPONSE_MAPS = {
+    'GND_PERSON': {
+        apiconfig.DIRECT: GND_MAPPING,
+        apiconfig.RULES: {'source_name': {apiconfig.RULE: '"GND"'}},
+    },
+    'VIAF_PERSON': {
+        apiconfig.RESULT: 'result',
+        apiconfig.FILTER: {'nametype': 'personal'},
+        apiconfig.DIRECT: VIAF_CONTRIBUTORS_MAPPING,
+        apiconfig.RULES: {
+            'source_name': {apiconfig.RULE: '"VIAF"'},
+            'source': {
+                apiconfig.RULE: '"http://www.viaf.org/viaf/{p1}"',
+                apiconfig.FIELDS: {'p1': 'viafid'},
+            },
+        },
+    },
+}
+
+CONTRIBUTORS = (
+    'GND_PERSON',
+    'VIAF_PERSON',
+)
+
+# if an autosuggest endpoint is not a key in this dict then the response of the API will be empty
+ACTIVE_SOURCES = {
+    # 'contributors': CONTRIBUTORS,  # GND, VIAF
+    'expertise': {
+        'all': 'core.skosmos.get_base_keywords',
+        'search': 'core.skosmos.get_skills',
+    },
+}
+
+REQUESTS_TIMEOUT = 60
+
+# Showroom connection settings
+SYNC_TO_SHOWROOM = env.bool('SYNC_TO_SHOWROOM', default=False)
+SHOWROOM_BASE_URL = env.str('SHOWROOM_BASE_URL', default=f'{SITE_URL}showroom/')
+SHOWROOM_API_PATH = env.str('SHOWROOM_API_PATH', default='api/v1/')
+SHOWROOM_API_BASE = f'{SHOWROOM_BASE_URL}{SHOWROOM_API_PATH}'
+SHOWROOM_API_KEY = env.str('SHOWROOM_API_KEY', default=None)
+WORKER_DELAY = 3

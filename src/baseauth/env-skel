@@ -82,3 +82,10 @@ SITE_URL=https://url/
 # CAS_REDIRECT_URL=/
 # CAS_VERIFY_SSL_CERTIFICATE=True
 # CAS_RENAME_ATTRIBUTES=
+
+## Showroom connection settings
+## See the configuration section in the docs for details.
+# SYNC_TO_SHOWROOM=False
+# SHOWROOM_BASE_URL={SITE_URL}showroom/
+# SHOWROOM_API_PATH=api/v1/
+# SHOWROOM_API_KEY=None

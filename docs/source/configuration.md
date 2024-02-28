@@ -105,6 +105,21 @@ The `POSTGRES_PASSWORD` has to be the same as the one set in the root folder _.e
 If you deploy everything with docker, you don't have to set it here explicitly, as the
 environment variable will already be set by docker based on the root _.env_ file.
 
+### Showroom connection
+
+These settings are only required, if a _Showroom_ instance is active, and syncing of
+user profiles & preferences to _Showroom_ is activated. In order to activate syncing,
+set `SYNC_TO_SHOWROOM` to `True`. Additionally, the `SHOWROOM_API_KEY` has to be
+set to a key that can be generated in the Django admin interface of _baseauth_.
+
+The other values only have to be set, if we deviate from a default single-domain
+setup:
+
+- `SHOWROOM_BASE_URL`: points to the base URL of where Showroom is available and
+  defaults to `showroom/` appended to whatever is set as the `SITE_URL`.
+- `SHOWROOM_API_PATH`: defaults to `api/v1/` and should only be changed if a new
+  API version comes out
+
 ### Authentication backends
 
 _baseauth_ can either be used as a standalone system, using Django's user model,
