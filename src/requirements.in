@@ -15,6 +15,7 @@ django-environ==0.11.2
 django-filter==23.5
 django-mama-cas==2.5.0
 django-redis==5.4.0
+django-rq==2.10.1
 django-simple-captcha==0.5.20
 djangorestframework==3.14.0
 djangorestframework-api-key==3.0.0

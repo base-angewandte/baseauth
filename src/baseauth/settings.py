@@ -109,6 +109,7 @@ INSTALLED_APPS = [
     'core',
     'general',
     'user_preferences',
+    'showroom_connector',
 ]
 
 # Authentication Backends
