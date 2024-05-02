@@ -9,6 +9,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
 
+from .views.autocomplete import AutocompleteView
 from .views.autosuggest_lookup import lookup_view
 from .views.autosuggest_lookup_search import lookup_view_search
 from .views.autosuggest_user import autosuggest_user
@@ -25,6 +26,7 @@ router.register(r'users', UserPreferencesAgentViewSet, basename='users')
 urlpatterns = [
     path('', include(router.urls)),
     path('user/', UserViewSet.as_view({'get': 'retrieve'}), name='user'),
+    path('autocomplete/', AutocompleteView.as_view(), name='autocomplete'),
     path(
         'user/data/',
         UserPreferencesDataViewSet.as_view(
