@@ -4,7 +4,7 @@
 ## If you are developing locally (with Django not running inside a container), set this to False
 # DOCKER=True
 
-## The base URL of the Django site, for local development http://127.0.0.1:8300/
+## The base URL of the Django site, for local development http://127.0.0.1:8000/
 SITE_URL=https://url/
 
 ## In a production deployment with other base components, this base path should
