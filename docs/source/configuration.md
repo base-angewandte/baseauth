@@ -57,6 +57,15 @@ This defines whether your application is running behind a reverse proxy (e.g. ng
 In most cases the default True will be fine here. But for local development you might
 want to set this to False.
 
+### DJANGO_ADMINS & DJANGO_SUPERUSERS
+
+While `DJANGO_ADMINS` is only used to configure whom to send admin notifications,
+`DJANGO_SUPERUSERS` tells Django which users to actually treat as administrators.
+This is applied on every login, irrespective of which flags you set for single
+users through the Django admin or by using the `createsuperuser` management command.
+So if you create an admin user, make sure to add their username in this setting.
+Otherwise, the user will automatically be demoted again.
+
 ### EMAIL\_\*
 
 All settings in the block prefixed with `EMAIL_` are needed if you want to receive
