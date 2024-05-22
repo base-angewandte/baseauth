@@ -62,8 +62,8 @@ want to set this to False.
 While `DJANGO_ADMINS` is only used to configure whom to send admin notifications,
 `DJANGO_SUPERUSERS` tells Django which users to actually treat as administrators.
 This is applied on every login, irrespective of which flags you set for single
-users through the Django admin or by using the `createsuperuser` management commend.
-So if you create an admin user, make sure to set their username in this setting.
+users through the Django admin or by using the `createsuperuser` management command.
+So if you create an admin user, make sure to add their username in this setting.
 Otherwise, the user will automatically be demoted again.
 
 ### EMAIL\_\*
