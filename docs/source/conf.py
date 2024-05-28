@@ -62,9 +62,6 @@ html_static_path = ['_static']
 html_show_sourcelink = False
 
 myst_heading_anchors = 4
-myst_enable_extensions = [
-    'linkify',
-]
 
 primary_color = '#f44336'
 
