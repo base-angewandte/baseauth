@@ -4,7 +4,7 @@
 ## If you are developing locally (with Django not running inside a container), set this to False
 # DOCKER=True
 
-## The base URL of the Django site, for local development http://127.0.0.1:8300/
+## The base URL of the Django site, for local development http://127.0.0.1:8000/
 SITE_URL=https://url/
 
 ## In a production deployment with other base components, this base path should
@@ -50,10 +50,15 @@ SITE_URL=https://url/
 ## default port. So use here whatever you set in your docker-compose.override.yml for
 ## baseauth-postgres or leave the comment to use the default:
 # POSTGRES_PORT=5432
+## Also the database host only needs to be set explicitly if you are not using
+## the default database container, or you need a different name than localhost.
+## This defaults either to the db container name or 'localhost', depending on
+## whether DOCKER is True
+# POSTGRES_HOST=baseauth-postgres
 ## The database name, user and password only need to be changed, in a local development
 ## environment, if they also changed in the ../../.env file
-# POSTGRES_DB=django_cas
-# POSTGRES_USER=django_cas
+# POSTGRES_DB=django_baseauth
+# POSTGRES_USER=django_baseauth
 # POSTGRES_PASSWORD=password
 
 ## Similar to Postgres we also might need to change the Redis port, if
