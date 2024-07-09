@@ -1,3 +1,6 @@
+from user_preferences.models import settings_dict_flat
+
+
 # TODO: this is a placeholder replacement for the original
 #   get_user_preferences_attributes() return value from the
 #   internal cas repo, as this was angewandte_auth specific.
@@ -14,6 +17,7 @@ def get_user_preferences_attributes(user):
     }
     if hasattr(user, 'userpreferencesdata'):
         attrs.update(user.userpreferencesdata.attrs_dict)
+    attrs.update(settings_dict_flat(user))
     if not attrs.get('settings', {}).get('showroom', {}).get('activate_profile'):
         # set showroom_id to None if page is not activated
         attrs['showroom_id'] = None
