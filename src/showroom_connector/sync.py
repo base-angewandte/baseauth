@@ -5,25 +5,14 @@ import requests
 from django.conf import settings
 
 from api import get_user_preferences_attributes
+from showroom_connector.exceptions import (
+    ShowroomAuthenticationException,
+    ShowroomException,
+    ShowroomUndefinedException,
+)
 from user_preferences.models import UserPreferencesData
 
 logger = logging.getLogger(__name__)
-
-
-class ShowroomError(Exception):
-    pass
-
-
-class ShowroomAuthenticationError(ShowroomError):
-    pass
-
-
-class ShowroomUndefinedError(ShowroomError):
-    pass
-
-
-class ShowroomNotFoundError(ShowroomError):
-    pass
 
 
 auth_headers = {
@@ -45,10 +34,12 @@ def push_user(user):
     )
 
     if r.status_code == 403:
-        raise ShowroomAuthenticationError(f'Authentication failed: {r.text}')
+        raise ShowroomAuthenticationException(f'Authentication failed: {r.text}')
 
     elif r.status_code == 400:
-        raise ShowroomError(f'User {user.username} could not be pushed: 400: {r.text}')
+        raise ShowroomException(
+            f'User {user.username} could not be pushed: 400: {r.text}'
+        )
 
     elif r.status_code in [200, 201]:
         showroom_id = r.json()
@@ -57,6 +48,6 @@ def push_user(user):
         )
         return showroom_id
     else:
-        raise ShowroomUndefinedError(
+        raise ShowroomUndefinedException(
             f'Ouch! Something unexpected happened: {r.status_code} {r.text}'
         )
