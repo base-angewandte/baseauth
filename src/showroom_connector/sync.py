@@ -1,5 +1,3 @@
-import logging
-
 import requests
 
 from django.conf import settings
@@ -11,9 +9,6 @@ from showroom_connector.exceptions import (
     ShowroomUndefinedException,
 )
 from user_preferences.models import UserPreferencesData
-
-logger = logging.getLogger(__name__)
-
 
 auth_headers = {
     'X-Api-Key': settings.SHOWROOM_API_KEY,
