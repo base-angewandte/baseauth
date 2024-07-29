@@ -105,10 +105,12 @@ INSTALLED_APPS = [
     'rest_framework_api_key',
     'drf_spectacular',
     'easy_thumbnails',
+    'django_rq',
     # Project apps
     'core',
     'general',
     'user_preferences',
+    'showroom_connector',
 ]
 
 # Authentication Backends
@@ -351,7 +353,9 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 if FORCE_SCRIPT_NAME:
     WHITENOISE_STATIC_PREFIX = '/s/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-"""Logging."""
+
+
+# Logging
 LOG_DIR = os.path.join(BASE_DIR, '..', 'logs')
 
 if not os.path.exists(LOG_DIR):
@@ -421,7 +425,9 @@ LOGGING = {
         },
     },
 }
-"""Cache settings."""
+
+
+# Cache settings
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -432,7 +438,23 @@ CACHES = {
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     }
 }
-"""Session settings."""
+
+
+# RQ worker settings
+RQ_QUEUES = {
+    'default': {'USE_REDIS_CACHE': 'default', 'DEFAULT_TIMEOUT': 500},
+}
+
+if DEBUG or TESTING:
+    for queueConfig in iter(RQ_QUEUES.values()):
+        queueConfig['ASYNC'] = False
+
+RQ_EXCEPTION_HANDLERS = ['core.rq.handlers.exception_handler']
+
+RQ_FAILURE_TTL = 2628288  # approx. 3 month
+
+
+# Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 SESSION_COOKIE_NAME = f'sessionid_{PROJECT_NAME}'
@@ -448,6 +470,7 @@ CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
 HOME_REDIRECT = reverse_lazy('cas_login')
+
 
 # Axes settings
 AXES_FAILURE_LIMIT = 3
@@ -469,7 +492,7 @@ if DEBUG:
             'handlers': ['console'],
         }
 
-"""User preferences specific settings"""
+
 # User profile picture thumbnail settings
 THUMBNAIL_NAMER = 'easy_thumbnails.namers.hashed'
 THUMBNAIL_DIR = 'tn'
@@ -484,6 +507,7 @@ THUMBNAIL_OPTIONS = {
 }
 
 MAX_IMAGE_SIZE = 10485760  # 10mb
+
 
 # User preferences settings profiles for apps
 SETTINGS_DATA = {
@@ -502,7 +526,9 @@ SETTINGS_DATA = {
         },
     },
 }
-"""API specific settings."""
+
+
+# API specific settings
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'X-Api-Key': {'type': 'apiKey', 'in': 'header', 'name': 'X-Api-Key'}
@@ -523,8 +549,6 @@ REST_FRAMEWORK = {
     'ORDERING_PARAM': 'sort',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
-
-# drf-spectacular
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'baseauth',
@@ -555,8 +579,8 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
-# Autosuggest
 
+# Autosuggest
 SKOSMOS_API = 'https://voc.uni-ak.ac.at/skosmos/rest/v1/'
 TAX_ID = 'potax'
 TAX_GRAPH = 'http://base.uni-ak.ac.at/portfolio/taxonomy/'
@@ -623,6 +647,7 @@ ACTIVE_SOURCES = {
 }
 
 REQUESTS_TIMEOUT = 60
+
 
 # Showroom connection settings
 SYNC_TO_SHOWROOM = env.bool('SYNC_TO_SHOWROOM', default=False)

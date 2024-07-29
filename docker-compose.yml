@@ -40,6 +40,36 @@ services:
       - baseauthnet
     restart: always
 
+  baseauth-rq-worker-1:
+    build: ./src
+    image: baseauth-django
+    container_name: baseauth-rq-worker-1
+    environment:
+      - POSTGRES_PASSWORD=$BASEAUTH_DB_PASSWORD
+      - POSTGRES_USER=$BASEAUTH_DB_USER
+      - POSTGRES_DB=$BASEAUTH_DB_NAME
+    volumes_from:
+      - baseauth-django
+    networks:
+      - baseauthnet
+    restart: always
+    command: python manage.py rqworker --with-scheduler default
+
+  baseauth-rq-worker-2:
+    build: ./src
+    image: baseauth-django
+    container_name: baseauth-rq-worker-2
+    environment:
+      - POSTGRES_PASSWORD=$BASEAUTH_DB_PASSWORD
+      - POSTGRES_USER=$BASEAUTH_DB_USER
+      - POSTGRES_DB=$BASEAUTH_DB_NAME
+    volumes_from:
+      - baseauth-django
+    networks:
+      - baseauthnet
+    restart: always
+    command: python manage.py rqworker default
+
   baseauth-cron:
     image: paradoxon/alpine-cron
     container_name: baseauth-cron

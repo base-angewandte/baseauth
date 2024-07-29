@@ -25,7 +25,9 @@ cfgv==3.4.0
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
-    # via pip-tools
+    # via
+    #   pip-tools
+    #   rq
 concurrent-log-handler==0.9.24
     # via -r src/requirements.in
 defusedxml==0.7.1
@@ -43,6 +45,7 @@ django==4.2.7
     #   django-filter
     #   django-ranged-response
     #   django-redis
+    #   django-rq
     #   django-simple-captcha
     #   djangorestframework
     #   drf-spectacular
@@ -70,6 +73,8 @@ django-mama-cas==2.5.0
 django-ranged-response==0.2.0
     # via django-simple-captcha
 django-redis==5.4.0
+    # via -r src/requirements.in
+django-rq==2.10.1
     # via -r src/requirements.in
 django-simple-captcha==0.5.20
     # via -r src/requirements.in
@@ -160,7 +165,10 @@ rainbow-saddle==0.4.0
 rdflib==7.0.0
     # via skosmos-client
 redis==5.0.1
-    # via django-redis
+    # via
+    #   django-redis
+    #   django-rq
+    #   rq
 referencing==0.32.0
     # via
     #   jsonschema
@@ -176,6 +184,8 @@ rpds-py==0.13.2
     # via
     #   jsonschema
     #   referencing
+rq==1.16.0
+    # via django-rq
 shortuuid==1.0.11
     # via -r src/requirements.in
 six==1.16.0
