@@ -3,6 +3,15 @@
 Before you set up either a production or development instance, make sure
 to meet all the [](./requirements.md).
 
+```{admonition} Additional steps when migrating
+:class: tip
+
+In case you are not creating a fresh installation, but are migrating
+from some older version, make sure to check out the [](./migration.md)
+first. In some cases you need to take additional steps, that are not
+outlined here.
+```
+
 ## Development
 
 There are two supported ways to start the development server:
