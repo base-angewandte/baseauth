@@ -6,14 +6,6 @@ from django.db import migrations, models
 import django.utils.timezone
 
 
-def adapt_content_types(apps, schema_editor):
-    pass
-
-
-def adapt_content_types_reverse(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
 
     initial = True
