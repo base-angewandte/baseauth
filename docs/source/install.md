@@ -45,10 +45,10 @@ There are two supported ways to start the development server:
   vi ./src/baseauth/.env
   ```
 
-- Create the docker-compose override file:
+- Create the docker compose override file:
 
   ```bash
-  cp docker-compose.override.dev.yml docker-compose.override.yml
+  cp compose.override.dev.yaml compose.override.yaml
   ```
 
 Now, depending on which path you want to go, take one of the following two
@@ -105,7 +105,7 @@ automagically. Take a look at the [](./configuration.md) section for details.
   pre-commit install
   ```
 
-- Check the _docker-compose.override.yml_ file you created before from the template
+- Check the _compose.override.yaml_ file you created before from the template
   and uncomment the port mounts for Redis and Postgres, so your local Django can access them.
 
 - Start required services:
@@ -138,8 +138,6 @@ automagically. Take a look at the [](./configuration.md) section for details.
   # Debian
   sudo apt-get update
   ```
-
-- Install docker and docker-compose
 
 - Change to user `base`
 

@@ -4,7 +4,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -146,4 +147,5 @@ src/assets/
 tmp/
 
 docker-compose.override.yml
+compose.override.yaml
 secret_key.py
