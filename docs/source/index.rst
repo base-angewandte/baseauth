@@ -16,6 +16,7 @@ and identity providers based on LDAP, Shibboleth, or other CAS servers.
 
    requirements
    install
+   migration.md
    configuration
 
 .. Indices and tables

@@ -107,11 +107,14 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'django_rq',
     # Project apps
+    'accounts',
     'core',
     'general',
     'user_preferences',
     'showroom_connector',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
 
 # Authentication Backends
 AUTH_BACKENDS_TO_USE = env.list('AUTHENTICATION_BACKENDS', default=['django'])
