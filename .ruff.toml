@@ -1,0 +1,58 @@
+src = ["src"]
+
+target-version = "py312"
+
+[lint]
+select = [
+  # see https://docs.astral.sh/ruff/rules/ for details
+  "A", # flake8-builtins
+  "ASYNC", # flake8-async
+  "B", # flake8-bugbear
+  "C4", # flake8-comprehensions
+  "COM", # flake8-commas
+  "DJ", # flake8-django
+  "E", # pycodestyle
+  "F", # Pyflakes
+  "FURB", # refurb
+  "I", # isort
+  "LOG", # flake8-logging
+  "N", # pep8-naming
+  "PERF", # Perflint
+  "PTH", # flake8-use-pathlib
+  "RSE", # flake8-raise
+  "RUF", # Ruff-specific rules
+  "S", # flake8-bandit
+  "SIM", # flake8-simplify
+  "T20", # flake8-print
+  "UP", # pyupgrade
+  "W", # pycodestyle
+]
+ignore = [
+  "E501", # line-too-long
+  "RUF010", # explicit-f-string-type-conversion
+  "RUF012", # mutable-class-default
+  "SIM105", # suppressible-exception
+]
+
+[lint.isort.sections]
+django = ["django"]
+
+[lint.isort]
+combine-as-imports = true
+
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "django",
+  "first-party",
+  "local-folder",
+]
+
+[lint.per-file-ignores]
+"tests*.py" = [
+  "S101", # allow asserts in tests
+]
+
+[format]
+quote-style = "single"
