@@ -7,10 +7,10 @@ if [ -z "${PROJECT_NAME}" ]; then
 	exit
 fi
 
-QUERY="echo \"SELECT * FROM django_migrations\" | psql -U django_${PROJECT_NAME}"
+QUERY="echo \"SELECT * FROM django_migrations\" | psql -U ${POSTGRES_USER}"
 
 if ! docker compose exec "${PROJECT_NAME}-postgres" sh -c "${QUERY}" | grep accounts | grep -q 0001_initial; then
-	docker compose exec -T "${PROJECT_NAME}-postgres" psql -U "django_${PROJECT_NAME}" <"$(dirname "$0")/migrate-user-model.sql"
+	docker compose exec -T "${PROJECT_NAME}-postgres" psql -U "${POSTGRES_USER}" <"$(dirname "$0")/migrate-user-model.sql"
 else
 	echo 'Initial accounts migration is already applied.'
 fi
