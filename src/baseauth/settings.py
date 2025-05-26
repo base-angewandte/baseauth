@@ -239,6 +239,7 @@ if SITE_URL.startswith('https'):
 X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
+    'general.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -660,3 +661,32 @@ SHOWROOM_API_PATH = env.str('SHOWROOM_API_PATH', default='api/v1/')
 SHOWROOM_API_BASE = f'{SHOWROOM_BASE_URL}{SHOWROOM_API_PATH}'
 SHOWROOM_API_KEY = env.str('SHOWROOM_API_KEY', default=None)
 WORKER_DELAY = 3
+
+
+# Sentry
+SENTRY_DSN = env.str('SENTRY_DSN', default=None)
+SENTRY_ENVIRONMENT = env.str(
+    'SENTRY_ENVIRONMENT',
+    default='development'
+    if any(i in SITE_URL for i in ['dev', 'localhost', '127.0.0.1'])
+    else 'production',
+)
+SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.2)
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
+    from sentry_sdk.integrations.rq import RqIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        integrations=[
+            DjangoIntegration(),
+            RedisIntegration(),
+            RqIntegration(),
+        ],
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        send_default_pii=True,
+    )

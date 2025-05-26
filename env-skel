@@ -90,3 +90,8 @@ SITE_URL=https://url/
 # SHOWROOM_BASE_URL={SITE_URL}showroom/
 # SHOWROOM_API_PATH=api/v1/
 # SHOWROOM_API_KEY=None
+
+## If you want to activate Sentry monitoring, set the following parameters
+# SENTRY_DSN=
+# SENTRY_ENVIRONMENT=development
+# SENTRY_TRACES_SAMPLE_RATE=0.2

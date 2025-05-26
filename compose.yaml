@@ -7,6 +7,14 @@ services:
     networks:
       - baseauthnet
     restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "(redis-cli info persistence | grep '^loading:0') && (redis-cli ping | grep PONG) || exit 1",
+        ]
+      start_period: 60s
+      interval: 60s
     command: redis-server --appendonly yes
 
   baseauth-postgres:
@@ -22,6 +30,10 @@ services:
     networks:
       - baseauthnet
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      start_period: 60s
+      interval: 60s
 
   baseauth-django:
     build: ./src
@@ -36,6 +48,15 @@ services:
     networks:
       - baseauthnet
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8200/health || exit 1"]
+      start_period: 60s
+      interval: 60s
+    depends_on: &django_depends_on
+      baseauth-postgres:
+        condition: service_healthy
+      baseauth-redis:
+        condition: service_healthy
 
   baseauth-rq-worker-1:
     build: ./src
@@ -48,6 +69,7 @@ services:
     networks:
       - baseauthnet
     restart: always
+    depends_on: *django_depends_on
     command: python manage.py rqworker --with-scheduler default
 
   baseauth-rq-worker-2:
@@ -61,11 +83,18 @@ services:
     networks:
       - baseauthnet
     restart: always
+    depends_on: *django_depends_on
     command: python manage.py rqworker default
 
+  # baseauth-cron handles restarts of unhealthy containers and
+  # log rotation in baseauth-django.
+  # See ./docker/cron/crontab for details.
   baseauth-cron:
-    image: paradoxon/alpine-cron
+    image: paradoxon/alpine-cron-sentry
     container_name: baseauth-cron
+    environment:
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/cron/crontab:/tmp/crontab
