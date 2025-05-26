@@ -36,15 +36,14 @@ def autosuggest_user(request, user, *args, **kwargs):
     search_result = User.objects.filter(
         Q(first_name__icontains=searchstr) | Q(last_name__icontains=searchstr),
     )
-    r = []
-    for user in search_result:
-        r.append(  # noqa - will be fixed in next commit
-            {
-                'UUID': user.username,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'label': f'{user.first_name} {user.last_name}',
-            },
-        )
+    response = [
+        {
+            'UUID': user.username,  # TODO: discuss in review: should this be all caps? leaving for now, as frontend might depend on it
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'label': f'{user.first_name} {user.last_name}',
+        }
+        for user in search_result
+    ]
 
-    return Response(r)
+    return Response(response)
