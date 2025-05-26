@@ -92,7 +92,7 @@ subsections.
 - Create a virtual environment with `uv` and activate it:
 
   ```bash
-  uv venv --python 3.11 --seed
+  uv venv --python 3.12 --seed
   source .venv/bin/activate
   ```
 

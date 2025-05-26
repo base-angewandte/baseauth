@@ -1,4 +1,4 @@
-FROM python:3.11 AS base
+FROM python:3.12 AS base
 
 ENV TZ="Europe/Vienna"
 
