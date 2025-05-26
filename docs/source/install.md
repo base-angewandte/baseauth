@@ -24,25 +24,38 @@ There are two supported ways to start the development server:
    to start a dev server and fiddle around with it, hot reloading included.
    But you will not have the local pre-commit setup.
 
+In both cases there are some common steps to follow:
+
+- Make sure you have `make` installed (e.g. with `sudo apt install make`
+  for Debian based distributions)
+
+- [Install docker with compose plugin](https://docs.docker.com/get-docker/)
+  for your system
+
+- [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
+  for your system
+
+- Install pre-commit with uv:
+
+  ```bash
+  uv tool install pre-commit --with pre-commit-uv
+  ```
+
 - Clone git repository and checkout branch `develop`:
 
   ```bash
   git clone https://github.com/base-angewandte/baseauth.git
   cd baseauth
+  git checkout develop
   ```
 
-- Check and adapt settings (if you need more details on the single settings,
-  then the comments in the skeleton env files give you, take a look at the
+- Check and adapt settings (if you need more details than the comments on
+  the single settings in the skeleton env file give you, take a look at the
   [](./configuration.md) section):
 
   ```bash
-  # env
   cp env-skel .env
   vi .env
-
-  # django env
-  cp ./src/baseauth/env-skel ./src/baseauth/.env
-  vi ./src/baseauth/.env
   ```
 
 - Create the docker compose override file:
@@ -56,9 +69,8 @@ subsections.
 
 ### Everything inside docker
 
-- Make sure that the `DOCKER` variable in `./src/baseauth/.env` is set to
-  `TRUE`. Otherwise, django will assume that postgres and redis are accessible
-  on localhost ports.
+- Make sure that the `DOCKER` variable in `.env` is set to `TRUE`. Otherwise,
+  Django will assume that postgres and redis are accessible on localhost ports.
 
 - Start everything:
 
@@ -77,32 +89,17 @@ subsections.
 
 ### The full developer setup
 
-```{note}
-Make sure to explicitly set the relevant `POSTGRES_*` variables in your
-./src/baseauth/.env file, if you have changed any of the corresponding `BASEAUTH_DB_*`
-parameters in your .env file. This is not necessary for dockerised setups, but in your
-local django dev server those environment variables are not assigned
-automagically. Take a look at the [](./configuration.md) section for details.
-```
-
-- Create your python environment with `pyenv` and activate it
+- Create a virtual environment with `uv` and activate it:
 
   ```bash
-  pyenv virtualenv 3.11 baseauth
-  pyenc activate baseauth
+  uv venv --python 3.11 --seed
+  source .venv/bin/activate
   ```
 
-- Install pip-tools and requirements in your virtualenv:
+- Install requirements in your virtualenv:
 
   ```bash
-  pip install pip-tools
-  pip-sync src/requirements-dev.txt
-  ```
-
-- Install pre-commit hooks:
-
-  ```bash
-  pre-commit install
+  uv pip sync src/requirements-dev.txt
   ```
 
 - Check the _compose.override.yaml_ file you created before from the template
@@ -114,7 +111,7 @@ automagically. Take a look at the [](./configuration.md) section for details.
   make start-dev
   ```
 
-- Run migration:
+- Run migrations:
 
   ```bash
   cd src
@@ -153,13 +150,8 @@ automagically. Take a look at the [](./configuration.md) section for details.
 - Check and adapt settings:
 
   ```bash
-  # env
   cp env-skel .env
   vi .env
-
-  # django env
-  cp ./src/baseauth/env-skel ./src/baseauth/.env
-  vi ./src/baseauth/.env
   ```
 
 - Use `Makefile` to initialize and run project:

@@ -1,27 +1,57 @@
 # Configuration
 
-The _baseauth_ backend is configured through two `.env` files. For both there is a template
-`env-skel` file available in the same folder, to copy from and then modify it. See
-also [](install.md) on when and how to set up those files.
+The _baseauth_ backend is configured through one `.env` file in the project root folder.
+There is a template `env-skel` file available in the same folder, to copy from and
+then modify it. See also [](install.md) on when and how to set up those file.
+
+Environment variables without a default value are required to be set.
 
 ## `.env`
 
-The first and shorter one is in the project root folder. It is used to configure the
-docker services for database credentials. The defaults are fine, only the `DB_PASSWORD`
-should be set to a strong password.
+### Database Settings
 
-```{danger}
-We wrote _should_, because programmatically nothing keeps you from using the
-default _password_. But in terms of nearly any security policy you absolutely _MUST_
-set a strong password here. Try e.g. `pwgen -s 32 1`.
-```
+These settings are used to set up the DB in the portfolio-postgres container.
 
-## `src/baseauth/.env`
+#### `POSTGRES_DB`
 
-The main configuration environment file is in the _src/basauth_ folder, and it is
-parsed in the Django settings initialization. Most settings are commented, but some
-are more self-explanatory than others. And especially setting up other authentication
-backends needs a bit more detail, which we provide here.
+Name of the PostgreSQL database.
+
+#### `POSTGRES_USER`
+
+User of the PostgreSQL database.
+
+#### `POSTGRES_PASSWORD`
+
+Password for user of the PostgreSQL database.
+
+Make sure to change this to a strong password on any production/public server.
+
+#### `POSTGRES_PORT`
+
+Default: `5432`
+
+Port of the PostgreSQL database.
+
+The database port only needs to be changed, if you are running Portfolio
+locally in combination with e.g. Showroom also running locally. Then at
+least one of the database container ports needs to be mapped to a different
+value. So use whatever you set in your compose.override.yaml for
+portfolio-postgres or use the default.
+
+### Redis Settings
+
+#### `REDIS_PORT`
+
+Default: `6379`
+
+Port of the Redis data store
+
+Similar to `POSTGRES_PORT` you won't need to change this in most cases.
+But if you develop locally and have several Redis instances for different
+projects running at the same time, you might map some of them to alternate
+ports. So whichever non-default port you set in your compose.override.yaml
+for Redis, this should be also set here, unless you operate in a fully
+containerised setup.
 
 ### DOCKER
 
@@ -104,15 +134,6 @@ For more background details on these settings:
 
 - https://docs.djangoproject.com/en/4.2/ref/csrf/
 - https://pypi.org/project/django-cors-headers/
-
-### POSTGRES\_\* & REDIS\_\*
-
-For both databases the `*_PORT` setting should be fine by default, unless you explicitly
-use a different port for those docker services.
-
-The `POSTGRES_PASSWORD` has to be the same as the one set in the root folder _.env_ file.
-If you deploy everything with docker, you don't have to set it here explicitly, as the
-environment variable will already be set by docker based on the root _.env_ file.
 
 ### Showroom connection
 
