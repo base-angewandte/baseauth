@@ -3,7 +3,10 @@
 apimapper==0.7.9
     # via -r src/requirements.in
 asgiref==3.7.2
-    # via django
+    # via
+    #   django
+    #   django-axes
+    #   django-cors-headers
 attrs==23.1.0
     # via
     #   jsonschema
@@ -14,8 +17,6 @@ base-common-drf==0.5
     # via -r src/requirements.in
 brotli==1.1.0
     # via whitenoise
-build==1.0.3
-    # via pip-tools
 certifi==2023.7.22
     # via
     #   requests
@@ -25,16 +26,14 @@ cfgv==3.4.0
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
-    # via
-    #   pip-tools
-    #   rq
-concurrent-log-handler==0.9.24
+    # via rq
+concurrent-log-handler==0.9.26
     # via -r src/requirements.in
 defusedxml==0.7.1
     # via -r src/requirements.in
 distlib==0.3.7
     # via virtualenv
-django==4.2.7
+django==4.2.21
     # via
     #   -r src/requirements.in
     #   base-common
@@ -52,19 +51,19 @@ django==4.2.7
     #   djangorestframework
     #   drf-spectacular
     #   easy-thumbnails
-django-auth-ldap==4.6.0
+django-auth-ldap==5.2.0
     # via -r src/requirements.in
-django-axes==6.1.1
+django-axes==8.0.0
     # via -r src/requirements.in
 django-cas-ng==5.0.1
     # via -r src/requirements.in
-django-cors-headers==4.3.0
+django-cors-headers==4.7.0
     # via -r src/requirements.in
-django-debug-toolbar==4.2.0
+django-debug-toolbar==5.2.0
     # via -r src/requirements.in
-django-environ==0.11.2
+django-environ==0.12.0
     # via -r src/requirements.in
-django-filter==23.5
+django-filter==25.1
     # via -r src/requirements.in
 django-ipware==5.0.2
     # via django-axes
@@ -74,30 +73,30 @@ django-ranged-response==0.2.0
     # via django-simple-captcha
 django-redis==5.4.0
     # via -r src/requirements.in
-django-rq==2.10.1
+django-rq==3.0.1
     # via -r src/requirements.in
-django-simple-captcha==0.5.20
+django-simple-captcha==0.6.2
     # via -r src/requirements.in
-djangorestframework==3.14.0
+djangorestframework==3.16.0
     # via
     #   -r src/requirements.in
     #   base-common-drf
     #   drf-spectacular
-djangorestframework-api-key==3.0.0
+djangorestframework-api-key==3.1.0
     # via -r src/requirements.in
-drf-spectacular==0.27.0
+drf-spectacular==0.28.0
     # via
     #   -r src/requirements.in
     #   base-common-drf
-easy-thumbnails==2.8.5
+easy-thumbnails==2.10
     # via -r src/requirements.in
 filelock==3.13.1
     # via virtualenv
-gevent==23.9.1
+gevent==25.5.1
     # via -r src/requirements.in
-greenlet==3.0.1
+greenlet==3.2.2
     # via gevent
-gunicorn==21.2.0
+gunicorn==23.0.0
     # via -r src/requirements.in
 identify==2.5.31
     # via pre-commit
@@ -119,16 +118,13 @@ nodeenv==1.8.0
     # via pre-commit
 packaging==23.2
     # via
-    #   build
     #   djangorestframework-api-key
     #   gunicorn
-pillow==10.2.0
+pillow==11.2.1
     # via
     #   -r src/requirements.in
     #   django-simple-captcha
     #   easy-thumbnails
-pip-tools==7.3.0
-    # via -r src/requirements.in
 platformdirs==3.11.0
     # via virtualenv
 portalocker==2.8.2
@@ -137,9 +133,9 @@ pre-commit==3.5.0
     # via -r src/requirements-dev.in
 psutil==5.9.6
     # via rainbow-saddle
-psycopg==3.1.12
+psycopg==3.2.9
     # via -r src/requirements.in
-psycopg-binary==3.1.12
+psycopg-binary==3.2.9
     # via psycopg
 pyasn1==0.5.0
     # via
@@ -149,14 +145,10 @@ pyasn1-modules==0.3.0
     # via python-ldap
 pyparsing==3.1.1
     # via rdflib
-pyproject-hooks==1.0.0
-    # via build
 python-cas==1.6.0
     # via django-cas-ng
 python-ldap==3.4.3
     # via django-auth-ldap
-pytz==2023.3.post1
-    # via djangorestframework
 pyyaml==6.0.1
     # via
     #   drf-spectacular
@@ -174,7 +166,7 @@ referencing==0.32.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r src/requirements.in
     #   apimapper
@@ -185,11 +177,11 @@ rpds-py==0.13.2
     # via
     #   jsonschema
     #   referencing
-rq==1.16.0
+rq==2.3.3
     # via django-rq
 sentry-sdk==2.29.1
     # via -r src/requirements.in
-shortuuid==1.0.11
+shortuuid==1.0.13
     # via
     #   -r src/requirements.in
     #   base-common
@@ -213,9 +205,7 @@ urllib3==2.0.7
     #   sentry-sdk
 virtualenv==20.24.6
     # via pre-commit
-wheel==0.41.3
-    # via pip-tools
-whitenoise==6.6.0
+whitenoise==6.9.0
     # via -r src/requirements.in
 zope-event==5.0
     # via gevent
@@ -223,5 +213,4 @@ zope-interface==6.1
     # via gevent
 
 # The following packages were excluded from the output:
-# pip
 # setuptools
