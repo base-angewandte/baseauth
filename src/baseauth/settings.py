@@ -16,6 +16,7 @@ import os
 import re
 import sys
 from email.utils import getaddresses
+from pathlib import Path
 from urllib.parse import urlparse
 
 import environ
@@ -27,22 +28,22 @@ from django.urls import reverse_lazy
 from django.utils.functional import lazy
 from django.utils.translation import get_language, gettext_lazy as _
 
-env = environ.Env()
-env.read_env()
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_NAME = '.'.join(__name__.split('.')[:-1])
+
+env = environ.Env()
+env.read_env(BASE_DIR / '..' / '.env')
 
 try:
     from .secret_key import SECRET_KEY
 except ImportError:
     from django.core.management.utils import get_random_secret_key
 
-    with open(os.path.join(BASE_DIR, PROJECT_NAME, 'secret_key.py'), 'w+') as f:
+    with Path.open(BASE_DIR / PROJECT_NAME / 'secret_key.py', 'w+') as f:
         SECRET_KEY = get_random_secret_key()
-        f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
+        f.write(f"SECRET_KEY = '{SECRET_KEY}'\n")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -144,7 +145,8 @@ for backend in AUTH_BACKENDS_TO_USE:
         CAS_APPLY_ATTRIBUTES_TO_USER = True
         CAS_REDIRECT_URL = env.str('CAS_REDIRECT_URL', default=FORCE_SCRIPT_NAME or '/')
         CAS_VERIFY_SSL_CERTIFICATE = env.bool(
-            'CAS_VERIFY_SSL_CERTIFICATE', default=True
+            'CAS_VERIFY_SSL_CERTIFICATE',
+            default=True,
         )
         CAS_RENAME_ATTRIBUTES = env.dict('CAS_RENAME_ATTRIBUTES', default={})
 
@@ -163,7 +165,7 @@ for backend in AUTH_BACKENDS_TO_USE:
             AUTH_LDAP_USER_DN_TEMPLATE = env.str('AUTH_LDAP_USER_DN_TEMPLATE')
         except environ.ImproperlyConfigured:
             AUTH_LDAP_USER_SEARCH_USER_TEMPLATE = env.str(
-                'AUTH_LDAP_USER_SEARCH_USER_TEMPLATE'
+                'AUTH_LDAP_USER_SEARCH_USER_TEMPLATE',
             )
             try:
                 AUTH_LDAP_USER_SEARCH_BASE = env.str('AUTH_LDAP_USER_SEARCH_BASE')
@@ -174,7 +176,7 @@ for backend in AUTH_BACKENDS_TO_USE:
                 )
             except environ.ImproperlyConfigured:
                 AUTH_LDAP_USER_SEARCH_BASE_LIST = env.str(
-                    'AUTH_LDAP_USER_SEARCH_BASE_LIST'
+                    'AUTH_LDAP_USER_SEARCH_BASE_LIST',
                 ).split(';')
                 searches = [
                     LDAPSearch(
@@ -199,16 +201,16 @@ for backend in AUTH_BACKENDS_TO_USE:
 # CAS
 MAMA_CAS_SERVICES = [
     {
-        'SERVICE': fr'^http[s]?://{re.escape(urlparse(SITE_URL).hostname)}',
+        'SERVICE': rf'^http[s]?://{re.escape(urlparse(SITE_URL).hostname)}',
         'CALLBACKS': ['core.utils.get_attributes'],
         'LOGOUT_ALLOW': True,
         # 'LOGOUT_URL': '',
-    }
+    },
 ]
 
 MAMA_CAS_ENABLE_SINGLE_SIGN_OUT = True
 """Email settings."""
-SERVER_EMAIL = 'error@%s' % urlparse(SITE_URL).hostname
+SERVER_EMAIL = f'error@{urlparse(SITE_URL).hostname}'
 
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', default='')
@@ -218,14 +220,14 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=False)
 EMAIL_USE_LOCALTIME = env.bool('EMAIL_USE_LOCALTIME', default=True)
 
 EMAIL_SUBJECT_PREFIX = '{} '.format(
-    env.str('EMAIL_SUBJECT_PREFIX', default='[CAS]').strip()
+    env.str('EMAIL_SUBJECT_PREFIX', default='[CAS]').strip(),
 )
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, '..', 'tmp', 'emails')
+    EMAIL_FILE_PATH = BASE_DIR / '..' / 'tmp' / 'emails'
 
-    if not os.path.exists(EMAIL_FILE_PATH):
-        os.makedirs(EMAIL_FILE_PATH)
+    if not EMAIL_FILE_PATH.exists():
+        EMAIL_FILE_PATH.mkdir(parents=True)
 
 """ Https settings """
 if SITE_URL.startswith('https'):
@@ -265,7 +267,7 @@ ROOT_URLCONF = f'{PROJECT_NAME}.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -277,7 +279,7 @@ TEMPLATES = [
             'debug': DEBUG,
             'string_if_invalid': "[invalid variable '%s'!]" if DEBUG else '',
         },
-    }
+    },
 ]
 
 WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
@@ -295,7 +297,7 @@ DATABASES = {
         'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
         'HOST': env.str('POSTGRES_HOST', default=POSTGRES_HOST_DEFAULT),
         'PORT': env.str('POSTGRES_PORT', default='5432'),
-    }
+    },
 }
 
 
@@ -306,7 +308,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': (
             'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
-        )
+        ),
     },
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
@@ -328,8 +330,8 @@ LANGUAGES = (('de', _('German')), ('en', _('English')))
 LANGUAGES_DICT = dict(LANGUAGES)
 
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
-    os.path.join(BASE_DIR, 'locale_mama_cas'),
+    BASE_DIR / 'locale',
+    BASE_DIR / 'locale_mama_cas',
 ]
 
 get_language_lazy = lazy(get_language, str)
@@ -338,17 +340,17 @@ get_language_lazy = lazy(get_language, str)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATICFILES_DIRS = (
-    '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
-)
+STATICFILES_DIRS = ('{}{}'.format(os.path.normpath(BASE_DIR / 'static'), os.sep),)
 STATIC_URL = '{}/s/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 STATIC_ROOT = '{}{}'.format(
-    os.path.normpath(os.path.join(BASE_DIR, 'assets', 'static')), os.sep
+    os.path.normpath(BASE_DIR / 'assets' / 'static'),
+    os.sep,
 )
 
 MEDIA_URL = '{}/m/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 MEDIA_ROOT = '{}{}'.format(
-    os.path.normpath(os.path.join(BASE_DIR, 'assets', 'media')), os.sep
+    os.path.normpath(BASE_DIR / 'assets' / 'media'),
+    os.sep,
 )
 
 FILE_UPLOAD_PERMISSIONS = 0o644
@@ -359,10 +361,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Logging
-LOG_DIR = os.path.join(BASE_DIR, '..', 'logs')
+LOG_DIR = BASE_DIR / '..' / 'logs'
 
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
+if not LOG_DIR.exists():
+    LOG_DIR.mkdir(parents=True)
 
 LOGGING = {
     'version': 1,
@@ -372,7 +374,7 @@ LOGGING = {
             'format': (
                 '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d '
                 '%(message)s'
-            )
+            ),
         },
         'simple': {'format': '%(levelname)s %(message)s'},
         'simple_with_time': {'format': '%(levelname)s %(asctime)s %(message)s'},
@@ -387,7 +389,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'application.log'),
+            'filename': LOG_DIR / 'application.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 1000,
             'use_gzip': True,
@@ -439,7 +441,7 @@ CACHES = {
             env.str('REDIS_PORT', default='6379'),
         ),
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
-    }
+    },
 }
 
 
@@ -449,8 +451,8 @@ RQ_QUEUES = {
 }
 
 if DEBUG or TESTING:
-    for queueConfig in iter(RQ_QUEUES.values()):
-        queueConfig['ASYNC'] = False
+    for queue_config in iter(RQ_QUEUES.values()):
+        queue_config['ASYNC'] = False
 
 RQ_EXCEPTION_HANDLERS = ['core.rq.handlers.exception_handler']
 
@@ -499,9 +501,7 @@ if DEBUG:
 # User profile picture thumbnail settings
 THUMBNAIL_NAMER = 'easy_thumbnails.namers.hashed'
 THUMBNAIL_DIR = 'tn'
-THUMBNAIL_MEDIA_ROOT = (
-    f'{os.path.normpath(os.path.join(MEDIA_ROOT, THUMBNAIL_DIR))}{os.sep}'
-)
+THUMBNAIL_MEDIA_ROOT = f'{os.path.normpath(Path(MEDIA_ROOT) / THUMBNAIL_DIR)}{os.sep}'
 THUMBNAIL_MEDIA_URL = f'{MEDIA_URL}/{THUMBNAIL_DIR}/'
 THUMBNAIL_QUALITY = 95
 THUMBNAIL_OPTIONS = {
@@ -534,7 +534,7 @@ SETTINGS_DATA = {
 # API specific settings
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
-        'X-Api-Key': {'type': 'apiKey', 'in': 'header', 'name': 'X-Api-Key'}
+        'X-Api-Key': {'type': 'apiKey', 'in': 'header', 'name': 'X-Api-Key'},
     },
 }
 
@@ -571,7 +571,8 @@ SPECTACULAR_SETTINGS = {
                 default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
             ),
             'description': env.str(
-                'OPENAPI_SERVER_DESCRIPTION', default='baseauth / User Preferences'
+                'OPENAPI_SERVER_DESCRIPTION',
+                default='baseauth / User Preferences',
             ),
         },
     ],
