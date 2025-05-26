@@ -3,6 +3,8 @@
 # to update all packages run 'pip-compile --upgrade'
 
 apimapper==0.7.9
+base-common==0.4
+base-common-drf==0.5
 concurrent-log-handler==0.9.24
 defusedxml==0.7.1
 django==4.2.7

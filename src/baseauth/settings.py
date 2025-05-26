@@ -97,6 +97,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # base common apps
+    'base_common',
+    'base_common_drf',
     # Third-party apps
     'mama_cas',
     'axes',
@@ -110,7 +113,6 @@ INSTALLED_APPS = [
     # Project apps
     'accounts',
     'core',
-    'general',
     'user_preferences',
     'showroom_connector',
 ]
@@ -239,7 +241,7 @@ if SITE_URL.startswith('https'):
 X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
-    'general.middleware.HealthCheckMiddleware',
+    'base_common.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -259,7 +261,7 @@ AXES_LOCKOUT_URL = reverse_lazy('locked_out')
 AXES_VERBOSE = DEBUG
 
 if BEHIND_PROXY:
-    MIDDLEWARE += ['general.middleware.SetRemoteAddrFromForwardedFor']
+    MIDDLEWARE += ['base_common.middleware.SetRemoteAddrFromForwardedFor']
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
