@@ -29,15 +29,16 @@ git-update-default:  ## git pull as base user
 
 .PHONY: init-default
 init-default:  ## init django project
-	docker compose exec ${PROJECT_NAME}-django bash -c "uv pip sync requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput"
 ifeq ($(DEBUG),True)
-	@make pre-commit-init
+	docker compose exec ${PROJECT_NAME}-django bash -c "uv pip sync requirements-dev.txt && python manage.py migrate && python manage.py collectstatic --noinput"
+else
+	docker compose exec ${PROJECT_NAME}-django bash -c "uv pip sync requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput"
 endif
 
 .PHONY: init-dev-default
 init-dev-default:  ## init django project for local development
+	uv pip sync src/requirements-dev.txt
 	cd src && python manage.py migrate
-	@make pre-commit-init
 
 .PHONY: restart-gunicorn-default
 restart-gunicorn-default:  ## gracefully restart gunicorn
@@ -72,17 +73,17 @@ pip-compile-upgrade-default:  ## run pip-compile locally with upgrade parameter
 
 .PHONY: pip-compile-docker-default
 pip-compile-docker-default:  ## run pip-compile in docker container
-	docker compose exec ${PROJECT_NAME}-django uv pip compile src/requirements.in -o src/requirements.txt
-	docker compose exec ${PROJECT_NAME}-django uv pip compile src/requirements-dev.in -o src/requirements-dev.txt
+	docker compose exec ${PROJECT_NAME}-django uv pip compile requirements.in -o requirements.txt
+	docker compose exec ${PROJECT_NAME}-django uv pip compile requirements-dev.in -o requirements-dev.txt
 
 .PHONY: pip-compile-upgrade-docker-default
 pip-compile-upgrade-docker-default:  ## run pip-compile in docker container with upgrade parameter
-	docker compose exec ${PROJECT_NAME}-django uv pip compile src/requirements.in -o src/requirements.txt --upgrade
-	docker compose exec ${PROJECT_NAME}-django uv pip compile src/requirements-dev.in -o src/requirements-dev.txt --upgrade
+	docker compose exec ${PROJECT_NAME}-django uv pip compile requirements.in -o requirements.txt --upgrade
+	docker compose exec ${PROJECT_NAME}-django uv pip compile requirements-dev.in -o requirements-dev.txt --upgrade
 
 .PHONY: pre-commit-init-default
 pre-commit-init-default:  ## initialize pre-commit
-	python3 -m pip install --upgrade pre-commit
+	uv tool install pre-commit --with pre-commit-uv
 	pre-commit install --install-hooks --overwrite
 
 .PHONY: pre-commit-clean-default
@@ -90,7 +91,10 @@ pre-commit-clean-default:  ## clean pre-commit
 	pre-commit clean
 
 .PHONY: pre-commit-update-default
-pre-commit-update-default: pre-commit-clean-default pre-commit-init-default  ## update pre-commit and hooks
+pre-commit-update-default:  ## update pre-commit and hooks
+	uv tool upgrade pre-commit
+	@make pre-commit-clean-default
+	pre-commit install --install-hooks --overwrite
 
 .PHONY: update-config-default
 update-config-default:  ## update config subtree
