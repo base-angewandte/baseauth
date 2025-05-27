@@ -7,8 +7,8 @@ def user_hash(username):
     return settings.HASHIDS.encode_hex(username.encode('utf-8').hex())
 
 
-def decode_user_hash(hash):
-    return bytes.fromhex(settings.HASHIDS.decode_hex(hash)).decode('utf-8')
+def decode_user_hash(hashval):
+    return bytes.fromhex(settings.HASHIDS.decode_hex(hashval)).decode('utf-8')
 
 
 def get_quota_for_user(user):

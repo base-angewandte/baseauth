@@ -35,7 +35,11 @@ class UserPreferencesDataSerializer(CleanModelSerializer, SwaggerMetaModelSerial
     #     default=None,
     # )
     urls = URLsField(
-        label=_('URL'), required=False, default='', allow_blank=True, allow_null=True
+        label=_('URL'),
+        required=False,
+        default='',
+        allow_blank=True,
+        allow_null=True,
     )
     expertise = SkillsField(
         label=_('Skills and Expertise'),
@@ -120,19 +124,19 @@ class UserPreferencesDataSerializer(CleanModelSerializer, SwaggerMetaModelSerial
                         True,
                     ),
                     ('placeholder', placeholder_lazy(_('Skills and Expertise'))),
-                ]
+                ],
             ),
             'complementary_email': OrderedDict(
                 [
                     ('order', 2),
                     ('placeholder', placeholder_lazy(_('E-Mail (complementary)'))),
-                ]
+                ],
             ),
             'urls': OrderedDict(
                 [
                     ('order', 3),
                     ('placeholder', placeholder_lazy(_('URL'))),
                     # ('field_format', 'half'),
-                ]
+                ],
             ),
         }

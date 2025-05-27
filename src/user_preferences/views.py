@@ -16,8 +16,8 @@ def user_image(request, image):
             request.build_absolute_uri(
                 get_thumbnailer(user_preferences.user_image)
                 .get_thumbnail(settings.THUMBNAIL_OPTIONS)
-                .url
-            )
+                .url,
+            ),
         )
     except UserPreferencesData.DoesNotExist:
         raise Http404 from None

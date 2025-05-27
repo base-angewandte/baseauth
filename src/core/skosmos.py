@@ -18,7 +18,7 @@ skosmos = SkosmosClient(api_base=settings.SKOSMOS_API)
 
 def unaccent(text):
     return str(
-        unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode('utf-8')
+        unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode('utf-8'),
     )
 
 
@@ -33,7 +33,7 @@ def autosuggest(data, query, language=None):
             lambda d: query
             in unaccent(d['label'].get(language, d['label'].get('en', '')).lower()),
             data,
-        )
+        ),
     )
 
     return result
@@ -75,10 +75,10 @@ def get_search_data(uri):
 def fetch_data(uri, vocid=None, fetch_children=False, source_name=None):
     language = get_language() or 'en'
 
-    cache_key = hashlib.md5(  # nosec
+    cache_key = hashlib.md5(  # noqa : TODO: this will be refactored to the new base-skosmos-voc package
         '-'.join(
-            [uri, vocid or '', str(fetch_children), source_name or '', language]
-        ).encode('utf-8')
+            [uri, vocid or '', str(fetch_children), source_name or '', language],
+        ).encode('utf-8'),
     ).hexdigest()
 
     data = cache.get(cache_key, [])
@@ -138,7 +138,7 @@ def get_disciplines():
                     fetch_children=True,
                     source_name='voc',
                 ),
-            )
+            ),
         )
 
         if data:
@@ -163,7 +163,7 @@ def get_skills():
 
 
 def get_altlabel(concept, project=settings.VOC_ID, graph=settings.VOC_GRAPH, lang=None):
-    if lang:
+    if lang:  # noqa : TODO: this will be refactored to the new base-skosmos-voc package
         language = lang
     else:
         language = get_language() or 'en'
@@ -173,7 +173,7 @@ def get_altlabel(concept, project=settings.VOC_ID, graph=settings.VOC_GRAPH, lan
     if not label:
         try:
             g = skosmos.data(f'{graph}{concept}')
-            for _uri, l in g.subject_objects(SKOS.altLabel):
+            for _uri, l in g.subject_objects(SKOS.altLabel):  # noqa : TODO: this will be refactored to the new base-skosmos-voc package
                 if l.language == language:
                     label = l
                     break
@@ -187,7 +187,10 @@ def get_altlabel(concept, project=settings.VOC_ID, graph=settings.VOC_GRAPH, lan
 
 
 def get_altlabel_collection(
-    collection, project=settings.TAX_ID, graph=settings.TAX_GRAPH, lang=None
+    collection,
+    project=settings.TAX_ID,
+    graph=settings.TAX_GRAPH,
+    lang=None,
 ):
     return (
         get_altlabel(collection, project, graph, lang)
@@ -199,9 +202,12 @@ def get_altlabel_collection(
 
 
 def get_preflabel(
-    concept, project=settings.VOC_ID, graph=settings.VOC_GRAPH, lang=None
+    concept,
+    project=settings.VOC_ID,
+    graph=settings.VOC_GRAPH,
+    lang=None,
 ):
-    if lang:
+    if lang:  # noqa : TODO: this will be refactored to the new base-skosmos-voc package
         language = lang
     else:
         language = get_language() or 'en'

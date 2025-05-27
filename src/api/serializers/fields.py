@@ -133,7 +133,7 @@ class DataField(serializers.JSONField):
 
 @extend_schema_field(
     component_name='profile',
-    field={'type': 'object'}
+    field={'type': 'object'},
     # todo: does it need more definition?
 )
 class ProfileField(serializers.JSONField):

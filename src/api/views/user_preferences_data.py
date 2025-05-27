@@ -7,7 +7,6 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from api.serializers.user_preferences_data import UserPreferencesDataSerializer
@@ -30,7 +29,6 @@ class UserPreferencesDataViewSet(GenericViewSet):
     queryset = UserPreferencesData.objects.all()
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
-    UserModel = get_user_model()
 
     @extend_schema(
         tags=['user'],
@@ -41,7 +39,7 @@ class UserPreferencesDataViewSet(GenericViewSet):
             404: OpenApiResponse(description='User preferences object not found'),
         },
     )
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, **kwargs):
         if UserPreferencesData.objects.filter(user=request.user).exists():
             user_preferences = self.queryset.get(user=request.user)
             if user_preferences:
@@ -62,7 +60,7 @@ class UserPreferencesDataViewSet(GenericViewSet):
             404: OpenApiResponse(description='User preferences object not found'),
         },
     )
-    def _update(self, request, partial=False, *args, **kwargs):
+    def _update(self, request, partial=True, **kwargs):
         user_preferences = UserPreferencesData.objects.get(user=request.user)
         if user_preferences:
             # TODO: get rid of this quick fix again
@@ -74,14 +72,12 @@ class UserPreferencesDataViewSet(GenericViewSet):
                     data[k] = v
 
             # If value is empty, change expertise's default to []
-            if (
-                'expertise' in data.keys()
-                and data['expertise'] == ''
-                or data['expertise'] is None
+            if 'expertise' in data and (
+                data['expertise'] == '' or data['expertise'] is None
             ):
                 data['expertise'] = []
 
-            serializer = self.get_serializer(data=data)
+            serializer = self.get_serializer(data=data, partial=partial)
 
             if serializer.is_valid():
                 if serializer.validated_data:
@@ -93,7 +89,8 @@ class UserPreferencesDataViewSet(GenericViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
-            _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
+            _('User preferences do not exist'),
+            status=status.HTTP_404_NOT_FOUND,
         )
 
     @extend_schema(
@@ -105,8 +102,8 @@ class UserPreferencesDataViewSet(GenericViewSet):
             404: OpenApiResponse(description='User preferences object not found'),
         },
     )
-    def update(self, request, *args, **kwargs):
-        return self._update(request, partial=False, *args, **kwargs)
+    def update(self, request, **kwargs):
+        return self._update(request, partial=False, **kwargs)
 
     @extend_schema(
         tags=['user'],
@@ -117,5 +114,5 @@ class UserPreferencesDataViewSet(GenericViewSet):
             404: OpenApiResponse(description='User preferences object not found'),
         },
     )
-    def partial_update(self, request, *args, **kwargs):
-        return self._update(request, partial=True, *args, **kwargs)
+    def partial_update(self, request, **kwargs):
+        return self._update(request, partial=True, **kwargs)

@@ -32,7 +32,7 @@ urlpatterns = [
                 'get': 'retrieve',
                 'put': 'update',
                 'patch': 'partial_update',
-            }
+            },
         ),
         name='user_data',
     ),
@@ -43,7 +43,7 @@ urlpatterns = [
                 'get': 'retrieve',
                 'put': 'update',
                 'patch': 'partial_update',
-            }
+            },
         ),
         name='user_settings',
     ),
@@ -55,14 +55,14 @@ urlpatterns = [
     # Autosuggest routes
     re_path(
         r'^autosuggest/(?P<fieldname>({}))/$'.format(
-            '|'.join(settings.ACTIVE_SOURCES.keys())
+            '|'.join(settings.ACTIVE_SOURCES.keys()),
         ),
         lookup_view,
         name='lookup_all',
     ),
     re_path(
         r'^autosuggest/(?P<fieldname>({}))/(?P<searchstr>(.*))/$'.format(
-            '|'.join(settings.ACTIVE_SOURCES.keys())
+            '|'.join(settings.ACTIVE_SOURCES.keys()),
         ),
         lookup_view_search,
         name='lookup',

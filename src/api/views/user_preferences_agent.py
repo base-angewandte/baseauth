@@ -38,12 +38,12 @@ class UserPreferencesAgentViewSet(GenericViewSet):
             APIKey.objects.get_from_key(key)
         except APIKey.DoesNotExist:
             raise PermissionDenied from None
-        UserModel = get_user_model()
+        User = get_user_model()  # noqa - this represents a model class
         try:
             return Response(
-                get_user_preferences_attributes(UserModel.objects.get(username=pk))
+                get_user_preferences_attributes(User.objects.get(username=pk)),
             )
-        except UserModel.DoesNotExist:
+        except User.DoesNotExist:
             return Response(
                 _('User does not exist'),
                 status=status.HTTP_404_NOT_FOUND,

@@ -39,4 +39,4 @@ FROM base as prod
 
 COPY . .
 
-CMD ["rainbow-saddle", "--pid", "/var/run/django.pid", "--gunicorn-pidfile", "/var/run/gunicorn.pid", "gunicorn", "baseauth.wsgi", "-c", "/django/gunicorn-conf.py"]
+CMD ["rainbow-saddle", "--pid", "/var/run/django.pid", "--gunicorn-pidfile", "/var/run/gunicorn.pid", "gunicorn", "baseauth.wsgi", "-c", "/django/gunicorn_conf.py"]

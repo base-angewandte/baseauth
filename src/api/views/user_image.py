@@ -53,16 +53,21 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
 
             if user_preferences.user_image:
                 return Response(
-                    reverse('user_image', kwargs={'image': user_preferences.user_image})
+                    reverse(
+                        'user_image',
+                        kwargs={'image': user_preferences.user_image},
+                    ),
                 )
 
             return Response(
-                _('User image does not exist.'), status=status.HTTP_404_NOT_FOUND
+                _('User image does not exist.'),
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         except UserPreferencesData.DoesNotExist:
             return Response(
-                _('User preferences do not exist.'), status=status.HTTP_404_NOT_FOUND
+                _('User preferences do not exist.'),
+                status=status.HTTP_404_NOT_FOUND,
             )
 
     @extend_schema(
@@ -82,22 +87,25 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         if user_preferences:
             serializer = UserImageSerializer(data=request.data)
 
-            if serializer.is_valid():
-                if serializer.validated_data:
-                    if request.FILES.get('user_image'):
-                        user_preferences.user_image = request.FILES['user_image']
-                        user_preferences.save()
-                        return Response(
-                            reverse(
-                                'user_image',
-                                kwargs={'image': user_preferences.user_image},
-                            )
-                        )
+            if (
+                serializer.is_valid()
+                and serializer.validated_data
+                and request.FILES.get('user_image')
+            ):
+                user_preferences.user_image = request.FILES['user_image']
+                user_preferences.save()
+                return Response(
+                    reverse(
+                        'user_image',
+                        kwargs={'image': user_preferences.user_image},
+                    ),
+                )
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
-            _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
+            _('User preferences do not exist'),
+            status=status.HTTP_404_NOT_FOUND,
         )
 
     @extend_schema(
@@ -118,5 +126,6 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(
-            _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
+            _('User preferences do not exist'),
+            status=status.HTTP_404_NOT_FOUND,
         )

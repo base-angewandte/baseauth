@@ -17,14 +17,14 @@ from user_preferences.models import UserSettings, UserSettingsValue, settings_di
 
 class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
     lookup_field = 'user'
-    '''
+    """
     retrieve:
     Returns certain user settings.
 
     update:
     Update certain user settings.
 
-    '''
+    """
 
     serializer_class = UserSettingsSerializer
     queryset = UserSettingsValue.objects.all()
@@ -62,7 +62,7 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
                 return Response(
                     _(
                         'The given value type is not valid. Value must be: boolean, string, list (of strings). '
-                        'Make sure field_type reflects your choice. '
+                        'Make sure field_type reflects your choice. ',
                     ),
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -76,19 +76,16 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
         }
 
         # if list, check if list of strings
-        if isinstance(value, list):
-            if not value or not all(
-                isinstance(i, str) for i in value
-            ):  # must be a list of strings
-                return False
-
-        if value_type not in value_type_mapping.keys():
+        if isinstance(value, list) and (
+            not value or not all(isinstance(i, str) for i in value)
+        ):
+            # must be a list of strings
             return False
 
-        if not isinstance(value, value_type_mapping[value_type]):
+        if value_type not in value_type_mapping:
             return False
 
-        return True
+        return isinstance(value, value_type_mapping[value_type])
 
     @extend_schema(
         tags=['user'],
