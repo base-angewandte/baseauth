@@ -27,12 +27,13 @@ class UserPreferencesData(models.Model):
         primary_key=True,
         on_delete=models.CASCADE,
     )
-    showroom_id = models.CharField(max_length=255, blank=True)
+    showroom_id = models.CharField(max_length=255, blank=True, default='')
 
     # Editable
     complementary_email = models.EmailField(
         verbose_name=_('E-Mail (complementary)'),
         blank=True,
+        default='',
     )
     # urls = JSONField(verbose_name=_('URLs'), blank=True, null=True)
 
@@ -40,13 +41,15 @@ class UserPreferencesData(models.Model):
         verbose_name=_('Website'),
         max_length=255,
         blank=True,
+        default='',
     )
 
     expertise = JSONField(verbose_name=_('Skills and Expertise'), blank=True, null=True)
-    orcid_pid = models.CharField(max_length=255, blank=True)
+    orcid_pid = models.CharField(max_length=255, blank=True, default='')
     gnd_viaf = models.CharField(
         max_length=255,
         blank=True,
+        default='',
     )  # todo should be array or anyway multiple should be available
 
     # still missing and TODO
@@ -61,10 +64,10 @@ class UserPreferencesData(models.Model):
     # Non_editable_data
     affiliation = JSONField(blank=True, null=True)
     organisational_unit = JSONField(blank=True, null=True)
-    position = models.CharField(max_length=255, blank=True)
-    email = models.CharField(max_length=255, blank=True)
-    telephone = models.CharField(max_length=255, blank=True)
-    fax = models.CharField(max_length=255, blank=True)
+    position = models.CharField(max_length=255, blank=True, default='')
+    email = models.CharField(max_length=255, blank=True, default='')
+    telephone = models.CharField(max_length=255, blank=True, default='')
+    fax = models.CharField(max_length=255, blank=True, default='')
 
     # Location fields
     street_address = JSONField(blank=True, null=True)
@@ -207,7 +210,7 @@ class UserPreferencesData(models.Model):
 
 class UserSettingsApp(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
-    name = models.CharField(max_length=255, blank=True, unique=True)
+    name = models.CharField(max_length=255, blank=True, unique=True, default='')
     icon = models.URLField(max_length=255, blank=True, default='')
 
     def __str__(self):
