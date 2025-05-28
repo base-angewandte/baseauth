@@ -1,2 +1,2 @@
-* * * * * docker container ls -f health=unhealthy -f name=portfolio --format "{{.Names}}" | xargs --no-run-if-empty docker restart | xargs -I{} sh -c '[ -n "${SENTRY_DSN}" ] && sentry-cli send-event -m "Unhealthy docker container {} restarted" -E ${SENTRY_ENVIRONMENT}'
+* * * * * docker container ls -f health=unhealthy -f name=baseauth --format "{{.Names}}" | xargs --no-run-if-empty docker restart | xargs -I{} sh -c '[ -n "${SENTRY_DSN}" ] && sentry-cli send-event -m "Unhealthy docker container {} restarted" -E ${SENTRY_ENVIRONMENT}'
 0 0 * * * docker exec baseauth-django /django/scripts/logrotate.sh > /dev/stdout
