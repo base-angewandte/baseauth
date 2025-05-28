@@ -22,7 +22,6 @@ There are two supported ways to start the development server:
 
 2. Start everything inside docker containers. This is the "easy" way
    to start a dev server and fiddle around with it, hot reloading included.
-   But you will not have the local pre-commit setup.
 
 In both cases there are some common steps to follow:
 
@@ -41,12 +40,13 @@ In both cases there are some common steps to follow:
   uv tool install pre-commit --with pre-commit-uv
   ```
 
-- Clone git repository and checkout branch `develop`:
+- Clone git repository, checkout branch `develop` and install pre-commit hooks:
 
   ```bash
   git clone https://github.com/base-angewandte/baseauth.git
   cd baseauth
   git checkout develop
+  pre-commit install --install-hooks --overwrite
   ```
 
 - Check and adapt settings (if you need more details than the comments on
