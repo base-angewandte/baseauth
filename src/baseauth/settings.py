@@ -222,7 +222,7 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=False)
 EMAIL_USE_LOCALTIME = env.bool('EMAIL_USE_LOCALTIME', default=True)
 
 EMAIL_SUBJECT_PREFIX = '{} '.format(
-    env.str('EMAIL_SUBJECT_PREFIX', default='[CAS]').strip(),
+    env.str('EMAIL_SUBJECT_PREFIX', default='[baseauth]').strip(),
 )
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
