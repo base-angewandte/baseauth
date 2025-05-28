@@ -391,12 +391,11 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentTimedRotatingFileHandler',
             'filename': LOG_DIR / 'application.log',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'when': 'midnight',
             'backupCount': 1000,
             'use_gzip': True,
-            'delay': True,
             'formatter': 'verbose',
         },
         'mail_admins': {
