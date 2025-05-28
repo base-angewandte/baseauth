@@ -486,11 +486,6 @@ AXES_COOLOFF_TIME = 1  # number in hours
 CAPTCHA_FLITE_PATH = '/usr/bin/flite'
 
 if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE.insert(
-        MIDDLEWARE.index('django.contrib.sessions.middleware.SessionMiddleware'),
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
     INTERNAL_IPS = ('127.0.0.1',)
 
     if 'ldap' in AUTH_BACKENDS_TO_USE:

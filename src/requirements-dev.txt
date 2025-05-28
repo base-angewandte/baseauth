@@ -42,7 +42,6 @@ django==4.2.21
     #   django-axes
     #   django-cas-ng
     #   django-cors-headers
-    #   django-debug-toolbar
     #   django-filter
     #   django-ranged-response
     #   django-redis
@@ -58,8 +57,6 @@ django-axes==8.0.0
 django-cas-ng==5.0.1
     # via -r src/requirements.in
 django-cors-headers==4.7.0
-    # via -r src/requirements.in
-django-debug-toolbar==5.2.0
     # via -r src/requirements.in
 django-environ==0.12.0
     # via -r src/requirements.in
@@ -192,9 +189,7 @@ six==1.16.0
 skosmos-client==0.3.0
     # via -r src/requirements.in
 sqlparse==0.4.4
-    # via
-    #   django
-    #   django-debug-toolbar
+    # via django
 typing-extensions==4.8.0
     # via psycopg
 uritemplate==4.1.1
