@@ -136,6 +136,9 @@ subsections.
   sudo apt-get update
   ```
 
+- [Install docker with compose plugin](https://docs.docker.com/get-docker/)
+  for your system
+
 - Change to user `base`
 
 - Change to `/opt/base`
