@@ -1,7 +1,7 @@
 ## PostgreSQL settings for baseauth-postgres container and Django
-# POSTGRES_DB=django_baseauth
-# POSTGRES_USER=django_baseauth
-# POSTGRES_PASSWORD=password
+POSTGRES_DB=django_baseauth
+POSTGRES_USER=django_baseauth
+POSTGRES_PASSWORD=
 ## If you change the default port of the container you need a compose override file too, to reflect this change there
 # POSTGRES_PORT=5432
 ## The database host only needs to be set explicitly if you are not using

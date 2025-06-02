@@ -51,7 +51,8 @@ In both cases there are some common steps to follow:
 
 - Check and adapt settings (if you need more details than the comments on
   the single settings in the skeleton env file give you, take a look at the
-  [](./configuration.md) section):
+  [](./configuration.md) section). You need to at least set the `POSTGRES_PASSWORD` and
+  the `SITE_URL`:
 
   ```bash
   cp env-skel .env
@@ -150,7 +151,8 @@ subsections.
   cd baseauth
   ```
 
-- Check and adapt settings:
+- Check and adapt settings. Take the [](./configuration.md) section as a reference.
+  You need to at least set the `POSTGRES_PASSWORD` and the `SITE_URL`:
 
   ```bash
   cp env-skel .env

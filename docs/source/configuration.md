@@ -24,7 +24,9 @@ User of the PostgreSQL database.
 
 Password for user of the PostgreSQL database.
 
-Make sure to change this to a strong password on any production/public server.
+This needs to be set explicitly. Make sure to use some strong password, e.g.
+one you can generate with `pwgen -sy 32 1`. You won't need to use it anywhere,
+except if you want to connect directly to the database for debugging reasons.
 
 #### `POSTGRES_PORT`
 
