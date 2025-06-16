@@ -14,7 +14,7 @@ This involves any version up to git commit id
 **Config file changes:**
 
 We refactored the configuration to only use a single .env file. Also,
-the docker compose file was brought up to it's newest version. This
+the docker compose file was brought up to its newest version. This
 requires you to adapt your config file as follows:
 
 - move all settings from the src/baseauth/.env file to .env
