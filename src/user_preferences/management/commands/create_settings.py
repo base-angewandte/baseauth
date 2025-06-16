@@ -9,13 +9,11 @@ class Command(BaseCommand):
     help = 'Create UserSettingsApp and UserSettings instances.'
 
     def add_arguments(self, parser):
-        (
-            parser.add_argument(
-                'app_name',
-                nargs='+',
-                type=str,
-                help=_('A name for your app.'),
-            ),
+        parser.add_argument(
+            'app_name',
+            nargs='+',
+            type=str,
+            help=_('A name for your app.'),
         )
 
     def handle(self, *args, **options):
