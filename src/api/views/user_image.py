@@ -16,18 +16,6 @@ from user_preferences.models import UserPreferencesData
 
 
 class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
-    """
-    retrieve:
-    Returns certain profile photo / thumbnail.
-
-    create:
-    Upload a profile photo.
-
-    delete:
-    Delete a profile photo.
-
-    """
-
     serializer_class = UserImageSerializer
     parser_classes = (
         FormParser,
@@ -51,6 +39,7 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         },
     )
     def list(self, request, *args, **kwargs):
+        """Returns certain profile photo / thumbnail."""
         try:
             user_preferences = UserPreferencesData.objects.get(user=request.user)
 
@@ -80,6 +69,7 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         ],
     )
     def create(self, request, *args, **kwargs):
+        """Upload a profile photo."""
         user_preferences = UserPreferencesData.objects.get(user=request.user)
         if user_preferences:
             serializer = UserImageSerializer(data=request.data)
@@ -114,6 +104,7 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         },
     )
     def delete(self, request, *args, **kwargs):
+        """Delete a profile photo."""
         # DELETE method cannot work without ID parameter
         user_preferences = UserPreferencesData.objects.get(user=request.user)
         if user_preferences:

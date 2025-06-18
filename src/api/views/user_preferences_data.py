@@ -15,17 +15,6 @@ from user_preferences.models import UserPreferencesData
 
 
 class UserPreferencesDataViewSet(GenericViewSet):
-    """
-    retrieve:
-    Returns the currently logged in user.
-
-    update:
-    Update the currently logged in user.
-
-    partial_update:
-    Partially update the currently logged in user.
-    """
-
     serializer_class = UserPreferencesDataSerializer
     queryset = UserPreferencesData.objects.all()
     parser_classes = (FormParser, MultiPartParser)
@@ -43,6 +32,7 @@ class UserPreferencesDataViewSet(GenericViewSet):
         },
     )
     def retrieve(self, request, **kwargs):
+        """Returns the currently logged in user."""
         if UserPreferencesData.objects.filter(user=request.user).exists():
             user_preferences = self.queryset.get(user=request.user)
             if user_preferences:
@@ -104,6 +94,7 @@ class UserPreferencesDataViewSet(GenericViewSet):
         },
     )
     def update(self, request, *args, **kwargs):
+        """Update the currently logged in user."""
         return self._update(request, *args, partial=False, **kwargs)
 
     @extend_schema(
@@ -118,4 +109,5 @@ class UserPreferencesDataViewSet(GenericViewSet):
         },
     )
     def partial_update(self, request, *args, **kwargs):
+        """Partially update the currently logged in user."""
         return self._update(request, *args, partial=True, **kwargs)
