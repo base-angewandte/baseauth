@@ -47,7 +47,7 @@ SITE_URL=https://url/
 # EMAIL_PORT=
 # EMAIL_USE_TLS=
 # EMAIL_USE_LOCALTIME=
-# EMAIL_SUBJECT_PREFIX=[CAS]
+# EMAIL_SUBJECT_PREFIX=[baseauth]
 
 ## For cross-domain cookies (e.g. different services on different subdomains) set
 ## this to your base domain. In that case also adapt the CSRF_COOKIE_DOMAIN below
