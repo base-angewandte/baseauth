@@ -18,5 +18,3 @@ If you want to actively develop or run a development instance directly on your
 host (aka _the full developer setup_), you will also need:
 
 - Dev libraries for: `libldap2-dev libsasl2-dev`
-- The latest [Python 3](https://www.python.org/) version and
-  [uv](https://docs.astral.sh/uv/getting-started/installation/)
