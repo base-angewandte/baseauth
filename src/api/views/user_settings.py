@@ -17,15 +17,6 @@ from user_preferences.models import UserSettings, UserSettingsValue, settings_di
 
 class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
     lookup_field = 'user'
-    """
-    retrieve:
-    Returns certain user settings.
-
-    update:
-    Update certain user settings.
-
-    """
-
     serializer_class = UserSettingsSerializer
     queryset = UserSettingsValue.objects.all()
     parser_classes = (FormParser, MultiPartParser)
@@ -43,6 +34,7 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
         },
     )
     def retrieve(self, request, *args, **kwargs):
+        """Returns certain user settings."""
         ret = settings_dict(request.user)
         if not ret:
             return Response(
@@ -97,6 +89,7 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
         },
     )
     def update(self, request, *args, **kwargs):
+        """Update certain user settings."""
         try:
             data = json.loads(request.data.get('data'))
         except json.decoder.JSONDecodeError:
