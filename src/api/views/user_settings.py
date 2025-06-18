@@ -67,11 +67,10 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
             'list': list,
         }
 
-        # if list, check if list of strings
+        # in case of lists only lists of strings are allowed
         if isinstance(value, list) and (
             not value or not all(isinstance(i, str) for i in value)
         ):
-            # must be a list of strings
             return False
 
         if value_type not in value_type_mapping:
