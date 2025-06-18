@@ -27,7 +27,7 @@ from api.serializers.autosuggest import AutosuggestUserSerializer
 @api_view(['GET'])
 def autosuggest_user(request, user, *args, **kwargs):
     """Get autosuggest results for query."""
-    User = get_user_model()  # noqa - this represents the model class
+    User = get_user_model()  # noqa: N806 - this represents the model class
     # the user parameter of this endpoint is the actual string to search for
     searchstr = user
 

@@ -20,7 +20,7 @@ from datetime import date
 # -- Project information -----------------------------------------------------
 
 project = 'baseauth'
-copyright = f'baseauth | University of Applied Arts Vienna, 2019-{date.today().year}'  # noqa - sphinx specific
+copyright = f'baseauth | University of Applied Arts Vienna, 2019-{date.today().year}'  # noqa: A001 - sphinx specific
 author = 'base Dev Team'
 
 

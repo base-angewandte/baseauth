@@ -38,7 +38,7 @@ class UserPreferencesAgentViewSet(GenericViewSet):
             APIKey.objects.get_from_key(key)
         except APIKey.DoesNotExist:
             raise PermissionDenied from None
-        User = get_user_model()  # noqa - this represents a model class
+        User = get_user_model()  # noqa: N806 - this represents a model class
         try:
             return Response(
                 get_user_preferences_attributes(User.objects.get(username=pk)),
