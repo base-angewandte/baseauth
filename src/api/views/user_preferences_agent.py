@@ -1,7 +1,6 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -36,15 +35,12 @@ class UserPreferencesAgentViewSet(GenericViewSet):
         key = request.headers.get('X-Api-Key', '')
         try:
             APIKey.objects.get_from_key(key)
-        except APIKey.DoesNotExist:
-            raise PermissionDenied from None
+        except APIKey.DoesNotExist as err:
+            raise PermissionDenied from err
         User = get_user_model()  # noqa: N806 - this represents a model class
         try:
             return Response(
                 get_user_preferences_attributes(User.objects.get(username=pk)),
             )
-        except User.DoesNotExist:
-            return Response(
-                _('User does not exist'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        except User.DoesNotExist as err:
+            raise NotFound(_('User does not exist')) from err
