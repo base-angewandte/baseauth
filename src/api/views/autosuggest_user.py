@@ -41,7 +41,7 @@ def autosuggest_user(request, user, *args, **kwargs):
             'UUID': user.username,  # TODO: discuss in review: should this be all caps? leaving for now, as frontend might depend on it
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'label': f'{user.first_name} {user.last_name}',
+            'label': user.get_full_name(),
         }
         for user in search_result
     ]
