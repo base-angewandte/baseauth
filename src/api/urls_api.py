@@ -31,7 +31,6 @@ urlpatterns = [
             {
                 'get': 'retrieve',
                 'put': 'update',
-                'patch': 'partial_update',
             },
         ),
         name='user_data',

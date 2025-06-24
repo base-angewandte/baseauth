@@ -96,18 +96,3 @@ class UserPreferencesDataViewSet(GenericViewSet):
     def update(self, request, *args, **kwargs):
         """Update the currently logged in user."""
         return self._update(request, *args, partial=False, **kwargs)
-
-    @extend_schema(
-        tags=['user'],
-        request=serializer_class,
-        responses={
-            200: OpenApiResponse(description=''),
-            403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(
-                description=_('User preferences object does not exist'),
-            ),
-        },
-    )
-    def partial_update(self, request, *args, **kwargs):
-        """Partially update the currently logged in user."""
-        return self._update(request, *args, partial=True, **kwargs)
