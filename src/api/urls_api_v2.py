@@ -21,6 +21,7 @@ router.register(r'users', UserPreferencesAgentViewSet, basename='users')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('autocomplete/', include('api.autocomplete.urls')),
     path('user/', UserViewSet.as_view({'get': 'retrieve'}), name='user'),
     path(
         'user/data/',
