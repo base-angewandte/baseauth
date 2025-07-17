@@ -3,6 +3,7 @@ import json
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -17,15 +18,6 @@ from user_preferences.models import UserSettings, UserSettingsValue, settings_di
 
 class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
     lookup_field = 'user'
-    '''
-    retrieve:
-    Returns certain user settings.
-
-    update:
-    Update certain user settings.
-
-    '''
-
     serializer_class = UserSettingsSerializer
     queryset = UserSettingsValue.objects.all()
     parser_classes = (FormParser, MultiPartParser)
@@ -39,16 +31,14 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
         responses={
             200: OpenApiResponse(description=''),
             403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='User preferences object not found'),
+            404: OpenApiResponse(description=_('No user settings exist')),
         },
     )
     def retrieve(self, request, *args, **kwargs):
+        """Returns certain user settings."""
         ret = settings_dict(request.user)
         if not ret:
-            return Response(
-                _('No user settings exist'),
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            raise NotFound(_('No user settings exist'))
         return Response(ret)
 
     def destringify_value(self, v, value_type):
@@ -62,7 +52,7 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
                 return Response(
                     _(
                         'The given value type is not valid. Value must be: boolean, string, list (of strings). '
-                        'Make sure field_type reflects your choice. '
+                        'Make sure field_type reflects your choice. ',
                     ),
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -75,20 +65,16 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
             'list': list,
         }
 
-        # if list, check if list of strings
-        if isinstance(value, list):
-            if not value or not all(
-                isinstance(i, str) for i in value
-            ):  # must be a list of strings
-                return False
-
-        if value_type not in value_type_mapping.keys():
+        # in case of lists only lists of strings are allowed
+        if isinstance(value, list) and (
+            not value or not all(isinstance(i, str) for i in value)
+        ):
             return False
 
-        if not isinstance(value, value_type_mapping[value_type]):
+        if value_type not in value_type_mapping:
             return False
 
-        return True
+        return isinstance(value, value_type_mapping[value_type])
 
     @extend_schema(
         tags=['user'],
@@ -96,10 +82,11 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
         responses={
             200: OpenApiResponse(description=''),
             403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='User preferences object not found'),
+            404: OpenApiResponse(description='Setting does not exist'),
         },
     )
     def update(self, request, *args, **kwargs):
+        """Update certain user settings."""
         try:
             data = json.loads(request.data.get('data'))
         except json.decoder.JSONDecodeError:
@@ -123,10 +110,9 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
                         % {'value': v, 'type': user_settings.value_type},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-            except UserSettings.DoesNotExist:
-                return Response(
+            except UserSettings.DoesNotExist as err:
+                raise NotFound(
                     _('Setting %(setting)s does not exist') % {'setting': k},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+                ) from err
 
         return Response(settings_dict(request.user))

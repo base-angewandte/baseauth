@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.utils.module_loading import import_string
 
+from api.serializers.autosuggest import AutosuggestFieldSerializer
 from api.spectacular import fieldname_parameter, language_header_parameter
 from api.views import fetch_responses
 from core.skosmos import autosuggest
@@ -13,6 +14,9 @@ from core.skosmos import autosuggest
 @extend_schema(
     tags=['autosuggest'],
     parameters=[fieldname_parameter, language_header_parameter],
+    responses={
+        '200': AutosuggestFieldSerializer(many=True),
+    },
     operation_id='autosuggest_v1_lookup',
 )
 @api_view(['GET'])

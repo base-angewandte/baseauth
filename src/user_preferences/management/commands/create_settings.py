@@ -14,7 +14,7 @@ class Command(BaseCommand):
             nargs='+',
             type=str,
             help=_('A name for your app.'),
-        ),
+        )
 
     def handle(self, *args, **options):
         # Make app
@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
         if options_app_name not in django_settings.SETTINGS_DATA:
             raise CommandError(
-                'App with name {} is not yet configured'.format(options['app_name'][0])
+                'App with name {} is not yet configured'.format(options['app_name'][0]),
             )
 
         app, created = UserSettingsApp.objects.get_or_create(
@@ -40,7 +40,8 @@ class Command(BaseCommand):
             'settings'
         ].items():
             user_settings, created = UserSettings.objects.get_or_create(
-                id=setting_id, app=app
+                id=setting_id,
+                app=app,
             )
             user_settings.title = setting['title']
             user_settings.value_type = setting['type']

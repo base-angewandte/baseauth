@@ -3,33 +3,34 @@
 # to update all packages run 'pip-compile --upgrade'
 
 apimapper==0.7.9
-concurrent-log-handler==0.9.24
+base-common==0.4
+base-common-drf==0.5
+concurrent-log-handler==0.9.26
 defusedxml==0.7.1
-django==4.2.7
-django-auth-ldap==4.6.0
-django-axes[ipware]==6.1.1
+django~=4.2
+django-auth-ldap==5.2.0
+django-axes[ipware]==8.0.0
 django-cas-ng==5.0.1
-django-cors-headers==4.3.0
-django-debug-toolbar==4.2.0
-django-environ==0.11.2
-django-filter==23.5
+django-cors-headers==4.7.0
+django-environ==0.12.0
+django-filter==25.1
 django-mama-cas==2.5.0
 django-redis==5.4.0
-django-rq==2.10.1
-django-simple-captcha==0.5.20
-djangorestframework==3.14.0
-djangorestframework-api-key==3.0.0
-drf-spectacular==0.27.0
-easy-thumbnails==2.8.5
-gevent==23.9.1
-Pillow==10.2.0
-pip-tools==7.3.0
-psycopg[binary]==3.1.12
-requests==2.31.0
-shortuuid==1.0.11
+django-rq==3.0.1
+django-simple-captcha==0.6.2
+djangorestframework==3.16.0
+djangorestframework-api-key==3.1.0
+drf-spectacular==0.28.0
+easy-thumbnails==2.10
+gevent==25.5.1
+Pillow==11.2.1
+psycopg[binary]==3.2.9
+requests==2.32.3
+sentry-sdk
+shortuuid==1.0.13
 skosmos-client==0.3.0
-whitenoise[brotli]==6.6.0
+whitenoise[brotli]==6.9.0
 
 # Server
-gunicorn==21.2.0
+gunicorn==23.0.0
 rainbow-saddle==0.4.0

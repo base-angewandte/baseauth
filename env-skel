@@ -1,7 +1,99 @@
-## These settings are used to set up the DB in the basauth-postgres container.
-BASEAUTH_DB_NAME=django_baseauth
-BASEAUTH_DB_USER=django_baseauth
-## Make sure to change this to a strong password on any production/public server.
-## If you change it here for local development, make sure to also set the POSTGRES_PASSWORD
-## in src/basauth/.env accordingly
-BASEAUTH_DB_PASSWORD=password
+## PostgreSQL settings for baseauth-postgres container and Django
+POSTGRES_DB=django_baseauth
+POSTGRES_USER=django_baseauth
+## A strong database password needs to be set explicitly here. Check the config docs for more.
+POSTGRES_PASSWORD=
+## If you change the default port of the container you need a compose override file too, to reflect this change there
+# POSTGRES_PORT=5432
+## The database host only needs to be set explicitly if you are not using
+## the default database container, or you need a different name than localhost.
+## This defaults either to the db container name or 'localhost', depending on
+## whether DOCKER is True
+# POSTGRES_HOST=baseauth-postgres
+
+## Similar to Postgres we also might need to change the Redis port, if
+## the standard port is already in use by another container.
+# REDIS_PORT=6379
+
+## For development this can be set to True
+# DEBUG=False
+
+## If you are developing locally (with Django not running inside a container), set this to False
+# DOCKER=True
+
+## The base URL of the Django site, for local development http://127.0.0.1:8000/
+SITE_URL=https://url/
+
+## In a production deployment with other base components, this base path should
+## be set for wherever baseauth is running. No need to adapt, if you follow the
+## default setup. For local development set this explicitly to an empty string.
+# FORCE_SCRIPT_NAME=/auth
+
+## The accepted HTTP Host headers, Django will serve. Defaults to urlparse(SITE_URL).hostname
+# ALLOWED_HOSTS=
+
+## In a production environment Django will be deployed behind a nginx proxy.
+## For local development, set this to False
+# BEHIND_PROXY=True
+
+## Set up admin notifications here
+# DJANGO_ADMINS=Full Name <email-with-name@example.com>,anotheremailwithoutname@example.com
+## The following users will have admin privileges in the django backend
+# DJANGO_SUPERUSERS=(username1,username2)
+
+## In a production setup you should set up the SMTP account to get notifications
+# EMAIL_HOST_USER=
+# EMAIL_HOST_PASSWORD=
+# EMAIL_HOST=
+# EMAIL_PORT=
+# EMAIL_USE_TLS=
+# EMAIL_USE_LOCALTIME=
+# EMAIL_SUBJECT_PREFIX=[baseauth]
+
+## For cross-domain cookies (e.g. different services on different subdomains) set
+## this to your base domain. In that case also adapt the CSRF_COOKIE_DOMAIN below
+## accordingly. For single domain setups, the default (None) is fine.
+# SESSION_COOKIE_DOMAIN=
+
+## Set up CSRF and CORS settings here. For a local development server you
+## might want to set CSRF_TRUSTED_ORIGINS to: localhost,127.0.0.1
+# CSRF_COOKIE_DOMAIN=
+# CSRF_TRUSTED_ORIGINS=
+# CORS_ALLOW_CREDENTIALS=False
+# CORS_ALLOW_ALL_ORIGINS=False
+# CORS_ALLOWED_ORIGINS=
+
+## Here you configure the type of authentication backends, that should be used.
+## See the configuration section in the docs for details.
+# AUTHENTICATION_BACKENDS=django
+
+## LDAP authentication (only needed if ldap occurs in the AUTHENTICATION_BACKENDS above)
+## See the configuration section in the docs for details.
+# AUTH_LDAP_SERVER_URI=
+# AUTH_LDAP_BIND_DN=
+# AUTH_LDAP_BIND_PASSWORD=
+# AUTH_LDAP_USER_ATTR_MAP=first_name=givenName,last_name=sn,email=mail
+# AUTH_LDAP_USER_DN_TEMPLATE=
+# AUTH_LDAP_USER_SEARCH_BASE=
+# AUTH_LDAP_USER_SEARCH_BASE_LIST=
+# AUTH_LDAP_USER_SEARCH_USER_TEMPLATE=
+
+## CAS authentication (only needed if cas occurs in AUTHENTICATION_BACKENDS above)
+## See the configuration section in the docs for details.
+# CAS_SERVER=
+# CAS_VERSION=3
+# CAS_REDIRECT_URL=/
+# CAS_VERIFY_SSL_CERTIFICATE=True
+# CAS_RENAME_ATTRIBUTES=
+
+## Showroom connection settings
+## See the configuration section in the docs for details.
+# SYNC_TO_SHOWROOM=False
+# SHOWROOM_BASE_URL={SITE_URL}showroom/
+# SHOWROOM_API_PATH=api/v1/
+# SHOWROOM_API_KEY=None
+
+## If you want to activate Sentry monitoring, set the following parameters
+# SENTRY_DSN=
+# SENTRY_ENVIRONMENT=development
+# SENTRY_TRACES_SAMPLE_RATE=0.2

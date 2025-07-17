@@ -2,6 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -15,18 +16,6 @@ from user_preferences.models import UserPreferencesData
 
 
 class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
-    """
-    retrieve:
-    Returns certain profile photo / thumbnail.
-
-    create:
-    Upload a profile photo.
-
-    delete:
-    Delete a profile photo.
-
-    """
-
     serializer_class = UserImageSerializer
     parser_classes = (
         FormParser,
@@ -44,26 +33,28 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         responses={
             200: OpenApiResponse(description=''),
             403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='User preferences object not found'),
+            404: OpenApiResponse(
+                description=_('User preferences object does not exist'),
+            ),
         },
     )
     def list(self, request, *args, **kwargs):
+        """Returns certain profile photo / thumbnail."""
         try:
             user_preferences = UserPreferencesData.objects.get(user=request.user)
 
             if user_preferences.user_image:
                 return Response(
-                    reverse('user_image', kwargs={'image': user_preferences.user_image})
+                    reverse(
+                        'user_image',
+                        kwargs={'image': user_preferences.user_image},
+                    ),
                 )
 
-            return Response(
-                _('User image does not exist.'), status=status.HTTP_404_NOT_FOUND
-            )
+            raise NotFound(_('User image does not exist.'))
 
-        except UserPreferencesData.DoesNotExist:
-            return Response(
-                _('User preferences do not exist.'), status=status.HTTP_404_NOT_FOUND
-            )
+        except UserPreferencesData.DoesNotExist as err:
+            raise NotFound(_('User preferences object does not exist')) from err
 
     @extend_schema(
         tags=['user'],
@@ -78,27 +69,28 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         ],
     )
     def create(self, request, *args, **kwargs):
+        """Upload a profile photo."""
         user_preferences = UserPreferencesData.objects.get(user=request.user)
         if user_preferences:
             serializer = UserImageSerializer(data=request.data)
 
-            if serializer.is_valid():
-                if serializer.validated_data:
-                    if request.FILES.get('user_image'):
-                        user_preferences.user_image = request.FILES['user_image']
-                        user_preferences.save()
-                        return Response(
-                            reverse(
-                                'user_image',
-                                kwargs={'image': user_preferences.user_image},
-                            )
-                        )
+            if (
+                serializer.is_valid()
+                and serializer.validated_data
+                and request.FILES.get('user_image')
+            ):
+                user_preferences.user_image = request.FILES['user_image']
+                user_preferences.save()
+                return Response(
+                    reverse(
+                        'user_image',
+                        kwargs={'image': user_preferences.user_image},
+                    ),
+                )
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(
-            _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
-        )
+        raise NotFound(_('User preferences object does not exist'))
 
     @extend_schema(
         tags=['user'],
@@ -106,10 +98,13 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
         responses={
             200: OpenApiResponse(description=''),
             403: OpenApiResponse(description='Access not allowed'),
-            404: OpenApiResponse(description='User preferences object not found'),
+            404: OpenApiResponse(
+                description=_('User preferences object does not exist'),
+            ),
         },
     )
     def delete(self, request, *args, **kwargs):
+        """Delete a profile photo."""
         # DELETE method cannot work without ID parameter
         user_preferences = UserPreferencesData.objects.get(user=request.user)
         if user_preferences:
@@ -117,6 +112,4 @@ class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
 
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        return Response(
-            _('User preferences do not exist'), status=status.HTTP_404_NOT_FOUND
-        )
+        raise NotFound(_('User preferences object does not exist'))

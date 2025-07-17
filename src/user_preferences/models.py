@@ -1,6 +1,6 @@
 import itertools
 import logging
-import os
+from pathlib import Path
 
 import shortuuid
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def user_directory_path(instance, filename):
-    path, ext = os.path.splitext(filename)
+    ext = Path(filename).suffix
 
     s_uuid = shortuuid.uuid()
     return f'{s_uuid}{ext}'
@@ -23,24 +23,33 @@ def user_directory_path(instance, filename):
 
 class UserPreferencesData(models.Model):
     user = models.OneToOneField(
-        get_user_model(), primary_key=True, on_delete=models.CASCADE
+        get_user_model(),
+        primary_key=True,
+        on_delete=models.CASCADE,
     )
-    showroom_id = models.CharField(max_length=255, blank=True, null=True)
+    showroom_id = models.CharField(max_length=255, blank=True, default='')
 
     # Editable
     complementary_email = models.EmailField(
-        verbose_name=_('E-Mail (complementary)'), blank=True, null=True
+        verbose_name=_('E-Mail (complementary)'),
+        blank=True,
+        default='',
     )
     # urls = JSONField(verbose_name=_('URLs'), blank=True, null=True)
 
     urls = models.URLField(
-        verbose_name=_('Website'), max_length=255, blank=True, null=True
+        verbose_name=_('Website'),
+        max_length=255,
+        blank=True,
+        default='',
     )
 
     expertise = JSONField(verbose_name=_('Skills and Expertise'), blank=True, null=True)
-    orcid_pid = models.CharField(max_length=255, blank=True, null=True)
+    orcid_pid = models.CharField(max_length=255, blank=True, default='')
     gnd_viaf = models.CharField(
-        max_length=255, blank=True, null=True
+        max_length=255,
+        blank=True,
+        default='',
     )  # todo should be array or anyway multiple should be available
 
     # still missing and TODO
@@ -55,10 +64,10 @@ class UserPreferencesData(models.Model):
     # Non_editable_data
     affiliation = JSONField(blank=True, null=True)
     organisational_unit = JSONField(blank=True, null=True)
-    position = models.CharField(max_length=255, blank=True, null=True)
-    email = models.CharField(max_length=255, blank=True, null=True)
-    telephone = models.CharField(max_length=255, blank=True, null=True)
-    fax = models.CharField(max_length=255, blank=True, null=True)
+    position = models.CharField(max_length=255, blank=True, default='')
+    email = models.CharField(max_length=255, blank=True, default='')
+    telephone = models.CharField(max_length=255, blank=True, default='')
+    fax = models.CharField(max_length=255, blank=True, default='')
 
     # Location fields
     street_address = JSONField(blank=True, null=True)
@@ -106,8 +115,8 @@ class UserPreferencesData(models.Model):
 
         zipped = list(
             itertools.zip_longest(
-                *[location_item for location_item in location_attrs if location_item]
-            )
+                *[location_item for location_item in location_attrs if location_item],
+            ),
         )
 
         return ', '.join(
@@ -116,7 +125,7 @@ class UserPreferencesData(models.Model):
                 for i in [
                     list(filter(None, location_element)) for location_element in zipped
                 ]
-            ]
+            ],
         )
 
     @property
@@ -128,7 +137,7 @@ class UserPreferencesData(models.Model):
                 {
                     'label': _('Affiliation'),
                     'data': self.affiliation[0],
-                }
+                },
             )
 
         if self.organisational_unit:
@@ -136,7 +145,7 @@ class UserPreferencesData(models.Model):
                 {
                     'label': _('Organisational Unit'),
                     'data': self.organisational_unit[0],
-                }
+                },
             )
 
         # TODO position
@@ -145,7 +154,7 @@ class UserPreferencesData(models.Model):
             {
                 'label': _('E-Mail'),
                 'data': {'value': self.user.email, 'url': f'mailto:{self.user.email}'},
-            }
+            },
         )
 
         if self.telephone:
@@ -153,7 +162,7 @@ class UserPreferencesData(models.Model):
                 {
                     'label': _('Telephone'),
                     'data': self.telephone[0],
-                }
+                },
             )
 
         # if self.fax:
@@ -170,7 +179,7 @@ class UserPreferencesData(models.Model):
                         f'{self.street_address[0]}',
                         f'{self.postal_code[0]} {self.place[0]}'.strip(),
                     ],
-                }
+                },
             )
 
         return ret
@@ -201,8 +210,8 @@ class UserPreferencesData(models.Model):
 
 class UserSettingsApp(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
-    name = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    icon = models.URLField(max_length=255, blank=True, null=True, default=None)
+    name = models.CharField(max_length=255, blank=True, unique=True, default='')
+    icon = models.URLField(max_length=255, blank=True, default='')
 
     def __str__(self):
         return f'{self.name} app (id: {self.id})'
@@ -279,7 +288,8 @@ def settings_dict(user):
         for setting in UserSettings.objects.filter(app=app):
             try:
                 schema = UserSettingsValue.objects.get(
-                    user_settings=setting, user=user
+                    user_settings=setting,
+                    user=user,
                 ).value_schema
             except UserSettingsValue.DoesNotExist:
                 schema = setting.value_schema
@@ -296,7 +306,8 @@ def settings_dict_flat(user):
         for setting in UserSettings.objects.filter(app=app):
             try:
                 value = UserSettingsValue.objects.get(
-                    user_settings=setting, user=user
+                    user_settings=setting,
+                    user=user,
                 ).value
             except UserSettingsValue.DoesNotExist:
                 value = setting.default_value

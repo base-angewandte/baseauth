@@ -1,14 +1,14 @@
-class ShowroomException(Exception):
+class ShowroomError(Exception):
     pass
 
 
-class ShowroomAuthenticationException(ShowroomException):
+class ShowroomAuthenticationError(ShowroomError):
     pass
 
 
-class ShowroomUndefinedException(ShowroomException):
+class ShowroomUndefinedError(ShowroomError):
     pass
 
 
-class ShowroomNotFoundException(ShowroomException):
+class ShowroomNotFoundError(ShowroomError):
     pass

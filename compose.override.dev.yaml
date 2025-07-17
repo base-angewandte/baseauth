@@ -1,4 +1,3 @@
-version: "2.3"
 services:
   # Uncomment the baseauth-redis and baseauth-postgres sections below if you need direct access to
   # these databases (e.g. for local development). If you are running several base applications
@@ -8,12 +7,12 @@ services:
   # Mounting the Redis port of the container to your localhost
   #baseauth-redis:
   #  ports:
-  #    - "127.0.0.1:6379:6379"
+  #    - "127.0.0.1:${REDIS_PORT:-6379}:6379"
 
   # Mounting the Postgres port of the container to your localhost
   #baseauth-postgres:
   #  ports:
-  #    - "127.0.0.1:5432:5432"
+  #    - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
 
   # Using the dev target of for the baseauth-django container and mounting
   # the port of the Django dev server to your localhost

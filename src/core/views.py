@@ -22,9 +22,9 @@ def locked_out(request):
             request,
             _(
                 'Too many failed login attempts. '
-                'Please enter the letters in the box beneath.'
+                'Please enter the letters in the box beneath.',
             ),
         )
         form = AxesCaptchaForm()
 
-    return render(request, 'core/locked_out.html', dict(form=form))
+    return render(request, 'core/locked_out.html', {'form': form})

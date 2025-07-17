@@ -8,7 +8,7 @@ max_requests = 1000
 max_requests_jitter = 50
 timeout = 300
 workers = os.getenv('GUNICORN_WORKERS', multiprocessing.cpu_count() * 2 + 1)
-worker_tmp_dir = '/dev/shm'  # nosec
+worker_tmp_dir = '/dev/shm'  # noqa: S108
 
 loglevel = 'info'
 accesslog = '/logs/gunicorn.access.log'
