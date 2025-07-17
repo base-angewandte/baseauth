@@ -14,7 +14,6 @@ from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from django.utils import translation
 from django.utils.module_loading import import_string
 
 from api.serializers.autosuggest import (
@@ -47,13 +46,6 @@ limit_parameter = OpenApiParameter(
     location=OpenApiParameter.QUERY,
     required=False,
 )
-language_header_parameter = openapi.Parameter(
-    'Accept-Language',
-    openapi.IN_HEADER,
-    required=False,
-    type=openapi.TYPE_STRING,
-    enum=['de', 'en'],
-)
 
 
 @swagger_auto_schema(
@@ -62,7 +54,6 @@ language_header_parameter = openapi.Parameter(
         type_parameter,
         q_parameter,
         limit_parameter,
-        language_header_parameter,
     ],
 )
 @extend_schema(
@@ -82,13 +73,6 @@ language_header_parameter = openapi.Parameter(
             required=False,
         ),
         limit_parameter,
-        OpenApiParameter(
-            name='Accept-Language',
-            type=OpenApiTypes.STR,
-            location=OpenApiParameter.HEADER,
-            required=False,
-            enum=['de', 'en'],
-        ),
     ],
     responses={'200': AutosuggestUserSerializer(many=True)},
     operation_id='autosuggest_v2_autocomplete',
@@ -101,13 +85,6 @@ def autocomplete(request, *args, **kwargs):
             raise ValueError
     except ValueError as e:
         raise ParseError('limit must be a positive integer') from e
-
-    lang = request.headers.get('Accept-Language', '')
-
-    if lang not in {'de', 'en'}:
-        lang = 'en'
-
-    translation.activate(lang)
 
     source_type = request.GET.get('type')
     q_param = request.GET.get('q', '')
@@ -135,7 +112,7 @@ def autocomplete(request, *args, **kwargs):
                 for u in users
             ],
         )
-
+    # TODO: Remove and access functions directly, also remove Apimapper.
     source = settings.ACTIVE_SOURCES.get(source_type, ())
 
     if not q_param and isinstance(source, dict):
@@ -151,5 +128,4 @@ def autocomplete(request, *args, **kwargs):
         )
     else:
         data = fetch_responses(q_param, source)
-
     return Response(data[:limit])
