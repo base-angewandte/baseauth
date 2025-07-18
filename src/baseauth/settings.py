@@ -21,7 +21,6 @@ from urllib.parse import urlparse
 
 import environ
 import ldap
-from apimapper import config as apiconfig
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 from django.urls import reverse_lazy
@@ -591,20 +590,6 @@ LANGUAGES_VOCID = 'languages'
 
 ACCEPT_LANGUAGE_HEADER = {'Accept-Language': get_language_lazy()}
 
-SOURCES = {
-    'GND_PERSON': {
-        apiconfig.URL: 'https://lobid.org/gnd/search',
-        apiconfig.QUERY_FIELD: 'q',
-        apiconfig.PAYLOAD: {'format': 'json:suggest', 'filter': 'type:Person'},
-        apiconfig.HEADER: ACCEPT_LANGUAGE_HEADER,
-    },
-    'VIAF_PERSON': {
-        apiconfig.URL: 'http://www.viaf.org/viaf/AutoSuggest',
-        apiconfig.QUERY_FIELD: 'query',
-        apiconfig.PAYLOAD: None,
-    },
-}
-
 GND_MAPPING = {
     'source': 'id',  # common_schema: GND schema
     'label': 'label',
@@ -614,38 +599,10 @@ VIAF_CONTRIBUTORS_MAPPING = {
     'label': 'displayForm',
 }
 
-RESPONSE_MAPS = {
-    'GND_PERSON': {
-        apiconfig.DIRECT: GND_MAPPING,
-        apiconfig.RULES: {'source_name': {apiconfig.RULE: '"GND"'}},
-    },
-    'VIAF_PERSON': {
-        apiconfig.RESULT: 'result',
-        apiconfig.FILTER: {'nametype': 'personal'},
-        apiconfig.DIRECT: VIAF_CONTRIBUTORS_MAPPING,
-        apiconfig.RULES: {
-            'source_name': {apiconfig.RULE: '"VIAF"'},
-            'source': {
-                apiconfig.RULE: '"http://www.viaf.org/viaf/{p1}"',
-                apiconfig.FIELDS: {'p1': 'viafid'},
-            },
-        },
-    },
-}
-
 CONTRIBUTORS = (
     'GND_PERSON',
     'VIAF_PERSON',
 )
-
-# if an autosuggest endpoint is not a key in this dict then the response of the API will be empty
-ACTIVE_SOURCES = {
-    # 'contributors': CONTRIBUTORS,  # GND, VIAF
-    'expertise': {
-        'all': 'core.skosmos.get_base_keywords',
-        'search': 'core.skosmos.get_skills',
-    },
-}
 
 REQUESTS_TIMEOUT = 60
 
