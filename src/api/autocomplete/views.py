@@ -11,26 +11,25 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from django.utils.module_loading import import_string
 
 from api.serializers.autosuggest import (
     AutosuggestUserSerializer,
 )
-from api.views import fetch_responses
-from core.skosmos import autosuggest
+from core.skosmos import autosuggest, get_base_keywords, get_skills
 
 logger = logging.getLogger(__name__)
+
+SUPPORTED_SOURCES = ('expertise', 'users')
 
 type_parameter = openapi.Parameter(
     'type',
     openapi.IN_QUERY,
     description='',
     required=True,
+    enum=SUPPORTED_SOURCES,
     type=openapi.TYPE_STRING,
-    enum=[*list(settings.ACTIVE_SOURCES.keys()), 'users'],
 )
 
 q_parameter = openapi.Parameter(
@@ -64,7 +63,7 @@ limit_parameter = OpenApiParameter(
             type=OpenApiTypes.STR,
             location=OpenApiParameter.QUERY,
             required=True,
-            enum=[*list(settings.ACTIVE_SOURCES.keys()), 'users'],
+            enum=SUPPORTED_SOURCES,
         ),
         OpenApiParameter(
             name='q',
@@ -89,8 +88,11 @@ def autocomplete(request, *args, **kwargs):
     source_type = request.GET.get('type')
     q_param = request.GET.get('q', '')
 
-    if not source_type:
-        return Response({'error': 'Missing required "type" parameter.'}, status=400)
+    if source_type not in SUPPORTED_SOURCES:
+        return Response(
+            {'error': f'Unknown type "{source_type}". Allowed: {SUPPORTED_SOURCES}'},
+            status=400,
+        )
 
     if source_type == 'users':
         if not q_param:
@@ -112,20 +114,12 @@ def autocomplete(request, *args, **kwargs):
                 for u in users
             ],
         )
-    # TODO: Remove and access functions directly, also remove Apimapper.
-    source = settings.ACTIVE_SOURCES.get(source_type, ())
+    if source_type == 'expertise':
+        if q_param:
+            suggestions = autosuggest(get_skills(), q_param)
+        else:
+            suggestions = get_base_keywords()
 
-    if not q_param and isinstance(source, dict):
-        source = source.get('all', ())
-    if q_param and isinstance(source, dict):
-        source = source.get('search', ())
+        return Response(suggestions[:limit])
 
-    if isinstance(source, str):
-        data = (
-            autosuggest(import_string(source)(), q_param)
-            if q_param
-            else import_string(source)()
-        )
-    else:
-        data = fetch_responses(q_param, source)
-    return Response(data[:limit])
+    return Response([], status=204)
