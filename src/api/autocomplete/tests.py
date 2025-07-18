@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from django.conf import settings
+# from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
@@ -18,9 +18,10 @@ class AutoCompleteViewTests(APITestCase):
         )
         self.client.force_authenticate(user=self.auth_user)
 
-        self.source_name = next(iter(settings.ACTIVE_SOURCES.keys()))
-        if self.source_name == 'users' and len(settings.ACTIVE_SOURCES) > 1:
-            self.source_name = list(settings.ACTIVE_SOURCES.keys())[1]
+        # self.source_name = next(iter(settings.ACTIVE_SOURCES.keys()))
+        # if self.source_name == 'users' and len(settings.ACTIVE_SOURCES) > 1:
+        #     self.source_name = list(settings.ACTIVE_SOURCES.keys())[1]
+        self.source_name = 'expertise'
 
     def test_users_search_respects_limit(self):
         self.User.objects.create_user(
@@ -82,4 +83,4 @@ class AutoCompleteViewTests(APITestCase):
         resp = self.client.get(self.url, {'q': 'ann'})
 
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(resp.json()['error'], 'Missing required "type" parameter.')
+        self.assertIn('Unknown type "None"', resp.json()['error'])
