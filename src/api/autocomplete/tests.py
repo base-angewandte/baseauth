@@ -43,7 +43,7 @@ class AutoCompleteViewTests(APITestCase):
         self.assertEqual(len(content), 1)
         self.assertSetEqual(
             set(content[0]),
-            {'UUID', 'first_name', 'last_name', 'label'},
+            {'UUID', 'first_name', 'last_name', 'label', 'source_name'},
         )
 
     def test_lookup_with_query(self):

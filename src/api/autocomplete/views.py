@@ -110,6 +110,7 @@ def autocomplete(request, *args, **kwargs):
                     'first_name': u.first_name,
                     'last_name': u.last_name,
                     'label': u.get_full_name(),
+                    'source_name': 'base',
                 }
                 for u in users
             ],
