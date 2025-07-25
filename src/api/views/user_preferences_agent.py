@@ -12,12 +12,14 @@ from django.utils.translation import gettext_lazy as _
 
 from api import get_user_preferences_attributes
 from api.serializers.user_preferences_data import UserPreferencesDataSerializer
+from core.pagination import EnvelopePagination
 from user_preferences.models import UserPreferencesData
 
 
 class UserPreferencesAgentViewSet(GenericViewSet):
     queryset = UserPreferencesData.objects.all()
     serializer_class = UserPreferencesDataSerializer
+    pagination_class = EnvelopePagination
     permission_classes = [HasAPIKey | IsAuthenticated]
 
     @extend_schema(

@@ -13,6 +13,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from api.serializers.user_settings import UserSettingsSerializer
+from core.pagination import EnvelopePagination
 from user_preferences.models import UserSettings, UserSettingsValue, settings_dict
 
 
@@ -20,6 +21,7 @@ class UserSettingsViewSet(GenericViewSet, UpdateModelMixin):
     lookup_field = 'user'
     serializer_class = UserSettingsSerializer
     queryset = UserSettingsValue.objects.all()
+    pagination_class = EnvelopePagination
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
     UserModel = get_user_model()

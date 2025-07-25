@@ -17,6 +17,7 @@ from django.db.models import Q
 from api.serializers.autosuggest import (
     AutosuggestUserSerializer,
 )
+from core.pagination import EnvelopePagination
 from core.skosmos import autosuggest, get_base_keywords, get_skills
 
 logger = logging.getLogger(__name__)
@@ -94,6 +95,9 @@ def autocomplete(request, *args, **kwargs):
             status=400,
         )
 
+    paginator = EnvelopePagination()
+    paginator.default_limit = limit
+
     if source_type == 'users':
         if not q_param:
             return Response([])
@@ -103,24 +107,26 @@ def autocomplete(request, *args, **kwargs):
             Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param),
         ).only('username', 'first_name', 'last_name')[:limit]
 
-        return Response(
-            [
-                {
-                    'UUID': u.username,
-                    'first_name': u.first_name,
-                    'last_name': u.last_name,
-                    'label': u.get_full_name(),
-                    'source_name': 'base',
-                }
-                for u in users
-            ],
-        )
+        page = paginator.paginate_queryset(users, request)
+        data = [
+            {
+                'UUID': u.username,
+                'first_name': u.first_name,
+                'last_name': u.last_name,
+                'label': u.get_full_name(),
+                'source_name': 'base',
+            }
+            for u in page
+        ]
+        return paginator.get_paginated_response(data)
+
     if source_type == 'expertise':
         if q_param:
             suggestions = autosuggest(get_skills(), q_param)
         else:
             suggestions = get_base_keywords()
 
-        return Response(suggestions[:limit])
+        page = paginator.paginate_queryset(suggestions, request)
+        return paginator.get_paginated_response(page)
 
     return Response([], status=204)

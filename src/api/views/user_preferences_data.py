@@ -11,12 +11,14 @@ from rest_framework.viewsets import GenericViewSet
 from django.utils.translation import gettext_lazy as _
 
 from api.serializers.user_preferences_data import UserPreferencesDataSerializer
+from core.pagination import EnvelopePagination
 from user_preferences.models import UserPreferencesData
 
 
 class UserPreferencesDataViewSet(GenericViewSet):
     serializer_class = UserPreferencesDataSerializer
     queryset = UserPreferencesData.objects.all()
+    pagination_class = EnvelopePagination
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = (DjangoFilterBackend,)
 
