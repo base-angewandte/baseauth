@@ -16,6 +16,7 @@ from user_preferences.models import UserPreferencesData
 
 
 class UserImageViewSet(GenericViewSet, CreateModelMixin, DestroyModelMixin):
+    skip_envelope = True
     serializer_class = UserImageSerializer
     parser_classes = (
         FormParser,
