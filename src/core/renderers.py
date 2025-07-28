@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
-SUCCESS_KEY = 'Success'
-FAILURE_KEY = 'Failure'
+SUCCESS_KEY = 'success'
+FAILURE_KEY = 'failure'
 
 
 class ApiRenderer(JSONRenderer):
