@@ -24,6 +24,12 @@ class ApiRenderer(JSONRenderer):
         status_code = response.status_code
         view_context = renderer_context.get('view')
 
+        request = renderer_context.get('request')
+        view = renderer_context.get('view')
+
+        if request.version != 'v2' or getattr(view, 'skip_envelope', False):
+            return super().render(data, accepted_media_type, renderer_context)
+
         if getattr(view_context, 'skip_envelope', False):
             return super().render(data, accepted_media_type, renderer_context)
 
