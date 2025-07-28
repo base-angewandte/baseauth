@@ -9,12 +9,12 @@ class EnvelopePagination(LimitOffsetPagination):
     max_limit = 100
 
     def get_paginated_response(self, data):
-        payload = {
-            'limit': self.limit,
-            'offset': self.offset,
-            'total': self.count,
-            'result_count': len(data),
-        }
-        resp = Response(data)
-        resp.pagination = payload
-        return resp
+        return Response(
+            {
+                'total': self.count,
+                'offset': self.offset,
+                'limit': self.limit,
+                'result_count': len(data),
+                'results': data,
+            },
+        )
