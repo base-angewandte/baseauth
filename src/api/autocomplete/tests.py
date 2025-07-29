@@ -40,9 +40,10 @@ class AutoCompleteViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         content = response.json()
-        self.assertEqual(len(content['users'][0]), 5)
+
+        self.assertEqual(len(content['data']['users']['results'][0]), 5)
         self.assertSetEqual(
-            set(content['users'][0]),
+            set(content['data']['users']['results'][0]),
             {'UUID', 'first_name', 'last_name', 'label', 'source_name'},
         )
 
@@ -73,10 +74,16 @@ class AutoCompleteViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json()['detail'], 'limit must be a positive integer')
+        self.assertEqual(
+            response.json()['data']['detail'],
+            'limit must be a positive integer',
+        )
 
     def test_missing_type_parameter(self):
         response = self.client.get(self.url, {'q': '1234321'})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('"type" query parameter is required.', response.json()['detail'])
+        self.assertIn(
+            '"type" query parameter is required.',
+            response.json()['data']['detail'],
+        )
