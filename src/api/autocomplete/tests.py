@@ -19,7 +19,7 @@ class AutoCompleteViewTests(APITestCase):
 
         self.source_name = 'expertise'
 
-    def test_users_search_respects_limit(self):
+    def test_users_search_limit(self):
         self.User.objects.create_user(
             username='anna',
             first_name='Anna',
@@ -40,9 +40,9 @@ class AutoCompleteViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         content = response.json()
-        self.assertEqual(len(content), 1)
+        self.assertEqual(len(content['users'][0]), 5)
         self.assertSetEqual(
-            set(content[0]),
+            set(content['users'][0]),
             {'UUID', 'first_name', 'last_name', 'label', 'source_name'},
         )
 
@@ -54,7 +54,7 @@ class AutoCompleteViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(response.json(), list)
+        self.assertIsInstance(response.json(), dict)
 
     def test_lookup_all_items(self):
         response = self.client.get(
@@ -64,7 +64,7 @@ class AutoCompleteViewTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(response.json(), list)
+        self.assertIsInstance(response.json(), dict)
 
     def test_limit(self):
         response = self.client.get(
@@ -76,7 +76,7 @@ class AutoCompleteViewTests(APITestCase):
         self.assertEqual(response.json()['detail'], 'limit must be a positive integer')
 
     def test_missing_type_parameter(self):
-        resp = self.client.get(self.url, {'q': 'ann'})
+        response = self.client.get(self.url, {'q': '1234321'})
 
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('Unknown type "None"', resp.json()['error'])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('"type" query parameter is required.', response.json()['detail'])

@@ -22,7 +22,7 @@ from core.skosmos import autosuggest, get_base_keywords, get_skills
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_SOURCES = ('expertise', 'users')
+SUPPORTED_SOURCES = ['expertise', 'users']
 
 type_parameter = openapi.Parameter(
     'type',
@@ -93,6 +93,12 @@ def autocomplete(request, *args, **kwargs):
 
     source_type_list = request.GET.getlist('type')
     q_param = request.GET.get('q', '')
+
+    if not source_type_list:
+        raise ParseError(
+            f'"type" query parameter is required. '
+            f'Allowed values: {SUPPORTED_SOURCES}',
+        )
 
     results = {}
 
