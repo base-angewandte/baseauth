@@ -21,15 +21,19 @@ from core.skosmos import autosuggest, get_base_keywords, get_skills
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_SOURCES = ('expertise', 'users')
+SUPPORTED_SOURCES = ['expertise', 'users']
 
 type_parameter = openapi.Parameter(
     'type',
     openapi.IN_QUERY,
     description='',
     required=True,
-    enum=SUPPORTED_SOURCES,
-    type=openapi.TYPE_STRING,
+    type=openapi.TYPE_ARRAY,
+    items=openapi.Items(
+        type=openapi.TYPE_STRING,
+        enum=SUPPORTED_SOURCES,
+    ),
+    collection_format='multi',
 )
 
 q_parameter = openapi.Parameter(
@@ -64,6 +68,7 @@ limit_parameter = OpenApiParameter(
             location=OpenApiParameter.QUERY,
             required=True,
             enum=SUPPORTED_SOURCES,
+            many=True,
         ),
         OpenApiParameter(
             name='q',
@@ -85,26 +90,30 @@ def autocomplete(request, *args, **kwargs):
     except ValueError as e:
         raise ParseError('limit must be a positive integer') from e
 
-    source_type = request.GET.get('type')
+    source_type_list = request.GET.getlist('type')
     q_param = request.GET.get('q', '')
 
-    if source_type not in SUPPORTED_SOURCES:
-        return Response(
-            {'error': f'Unknown type "{source_type}". Allowed: {SUPPORTED_SOURCES}'},
-            status=400,
-        )
+    results = {}
 
-    if source_type == 'users':
-        if not q_param:
-            return Response([])
+    for source_type in source_type_list:
+        if source_type not in SUPPORTED_SOURCES:
+            return Response(
+                {
+                    'error': f'Unknown type "{source_type}". Allowed: {SUPPORTED_SOURCES}',
+                },
+                status=400,
+            )
 
-        User = get_user_model()  # noqa: N806
-        users = User.objects.filter(
-            Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param),
-        ).only('username', 'first_name', 'last_name')[:limit]
+        if source_type == 'users':
+            if not q_param:
+                return Response([])
 
-        return Response(
-            [
+            User = get_user_model()  # noqa: N806
+            users = User.objects.filter(
+                Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param),
+            ).only('username', 'first_name', 'last_name')[:limit]
+
+            results['users'] = [
                 {
                     'UUID': u.username,
                     'first_name': u.first_name,
@@ -113,14 +122,17 @@ def autocomplete(request, *args, **kwargs):
                     'source_name': 'base',
                 }
                 for u in users
-            ],
-        )
-    if source_type == 'expertise':
-        if q_param:
-            suggestions = autosuggest(get_skills(), q_param)
-        else:
-            suggestions = get_base_keywords()
+            ][:limit]
 
-        return Response(suggestions[:limit])
+        if source_type == 'expertise':
+            if q_param:
+                suggestions = autosuggest(get_skills(), q_param)
+            else:
+                suggestions = get_base_keywords()
 
-    return Response([], status=204)
+            results['expertise'] = suggestions[:limit]
+
+    if not results:
+        return Response([], status=204)
+
+    return Response(results)
