@@ -93,6 +93,12 @@ def autocomplete(request, *args, **kwargs):
     source_type_list = request.GET.getlist('type')
     q_param = request.GET.get('q', '')
 
+    if not source_type_list:
+        raise ParseError(
+            f'"type" query parameter is required. '
+            f'Allowed values: {SUPPORTED_SOURCES}',
+        )
+
     results = {}
 
     for source_type in source_type_list:
