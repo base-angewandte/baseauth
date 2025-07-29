@@ -41,7 +41,6 @@ class ApiRenderer(JSONRenderer):
         }
 
         pagination = None
-
         if isinstance(response.data, dict) and (
             {'total', 'offset', 'limit', 'result_count', 'results'}
             & response.data.keys()

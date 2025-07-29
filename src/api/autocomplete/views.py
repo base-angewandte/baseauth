@@ -29,8 +29,12 @@ type_parameter = openapi.Parameter(
     openapi.IN_QUERY,
     description='',
     required=True,
-    enum=SUPPORTED_SOURCES,
-    type=openapi.TYPE_STRING,
+    type=openapi.TYPE_ARRAY,
+    items=openapi.Items(
+        type=openapi.TYPE_STRING,
+        enum=SUPPORTED_SOURCES,
+    ),
+    collection_format='multi',
 )
 
 q_parameter = openapi.Parameter(
@@ -65,6 +69,7 @@ limit_parameter = OpenApiParameter(
             location=OpenApiParameter.QUERY,
             required=True,
             enum=SUPPORTED_SOURCES,
+            many=True,
         ),
         OpenApiParameter(
             name='q',
@@ -86,47 +91,65 @@ def autocomplete(request, *args, **kwargs):
     except ValueError as e:
         raise ParseError('limit must be a positive integer') from e
 
-    source_type = request.GET.get('type')
+    source_type_list = request.GET.getlist('type')
     q_param = request.GET.get('q', '')
 
-    if source_type not in SUPPORTED_SOURCES:
-        return Response(
-            {'error': f'Unknown type "{source_type}". Allowed: {SUPPORTED_SOURCES}'},
-            status=400,
-        )
+    results = {}
 
-    paginator = EnvelopePagination()
-    paginator.default_limit = limit
+    for source_type in source_type_list:
+        if source_type not in SUPPORTED_SOURCES:
+            raise ParseError(
+                f'Unknown type "{source_type}". Allowed values: {SUPPORTED_SOURCES}',
+            )
 
-    if source_type == 'users':
-        if not q_param:
-            return Response([])
+        paginator = EnvelopePagination()
+        paginator.default_limit = limit
 
-        User = get_user_model()  # noqa: N806
-        users = User.objects.filter(
-            Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param),
-        ).only('username', 'first_name', 'last_name')[:limit]
+        if source_type == 'users':
+            if not q_param:
+                results['users'] = []
 
-        page = paginator.paginate_queryset(users, request)
-        data = [
-            {
-                'UUID': u.username,
-                'first_name': u.first_name,
-                'last_name': u.last_name,
-                'label': u.get_full_name(),
-                'source_name': 'base',
+            User = get_user_model()  # noqa: N806
+            users = User.objects.filter(
+                Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param),
+            ).only('username', 'first_name', 'last_name')[:limit]
+
+            page = paginator.paginate_queryset(users, request)
+            data = [
+                {
+                    'UUID': u.username,
+                    'first_name': u.first_name,
+                    'last_name': u.last_name,
+                    'label': u.get_full_name(),
+                    'source_name': 'base',
+                }
+                for u in page
+            ]
+
+            response = paginator.get_paginated_response(data).data
+            results['users'] = {
+                'pagination': {
+                    k: response[k] for k in ('total', 'offset', 'limit', 'result_count')
+                },
+                'results': response['results'],
             }
-            for u in page
-        ]
-        return paginator.get_paginated_response(data)
 
-    if source_type == 'expertise':
-        if q_param:
-            suggestions = autosuggest(get_skills(), q_param)
-        else:
-            suggestions = get_base_keywords()
+        if source_type == 'expertise':
+            if q_param:
+                suggestions = autosuggest(get_skills(), q_param)
+            else:
+                suggestions = get_base_keywords()
 
-        page = paginator.paginate_queryset(suggestions, request)
-        return paginator.get_paginated_response(page)
+            page = paginator.paginate_queryset(suggestions, request)
+            response = paginator.get_paginated_response(page).data
+            results['expertise'] = {
+                'pagination': {
+                    k: response[k] for k in ('total', 'offset', 'limit', 'result_count')
+                },
+                'results': response['results'],
+            }
 
-    return Response([], status=204)
+    if not results:
+        return Response([], status=204)
+
+    return Response(results)
