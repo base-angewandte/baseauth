@@ -14,7 +14,7 @@ class ApiRenderer(JSONRenderer):
           "status": "Success" | "Failure",
           "code": 200,
           "msg": "Successful Transaction" | "Validation Error" | ...,
-          "pagination": {...}?,   # injected by pagination class
+          "meta": {...}?,   # injected by pagination class
           "data": object | list | null
         }
     """
