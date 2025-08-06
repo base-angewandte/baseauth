@@ -88,19 +88,21 @@ def autocomplete(request, *args, **kwargs):
         limit = int(request.GET.get('limit', 10))
         if limit <= 0:
             raise ValueError
-    except ValueError as e:
-        raise ParseError('limit must be a positive integer') from e
+    except ValueError as exc:
+        raise ParseError('limit must be a positive integer') from exc
 
     source_type_list = request.GET.getlist('type')
-    q_param = request.GET.get('q', '')
-
     if not source_type_list:
         raise ParseError(
-            f'"type" query parameter is required. '
+            '"type" query parameter is required. '
             f'Allowed values: {SUPPORTED_SOURCES}',
         )
+    q_param = request.GET.get('q', '')
 
     results = {}
+    pagination = {}
+    paginator = EnvelopePagination()
+    paginator.default_limit = limit
 
     for source_type in source_type_list:
         if source_type not in SUPPORTED_SOURCES:
@@ -108,19 +110,13 @@ def autocomplete(request, *args, **kwargs):
                 f'Unknown type "{source_type}". Allowed values: {SUPPORTED_SOURCES}',
             )
 
-        paginator = EnvelopePagination()
-        paginator.default_limit = limit
-
         if source_type == 'users':
-            if not q_param:
-                results['users'] = []
-
             User = get_user_model()  # noqa: N806
-            users = User.objects.filter(
+            users_qs = User.objects.filter(
                 Q(first_name__icontains=q_param) | Q(last_name__icontains=q_param),
             ).only('username', 'first_name', 'last_name')[:limit]
 
-            page = paginator.paginate_queryset(users, request)
+            page = paginator.paginate_queryset(users_qs, request)
             data = [
                 {
                     'UUID': u.username,
@@ -132,30 +128,34 @@ def autocomplete(request, *args, **kwargs):
                 for u in page
             ]
 
-            response = paginator.get_paginated_response(data).data
-            results['users'] = {
-                'pagination': {
-                    k: response[k] for k in ('total', 'offset', 'limit', 'result_count')
-                },
-                'results': response['results'],
-            }
-
-        if source_type == 'expertise':
-            if q_param:
-                suggestions = autosuggest(get_skills(), q_param)
-            else:
-                suggestions = get_base_keywords()
-
+        elif source_type == 'expertise':
+            suggestions = (
+                autosuggest(get_skills(), q_param) if q_param else get_base_keywords()
+            )
             page = paginator.paginate_queryset(suggestions, request)
-            response = paginator.get_paginated_response(page).data
-            results['expertise'] = {
-                'pagination': {
-                    k: response[k] for k in ('total', 'offset', 'limit', 'result_count')
-                },
-                'results': response['results'],
-            }
+            data = list(page)
 
-    if not results:
-        return Response([], status=204)
+        paged = paginator.get_paginated_response(data).data
+        results[source_type] = paged['results']
+        pagination[source_type] = {
+            k: paged[k] for k in ('total', 'offset', 'limit', 'result_count')
+        }
 
-    return Response(results)
+    meta = {
+        'types': list(results.keys()),
+        'pagination': pagination,
+    }
+    lang = getattr(request, 'LANGUAGE_CODE', None)
+    if lang:
+        meta['language'] = lang
+
+    data_block = next(iter(results.values())) if len(results) == 1 else results
+
+    envelope = {
+        'status': 'success',
+        'code': 200,
+        'msg': 'OK',
+        'meta': meta,
+        'data': data_block,
+    }
+    return Response(envelope, status=200)

@@ -41,9 +41,9 @@ class AutoCompleteViewTests(APITestCase):
 
         content = response.json()
 
-        self.assertEqual(len(content['data']['users']['results'][0]), 5)
+        self.assertEqual(len(content['data'][0]), 5)
         self.assertSetEqual(
-            set(content['data']['users']['results'][0]),
+            set(content['data'][0]),
             {'UUID', 'first_name', 'last_name', 'label', 'source_name'},
         )
 
