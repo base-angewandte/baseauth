@@ -20,6 +20,7 @@ class ApiRenderer(JSONRenderer):
     """
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        # Skip renderer, if the data is already present in the response
         if (
             isinstance(data, dict)
             and {'status', 'code', 'msg', 'meta', 'data'} <= data.keys()
@@ -27,10 +28,18 @@ class ApiRenderer(JSONRenderer):
             return super().render(data, accepted_media_type, renderer_context)
 
         response = renderer_context['response']
+
+        # skip binary/streaming responses
+        if getattr(response, 'streaming', False):
+            return super().render(data, accepted_media_type, renderer_context)
+        if not isinstance(data, dict | list | tuple):
+            return super().render(data, accepted_media_type, renderer_context)
+
         status_code = response.status_code
         request = renderer_context.get('request')
         view = renderer_context.get('view')
 
+        # Skip api v1 and completely exempt endpoints from renderer
         if request.version != 'v2' or getattr(view, 'skip_envelope', False):
             return super().render(data, accepted_media_type, renderer_context)
 
@@ -41,10 +50,16 @@ class ApiRenderer(JSONRenderer):
             'code': status_code,
         }
 
+        # Build meta
         meta = {}
-        lang = getattr(request, 'LANGUAGE_CODE', None)
-        if lang:
-            meta['language'] = lang
+        if (
+            getattr(view, 'expect_language_header', False)
+            and 'HTTP_ACCEPT_LANGUAGE' in request.META
+        ):
+            lang = getattr(request, 'LANGUAGE_CODE', None)
+            if lang:
+                meta['language'] = lang
+
         if isinstance(response.data, dict) and {
             'total',
             'offset',
@@ -72,6 +87,24 @@ class ApiRenderer(JSONRenderer):
         else:
             default_msg = HTTPStatus(status_code).phrase
             wrapper['msg'] = default_msg
-            wrapper['data'] = payload
+
+            errors = []
+            if isinstance(payload, dict):
+                for error_message in payload.values():
+                    if isinstance(error_message, list | tuple):
+                        errors.extend(error_message)
+                    elif error_message:
+                        errors.append(error_message)
+            elif isinstance(payload, list | tuple):
+                errors = list(payload)
+            elif isinstance(payload, str):
+                errors = [payload]
+
+            if not errors:
+                wrapper['data'] = payload
+            elif len(errors) == 1:
+                wrapper['data'] = errors[0]
+            else:
+                wrapper['data'] = errors
 
         return super().render(wrapper, accepted_media_type, renderer_context)

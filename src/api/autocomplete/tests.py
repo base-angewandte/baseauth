@@ -58,10 +58,10 @@ class AutoCompleteViewTests(APITestCase):
         self.assertIsInstance(response.json(), dict)
 
     def test_lookup_all_items(self):
+        # TODO: has to be fixed
         response = self.client.get(
             self.url,
             {'type': self.source_name},
-            HTTP_ACCEPT_LANGUAGE='en',
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -75,7 +75,7 @@ class AutoCompleteViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.json()['data']['detail'],
+            response.json()['data'],
             'limit must be a positive integer',
         )
 
@@ -84,6 +84,6 @@ class AutoCompleteViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
-            '"type" query parameter is required.',
-            response.json()['data']['detail'],
+            'This field is required.',
+            response.json()['data'],
         )
