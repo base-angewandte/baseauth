@@ -58,10 +58,9 @@ class AutoCompleteViewTests(APITestCase):
         self.assertIsInstance(response.json(), dict)
 
     def test_lookup_all_items(self):
-        # TODO: has to be fixed
         response = self.client.get(
             self.url,
-            {'type': self.source_name},
+            {'type': self.source_name, 'q': 'test'},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
