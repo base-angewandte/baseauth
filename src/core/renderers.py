@@ -11,7 +11,7 @@ class ApiRenderer(JSONRenderer):
     """
     Wrap every response in the standard body:
         {
-          "status": "Success" | "Failure",
+          "status": "success" | "failure",
           "code": 200,
           "msg": "Successful Transaction" | "Validation Error" | ...,
           "meta": {...}?,   # injected by pagination class
