@@ -7,8 +7,13 @@ from rest_framework import routers
 
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import include, path
+from django.urls import include, path, re_path
 
+from api.autocomplete.views import SUPPORTED_SOURCES
+
+from .views.autosuggest_lookup import lookup_view
+from .views.autosuggest_lookup_search import lookup_view_search
+from .views.autosuggest_user import autosuggest_user
 from .views.user import UserViewSet
 from .views.user_image import UserImageViewSet
 from .views.user_preferences_agent import UserPreferencesAgentViewSet
@@ -47,6 +52,26 @@ urlpatterns = [
         'user/image/',
         UserImageViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'delete'}),
         name='user_image',
+    ),
+    # Autosuggest routes
+    re_path(
+        r'^autosuggest/(?P<fieldname>({}))/$'.format(
+            '|'.join(SUPPORTED_SOURCES),
+        ),
+        lookup_view,
+        name='lookup_all',
+    ),
+    re_path(
+        r'^autosuggest/(?P<fieldname>({}))/(?P<searchstr>(.*))/$'.format(
+            '|'.join(SUPPORTED_SOURCES),
+        ),
+        lookup_view_search,
+        name='lookup',
+    ),
+    re_path(
+        r'^autosuggest/(?P<user>(.*))/$',
+        autosuggest_user,
+        name='autosuggest_user',
     ),
     # Open API routes
     path('openapi.yaml', SpectacularAPIView.as_view(), name='schema-yaml'),
