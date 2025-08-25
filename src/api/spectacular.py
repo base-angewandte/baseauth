@@ -1,6 +1,8 @@
-from drf_spectacular.utils import OpenApiParameter, OpenApiTypes  # extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes
 
 from django.conf import settings
+
+from api.autocomplete.views import SUPPORTED_SOURCES
 
 language_header_parameter = OpenApiParameter(
     name='Accept-Language',
@@ -15,5 +17,5 @@ fieldname_parameter = OpenApiParameter(
     type=OpenApiTypes.STR,
     location=OpenApiParameter.PATH,
     required=True,
-    enum=list(settings.ACTIVE_SOURCES.keys()),
+    enum=SUPPORTED_SOURCES,
 )
