@@ -8,7 +8,7 @@ from django.urls import reverse
 class AutoCompleteViewTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.url = reverse('autocomplete', kwargs={'version': 'v2'})
+        self.url = reverse('v2:autocomplete', kwargs={'version': 'v2'})
         self.User = get_user_model()
 
         self.auth_user = self.User.objects.create_user(
