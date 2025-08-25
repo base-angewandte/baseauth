@@ -53,7 +53,7 @@ class ApiRenderer(JSONRenderer):
         # Build meta
         meta = {}
         if (
-            getattr(view, 'expect_language_header', False)
+            getattr(view, 'accept_language_header', False)
             and 'HTTP_ACCEPT_LANGUAGE' in request.META
         ):
             lang = getattr(request, 'LANGUAGE_CODE', None)
