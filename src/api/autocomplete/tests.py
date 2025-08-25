@@ -51,7 +51,6 @@ class AutoCompleteViewTests(APITestCase):
         response = self.client.get(
             self.url,
             {'type': self.source_name, 'q': 'test'},
-            HTTP_ACCEPT_LANGUAGE='en',
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
