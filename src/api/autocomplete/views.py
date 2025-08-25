@@ -23,6 +23,7 @@ from .serializers import (
     AutocompleteRequestSerializer,
 )
 
+SUPPORTED_SOURCES = ['users', 'expertise']
 logger = logging.getLogger(__name__)
 
 type_parameter = OpenApiParameter(
