@@ -2,12 +2,11 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from django.conf import settings
 from django.utils.module_loading import import_string
 
-from api.autocomplete.views import SUPPORTED_SOURCES
 from api.serializers.autosuggest import AutosuggestFieldSerializer
 from api.spectacular import fieldname_parameter, language_header_parameter
-from api.views import fetch_responses
 
 
 @extend_schema(
@@ -20,13 +19,12 @@ from api.views import fetch_responses
 )
 @api_view(['GET'])
 def lookup_view(request, fieldname, *args, **kwargs):
-    source = SUPPORTED_SOURCES.get(fieldname, ())
+    source = settings.ACTIVE_SOURCES.get(fieldname, ())
 
     if isinstance(source, dict):
         source = source.get('all', ())
 
     if isinstance(source, str):
         data = import_string(source)()
-    else:
-        data = fetch_responses('', source)
+
     return Response(data)

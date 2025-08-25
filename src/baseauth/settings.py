@@ -615,6 +615,13 @@ SHOWROOM_API_BASE = f'{SHOWROOM_BASE_URL}{SHOWROOM_API_PATH}'
 SHOWROOM_API_KEY = env.str('SHOWROOM_API_KEY', default=None)
 WORKER_DELAY = 3
 
+ACTIVE_SOURCES = {
+    # 'contributors': CONTRIBUTORS,  # GND, VIAF
+    'expertise': {
+        'all': 'core.skosmos.get_base_keywords',
+        'search': 'core.skosmos.get_skills',
+    },
+}
 
 # Sentry
 SENTRY_DSN = env.str('SENTRY_DSN', default=None)
