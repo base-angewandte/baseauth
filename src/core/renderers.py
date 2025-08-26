@@ -87,6 +87,17 @@ class ApiRenderer(JSONRenderer):
         else:
             default_msg = HTTPStatus(status_code).phrase
             wrapper['msg'] = default_msg
+            if (
+                status_code == 400
+                and isinstance(payload, dict)
+                and any(k != 'detail' for k in payload)
+            ):
+                normalized = {
+                    key: (val[0] if isinstance(val, list | tuple) and val else val)
+                    for key, val in payload.items()
+                }
+                wrapper['data'] = normalized
+                return super().render(wrapper, accepted_media_type, renderer_context)
 
             errors = []
             if isinstance(payload, dict):
