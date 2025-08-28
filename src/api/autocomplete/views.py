@@ -52,13 +52,12 @@ type_parameter = OpenApiParameter(
 )
 @api_view(['GET'])
 def autocomplete(request, *args, **kwargs):
-    # TODO: Adapt Validation Errors, also ParseErrors ("limit": "limit must be a positive integer")
     try:
         limit = int(request.GET.get('limit', 10))
         if limit <= 0:
             raise ValueError
     except ValueError as exc:
-        raise ParseError('limit must be a positive integer') from exc
+        raise ParseError({'limit': 'limit must be a positive integer'}) from exc
 
     serializer = AutocompleteRequestSerializer(data=request.query_params)
     serializer.is_valid(raise_exception=True)
