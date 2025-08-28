@@ -52,24 +52,35 @@ class ApiRenderer(JSONRenderer):
 
         # Build meta
         meta = {}
-        if (
-            getattr(view, 'accept_language_header', False)
-            and 'HTTP_ACCEPT_LANGUAGE' in request.META
-        ):
+        if 'HTTP_ACCEPT_LANGUAGE' in request.META:
             lang = getattr(request, 'LANGUAGE_CODE', None)
             if lang:
                 meta['language'] = lang
 
-        if isinstance(response.data, dict) and {
-            'total',
-            'offset',
-            'limit',
-            'result_count',
-            'results',
-        }.issubset(response.data):
+        qp = getattr(request, 'query_params', None) or getattr(request, 'GET', {})
+        if (
+            'limit' in qp
+            and 'offset' in qp
+            and isinstance(response.data, dict)
+            and 'results' in response.data
+        ):
+            try:
+                limit = int(qp.get('limit'))
+            except (TypeError, ValueError):
+                limit = 0
+            try:
+                offset = int(qp.get('offset'))
+            except (TypeError, ValueError):
+                offset = 0
+
             meta['pagination'] = {
-                k: response.data.get(k, 0)
-                for k in ('total', 'offset', 'limit', 'result_count')
+                'total': response.data.get('total')
+                or response.data.get('count')
+                or len(response.data['results']),
+                'offset': offset,
+                'limit': limit,
+                'result_count': response.data.get('result_count')
+                or len(response.data['results']),
             }
 
         payload = (
