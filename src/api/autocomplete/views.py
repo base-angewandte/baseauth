@@ -52,6 +52,7 @@ type_parameter = OpenApiParameter(
 )
 @api_view(['GET'])
 def autocomplete(request, *args, **kwargs):
+    # TODO: Adapt Validation Errors, also ParseErrors ("limit": "limit must be a positive integer")
     try:
         limit = int(request.GET.get('limit', 10))
         if limit <= 0:

@@ -70,10 +70,9 @@ class AutoCompleteViewTests(APITestCase):
             self.url,
             {'type': 'users', 'q': 'ann', 'limit': 0},
         )
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.json()['data'],
+            response.json()['msg'],
             'limit must be a positive integer',
         )
 
