@@ -22,9 +22,15 @@ def lookup_view(request, fieldname, *args, **kwargs):
     source = settings.ACTIVE_SOURCES.get(fieldname, ())
 
     if isinstance(source, dict):
-        source = source.get('all', ())
+        source = source.get('all', ()) or source.get('search', ())
+
+    data = []
 
     if isinstance(source, str):
-        data = import_string(source)()
+        obj = import_string(source)
+        try:
+            data = obj()
+        except TypeError:
+            data = obj('')
 
     return Response(data)

@@ -3,6 +3,12 @@ from http import HTTPStatus
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 
+from django.conf import settings
+from django.utils.functional import lazy
+from django.utils.translation import get_language
+
+get_language_lazy = lazy(get_language, str)
+
 SUCCESS_KEY = 'success'
 FAILURE_KEY = 'failure'
 
@@ -21,6 +27,12 @@ class ApiRenderer(JSONRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         # Skip renderer, if the data is already present in the response
+
+        request = renderer_context.get('request')
+        view = renderer_context.get('view')
+
+        if request.version != 'v2' or getattr(view, 'skip_envelope', False):
+            return super().render(data, accepted_media_type, renderer_context)
         if (
             isinstance(data, dict)
             and {'status', 'code', 'msg', 'meta', 'data'} <= data.keys()
@@ -36,13 +48,11 @@ class ApiRenderer(JSONRenderer):
             return super().render(data, accepted_media_type, renderer_context)
 
         status_code = response.status_code
-        request = renderer_context.get('request')
-        view = renderer_context.get('view')
 
-        # Skip api v1 and completely exempt endpoints from renderer
-        if request.version != 'v2' or getattr(view, 'skip_envelope', False):
+        if getattr(view, 'skip_envelope', False):
             return super().render(data, accepted_media_type, renderer_context)
 
+        meta = {}
         is_success = status.is_success(status_code)
 
         wrapper = {
@@ -51,34 +61,41 @@ class ApiRenderer(JSONRenderer):
         }
 
         # Build meta
-        meta = {}
-        if 'HTTP_ACCEPT_LANGUAGE' in request.META:
-            lang = getattr(request, 'LANGUAGE_CODE', None)
-            if lang:
-                meta['language'] = lang
 
-        qp = getattr(request, 'query_params', None) or getattr(request, 'GET', {})
+        view_module = getattr(view, '__module__', '')
+        excluded = getattr(settings, 'EXCLUDE_LANGUAGES_FROM_URLS', ())
+
+        is_excluded = any(
+            view_module == p or view_module.startswith(p + '.') for p in excluded
+        )
+
+        if not is_excluded:
+            meta['language'] = get_language_lazy()
+
+        qp = request.query_params
+
+        limit_raw = qp.get('limit')
+        offset_raw = qp.get('offset')
+
         if (
             'limit' in qp
-            and 'offset' in qp
+            or 'offset' in qp
             and isinstance(response.data, dict)
             and 'results' in response.data
         ):
-            try:
-                limit = int(qp.get('limit'))
-            except (TypeError, ValueError):
-                limit = 0
-            try:
-                offset = int(qp.get('offset'))
-            except (TypeError, ValueError):
-                offset = 0
+            limit = None
+            offset = None
+            if limit_raw is not None:
+                limit = int(limit_raw)
+            if offset_raw is not None:
+                offset = int(offset_raw)
 
-            meta['pagination'] = {
+            meta = {
+                'limit': limit,
+                'offset': offset,
                 'total': response.data.get('total')
                 or response.data.get('count')
                 or len(response.data['results']),
-                'offset': offset,
-                'limit': limit,
                 'result_count': response.data.get('result_count')
                 or len(response.data['results']),
             }

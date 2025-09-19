@@ -623,6 +623,9 @@ ACTIVE_SOURCES = {
         'all': 'core.skosmos.get_base_keywords',
         'search': 'core.skosmos.get_skills',
     },
+    'users': {
+        'search': 'api.views.autosuggest_user_search',
+    },
 }
 
 # Sentry
