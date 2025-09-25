@@ -26,13 +26,17 @@ class ApiRenderer(JSONRenderer):
     """
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        # Skip renderer, if the data is already present in the response
-
         request = renderer_context.get('request')
         view = renderer_context.get('view')
+        project_name = settings.ROOT_URLCONF.split('.')[0]
 
-        if request.version != 'v2' or getattr(view, 'skip_envelope', False):
+        # Skip renderer, if the api isn't v2 (for portfolio and baseauth)
+        if (request.version != 'v2' or getattr(view, 'skip_envelope', False)) or (
+            project_name == 'baseauth' or project_name == 'portfolio'
+        ):
             return super().render(data, accepted_media_type, renderer_context)
+
+        # Skip renderer, if the data is already present in the response
         if (
             isinstance(data, dict)
             and {'status', 'code', 'msg', 'meta', 'data'} <= data.keys()
@@ -41,7 +45,7 @@ class ApiRenderer(JSONRenderer):
 
         response = renderer_context['response']
 
-        # skip binary/streaming responses
+        # Skip renderer for binary/streaming responses
         if getattr(response, 'streaming', False):
             return super().render(data, accepted_media_type, renderer_context)
         if not isinstance(data, dict | list | tuple):
@@ -52,16 +56,13 @@ class ApiRenderer(JSONRenderer):
         if getattr(view, 'skip_envelope', False):
             return super().render(data, accepted_media_type, renderer_context)
 
+        # Build meta
         meta = {}
         is_success = status.is_success(status_code)
-
         wrapper = {
             'status': SUCCESS_KEY if is_success else FAILURE_KEY,
             'code': status_code,
         }
-
-        # Build meta
-
         view_module = getattr(view, '__module__', '')
         excluded = getattr(settings, 'EXCLUDE_LANGUAGES_FROM_URLS', ())
 
@@ -72,19 +73,37 @@ class ApiRenderer(JSONRenderer):
         if not is_excluded:
             meta['language'] = get_language_lazy()
 
+        # Early exit because of pagination (Portfolio API /entry):
+        if (
+            project_name == 'portfolio'
+            and isinstance(response.data, dict)
+            and {'total', 'offset', 'limit', 'result_count', 'data'}
+            <= response.data.keys()
+        ):
+            meta = {
+                'limit': response.data['limit'],
+                'offset': response.data['offset'],
+                'total': response.data['total'],
+                'result_count': response.data['result_count'],
+            }
+            payload = response.data['data']
+            wrapper['meta'] = meta
+            wrapper['data'] = payload
+            return super().render(wrapper, accepted_media_type, renderer_context)
+
         qp = request.query_params
 
         limit_raw = qp.get('limit')
         offset_raw = qp.get('offset')
 
         if (
-            'limit' in qp
-            or 'offset' in qp
+            (('limit' in qp) or ('offset' in qp))
             and isinstance(response.data, dict)
             and 'results' in response.data
         ):
             limit = None
             offset = None
+
             if limit_raw is not None:
                 limit = int(limit_raw)
             if offset_raw is not None:
@@ -115,6 +134,7 @@ class ApiRenderer(JSONRenderer):
         else:
             default_msg = HTTPStatus(status_code).phrase
             wrapper['msg'] = default_msg
+
             if isinstance(payload, dict) and status_code == 400:
                 if 'detail' in payload:
                     wrapper['msg'] = str(payload.get('detail')) or default_msg
