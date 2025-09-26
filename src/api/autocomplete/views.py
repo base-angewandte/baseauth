@@ -4,7 +4,6 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
 )
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
@@ -44,11 +43,6 @@ type_parameter = OpenApiParameter(
     ],
     responses={200: AutosuggestUserSerializer(many=True)},
     operation_id='autosuggest_v2_autocomplete',
-)
-@swagger_auto_schema(
-    methods=['get'],
-    query_serializer=AutocompleteRequestSerializer,
-    manual_parameters=[type_parameter],
 )
 @api_view(['GET'])
 def autocomplete(request, *args, **kwargs):
