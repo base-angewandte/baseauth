@@ -31,8 +31,10 @@ class ApiRenderer(JSONRenderer):
         project_name = settings.ROOT_URLCONF.split('.')[0]
 
         # Skip renderer, if the api isn't v2 (for portfolio and baseauth)
-        if (request.version != 'v2' or getattr(view, 'skip_envelope', False)) or (
-            project_name == 'baseauth' or project_name == 'portfolio'
+        if (
+            (project_name == 'baseauth' or project_name == 'portfolio')
+            and (request.version != 'v2')
+            or getattr(view, 'skip_envelope', False)
         ):
             return super().render(data, accepted_media_type, renderer_context)
 
@@ -48,7 +50,10 @@ class ApiRenderer(JSONRenderer):
         # Skip renderer for binary/streaming responses
         if getattr(response, 'streaming', False):
             return super().render(data, accepted_media_type, renderer_context)
-        if not isinstance(data, dict | list | tuple):
+        # As Portfolio's is using Python 3.9, the newer style unions (X | Y) can't be used for it.
+        # That's why I decided that for image and baseauth the older union style will be used,
+        # if we don't decide otherwise.
+        if not isinstance(data, (dict, list, tuple)):  # noqa UP038
             return super().render(data, accepted_media_type, renderer_context)
 
         status_code = response.status_code
@@ -146,7 +151,7 @@ class ApiRenderer(JSONRenderer):
                     )
                 if any(k != 'detail' for k in payload):
                     normalized = {
-                        key: (val[0] if isinstance(val, list | tuple) and val else val)
+                        key: (val[0] if isinstance(val, (list, tuple)) and val else val)  # noqa UP038
                         for key, val in payload.items()
                     }
                     wrapper['data'] = normalized
@@ -159,11 +164,11 @@ class ApiRenderer(JSONRenderer):
             errors = []
             if isinstance(payload, dict):
                 for error_message in payload.values():
-                    if isinstance(error_message, list | tuple):
+                    if isinstance(error_message, (list, tuple)):  # noqa UP038
                         errors.extend(error_message)
                     elif error_message:
                         errors.append(error_message)
-            elif isinstance(payload, list | tuple):
+            elif isinstance(payload, (list, tuple)):  # noqa UP038
                 errors = list(payload)
             elif isinstance(payload, str):
                 errors = [payload]
