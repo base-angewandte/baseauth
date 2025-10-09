@@ -4,8 +4,11 @@ from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 
 from django.conf import settings
+from django.urls import resolve
 from django.utils.functional import lazy
 from django.utils.translation import get_language
+
+from .pagination import EnvelopePagination
 
 get_language_lazy = lazy(get_language, str)
 
@@ -29,6 +32,8 @@ class ApiRenderer(JSONRenderer):
         request = renderer_context.get('request')
         view = renderer_context.get('view')
         project_name = settings.ROOT_URLCONF.split('.')[0]
+        resolver_match = resolve(request.path_info)
+        endpoint_name = resolver_match.url_name
 
         # Skip renderer, if the api isn't v2 (for portfolio and baseauth)
         if (
@@ -123,6 +128,31 @@ class ApiRenderer(JSONRenderer):
                 'result_count': response.data.get('result_count')
                 or len(response.data['results']),
             }
+        # (image) -permissions workaround
+        elif (
+            ('limit' in qp)
+            or ('offset' in qp)
+            and project_name == 'image'
+            and endpoint_name == 'permission-list'
+            and isinstance(response.data, list)
+            and is_success
+        ):
+            paginator = EnvelopePagination()
+            paged = paginator.paginate_queryset(response.data, request)
+            meta_raw = paginator.get_paginated_response(list(paged)).data
+            meta = {
+                'limit': meta_raw['limit'],
+                'offset': meta_raw['offset'],
+                'total': meta_raw['total'],
+                'result_count': meta_raw['result_count'],
+            }
+            payload = meta_raw['data']
+
+            default_msg = HTTPStatus(status_code).phrase or 'Successful Transaction'
+            wrapper['msg'] = renderer_context.get('msg', default_msg)
+            wrapper['meta'] = meta
+            wrapper['data'] = payload
+            return super().render(wrapper, accepted_media_type, renderer_context)
 
         payload = (
             response.data['results']
