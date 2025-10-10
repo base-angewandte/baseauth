@@ -36,11 +36,7 @@ class ApiRenderer(JSONRenderer):
         endpoint_name = resolver_match.url_name
 
         # Skip renderer, if the api isn't v2 (for portfolio and baseauth)
-        if (
-            (project_name == 'baseauth' or project_name == 'portfolio')
-            and (request.version != 'v2')
-            or getattr(view, 'skip_envelope', False)
-        ):
+        if request.version != 'v2' or getattr(view, 'skip_envelope', False):
             return super().render(data, accepted_media_type, renderer_context)
 
         # Skip renderer, if the data is already present in the response
