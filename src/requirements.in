@@ -2,25 +2,35 @@
 # sync environment with 'pip-sync'
 # to update all packages run 'pip-compile --upgrade'
 
-concurrent-log-handler==0.9.24
-django==4.2.7
-django-auth-ldap==4.6.0
-django-axes[ipware]==6.1.1
-django-cors-headers==4.3.0
-django-debug-toolbar==4.2.0
-django-environ==0.11.2
-django-mama-cas==2.5.0
-django-redis==5.4.0
-django-simple-captcha==0.5.20
+apimapper==0.7.9
+base-common==0.4
+base-common-drf==0.5
+concurrent-log-handler==0.9.28
 defusedxml==0.7.1
-gevent==23.9.1
-Pillow==10.1.0
-pip-tools==7.3.0
-psycopg[binary]==3.1.12
-requests==2.31.0
-requests-futures==1.0.1
-whitenoise[brotli]==6.6.0
+django~=4.2
+django-auth-ldap==5.3.0
+django-axes[ipware]==8.3.0
+django-cas-ng==5.1.0
+django-cors-headers==4.9.0
+django-environ==0.12.0
+django-filter==25.1  # 25.2 already depends on django>=5.2
+django-mama-cas==2.5.0
+django-redis==6.0.0
+django-rq==3.2.2
+django-simple-captcha==0.6.3
+djangorestframework==3.16.1
+djangorestframework-api-key==3.1.0
+drf-spectacular==0.29.0
+easy-thumbnails==2.10.1
+gevent==25.9.1
+Pillow==12.1.1
+psycopg[binary]==3.3.2
+requests==2.32.5
+sentry-sdk
+shortuuid==1.0.13
+skosmos-client==0.3.0
+whitenoise[brotli]==6.11.0
 
 # Server
-gunicorn==21.2.0
+gunicorn==25.0.3
 rainbow-saddle==0.4.0

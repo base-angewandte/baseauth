@@ -1,0 +1,4 @@
+extend = "config/.ruff.toml"
+
+src = ["src"]
+target-version = "py312"

@@ -1,27 +1,59 @@
 # Configuration
 
-The _baseauth_ backend is configured through two `.env` files. For both there is a template
-`env-skel` file available in the same folder, to copy from and then modify it. See
-also [](install.md) on when and how to set up those files.
+The _baseauth_ backend is configured through one `.env` file in the project root folder.
+There is a template `env-skel` file available in the same folder, to copy from and
+then modify it. See also [](install.md) on when and how to set up those file.
+
+Environment variables without a default value are required to be set.
 
 ## `.env`
 
-The first and shorter one is in the project root folder. It is used to configure the
-docker services for database credentials. The defaults are fine, only the `DB_PASSWORD`
-should be set to a strong password.
+### Database Settings
 
-```{danger}
-We wrote _should_, because programmatically nothing keeps you from using the
-default _password_. But in terms of nearly any security policy you absolutely _MUST_
-set a strong password here. Try e.g. `pwgen -s 32 1`.
-```
+These settings are used to set up the DB in the portfolio-postgres container.
 
-## `src/baseauth/.env`
+#### `POSTGRES_DB`
 
-The main configuration environment file is in the _src/basauth_ folder, and it is
-parsed in the Django settings initialization. Most settings are commented, but some
-are more self-explanatory than others. And especially setting up other authentication
-backends needs a bit more detail, which we provide here.
+Name of the PostgreSQL database.
+
+#### `POSTGRES_USER`
+
+User of the PostgreSQL database.
+
+#### `POSTGRES_PASSWORD`
+
+Password for user of the PostgreSQL database.
+
+This needs to be set explicitly. Make sure to use some strong password, e.g.
+one you can generate with `pwgen -sy 32 1`. You won't need to use it anywhere,
+except if you want to connect directly to the database for debugging reasons.
+
+#### `POSTGRES_PORT`
+
+Default: `5432`
+
+Port of the PostgreSQL database.
+
+The database port only needs to be changed, if you are running Portfolio
+locally in combination with e.g. Showroom also running locally. Then at
+least one of the database container ports needs to be mapped to a different
+value. So use whatever you set in your compose.override.yaml for
+portfolio-postgres or use the default.
+
+### Redis Settings
+
+#### `REDIS_PORT`
+
+Default: `6379`
+
+Port of the Redis data store
+
+Similar to `POSTGRES_PORT` you won't need to change this in most cases.
+But if you develop locally and have several Redis instances for different
+projects running at the same time, you might map some of them to alternate
+ports. So whichever non-default port you set in your compose.override.yaml
+for Redis, this should be also set here, unless you operate in a fully
+containerised setup.
 
 ### DOCKER
 
@@ -56,6 +88,15 @@ default if it runs on a shared domain where it runs on the _/auth_ path.
 This defines whether your application is running behind a reverse proxy (e.g. nginx).
 In most cases the default True will be fine here. But for local development you might
 want to set this to False.
+
+### DJANGO_ADMINS & DJANGO_SUPERUSERS
+
+While `DJANGO_ADMINS` is only used to configure whom to send admin notifications,
+`DJANGO_SUPERUSERS` tells Django which users to actually treat as administrators.
+This is applied on every login, irrespective of which flags you set for single
+users through the Django admin or by using the `createsuperuser` management command.
+So if you create an admin user, make sure to add their username in this setting.
+Otherwise, the user will automatically be demoted again.
 
 ### EMAIL\_\*
 
@@ -96,14 +137,23 @@ For more background details on these settings:
 - https://docs.djangoproject.com/en/4.2/ref/csrf/
 - https://pypi.org/project/django-cors-headers/
 
-### POSTGRES\_\* & REDIS\_\*
+### Showroom connection
 
-For both databases the `*_PORT` setting should be fine by default, unless you explicitly
-use a different port for those docker services.
+These settings are only required, if a _Showroom_ instance is active, and syncing of
+user profiles & preferences to _Showroom_ is activated. In order to activate syncing,
+set `SYNC_TO_SHOWROOM` to `True`. Additionally, the `SHOWROOM_API_KEY` has to be
+set to a key that has to be generated with the
+[`create-source-repository`](https://showroom-backend.readthedocs.io/en/latest/management_commands.html#create-source-repository)
+command, when _Showroom_ is set up. This key then can be used for _Portfolio_ and _baseauth_
+to push new and updated activities and entities.
 
-The `POSTGRES_PASSWORD` has to be the same as the one set in the root folder _.env_ file.
-If you deploy everything with docker, you don't have to set it here explicitly, as the
-environment variable will already be set by docker based on the root _.env_ file.
+The other values only have to be set, if we deviate from a default single-domain
+setup:
+
+- `SHOWROOM_BASE_URL`: points to the base URL of where Showroom is available and
+  defaults to `showroom/` appended to whatever is set as the `SITE_URL`.
+- `SHOWROOM_API_PATH`: defaults to `api/v1/` and should only be changed if a new
+  API version comes out
 
 ### Authentication backends
 
@@ -118,8 +168,10 @@ Currently available options are:
 
 - `django` - the internal user model authentication backend of Django
 - `ldap` - a generic LDAP-based authentication
+- `cas` - redirect all auth to an upstream CAS server
 
-If you combine different backends, they will be checked in order of listing. So if
+While `cas` will overrule other authentication backends, generally you can combine
+different backends, so they will be checked in order of listing. So if
 you for example use:
 
 ```
@@ -165,3 +217,30 @@ Now depending on your setup you can use three different ways to query your users
    list of distinguished names. E.g.:
    `ou=unit1,ou=users,dc=example,dc=com;ou=unit2,ou=users,dc=example,dc=com`
    This will only work, if `AUTH_LDAP_USER_SEARCH_BASE` is not set.
+
+#### CAS
+
+```{note}
+This authentication backend will overrule all other backends you might have configured.
+All login and logout routes will be redirected to the upstream CAS server.
+```
+
+If `cas` is used in the `AUTHENTICATION_BACKENDS`, you also have to set the following:
+
+- `CAS_SERVER` has to point to an upstream CAS server, which all login and logout
+  attempts will be redirected to.
+
+All other `CAS_` settings are optional (for details see the
+[django-cas-ng config docs](https://djangocas.dev/docs/4.0/configuration.html)):
+
+- `CAS_VERSION` : specifies the version of the CAS protocol and defaults to `3`
+- `CAS_REDIRECT_URL` : specifies the redirect to happen after successful login and
+  defaults to `/`. This only affects logins directly on baseauth. Logins coming
+  from one of the apps already have their redirect URL set.
+- `CAS_VERIFY_SSL_CERTIFICATE` : defaults to `True` and should not be changed in any
+  production context. For local testing you can disable the SSL certificate check
+  (e.g. if case of a self-signed certificate).
+- `CAS_RENAME_ATTRIBUTES` : a dictionary used to rename the (key of the) attributes
+  that the upstream CAS server may return. Is empty by default, so no renaming happens.
+  For example, if `CAS_RENAME_ATTRIBUTES=ln=last_name,fn=first_name` the `ln` attribute
+  returned by the cas server will be renamed as `last_name` and `fn` to `first_name`.

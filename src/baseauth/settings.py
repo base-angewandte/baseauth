@@ -16,31 +16,34 @@ import os
 import re
 import sys
 from email.utils import getaddresses
+from pathlib import Path
 from urllib.parse import urlparse
 
 import environ
 import ldap
+from apimapper import config as apiconfig
 from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
+from django.utils.functional import lazy
+from django.utils.translation import get_language, gettext_lazy as _
 
-env = environ.Env()
-env.read_env()
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_NAME = '.'.join(__name__.split('.')[:-1])
+
+env = environ.Env()
+env.read_env(BASE_DIR / '..' / '.env')
 
 try:
     from .secret_key import SECRET_KEY
 except ImportError:
     from django.core.management.utils import get_random_secret_key
 
-    with open(os.path.join(BASE_DIR, PROJECT_NAME, 'secret_key.py'), 'w+') as f:
+    with Path.open(BASE_DIR / PROJECT_NAME / 'secret_key.py', 'w+') as f:
         SECRET_KEY = get_random_secret_key()
-        f.write("SECRET_KEY = '%s'\n" % SECRET_KEY)
+        f.write(f"SECRET_KEY = '{SECRET_KEY}'\n")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -94,15 +97,27 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # base common apps
+    'base_common',
+    'base_common_drf',
     # Third-party apps
     'mama_cas',
     'axes',
     'captcha',
     'corsheaders',
+    'rest_framework',
+    'rest_framework_api_key',
+    'drf_spectacular',
+    'easy_thumbnails',
+    'django_rq',
     # Project apps
+    'accounts',
     'core',
-    'general',
+    'user_preferences',
+    'showroom_connector',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
 
 # Authentication Backends
 AUTH_BACKENDS_TO_USE = env.list('AUTHENTICATION_BACKENDS', default=['django'])
@@ -117,6 +132,25 @@ for backend in AUTH_BACKENDS_TO_USE:
     # The default django user model backend
     if backend == 'django':
         AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.ModelBackend')
+
+    if backend == 'cas':
+        INSTALLED_APPS.append('django_cas_ng')
+        AUTHENTICATION_BACKENDS.append('django_cas_ng.backends.CASBackend')
+
+        CAS_SERVER_URL = env.str('CAS_SERVER', default=f'{SITE_URL}cas/')
+        CAS_LOGIN_MSG = None
+        CAS_LOGGED_MSG = None
+        CAS_RENEW = False
+        CAS_LOGOUT_COMPLETELY = True
+        CAS_RETRY_LOGIN = True
+        CAS_VERSION = env.str('CAS_VERSION', default='3')
+        CAS_APPLY_ATTRIBUTES_TO_USER = True
+        CAS_REDIRECT_URL = env.str('CAS_REDIRECT_URL', default=FORCE_SCRIPT_NAME or '/')
+        CAS_VERIFY_SSL_CERTIFICATE = env.bool(
+            'CAS_VERIFY_SSL_CERTIFICATE',
+            default=True,
+        )
+        CAS_RENAME_ATTRIBUTES = env.dict('CAS_RENAME_ATTRIBUTES', default={})
 
     # A generically configurable LDAP authentication backend
     # See https://django-auth-ldap.readthedocs.io/en/latest/authentication.html for details
@@ -133,7 +167,7 @@ for backend in AUTH_BACKENDS_TO_USE:
             AUTH_LDAP_USER_DN_TEMPLATE = env.str('AUTH_LDAP_USER_DN_TEMPLATE')
         except environ.ImproperlyConfigured:
             AUTH_LDAP_USER_SEARCH_USER_TEMPLATE = env.str(
-                'AUTH_LDAP_USER_SEARCH_USER_TEMPLATE'
+                'AUTH_LDAP_USER_SEARCH_USER_TEMPLATE',
             )
             try:
                 AUTH_LDAP_USER_SEARCH_BASE = env.str('AUTH_LDAP_USER_SEARCH_BASE')
@@ -144,7 +178,7 @@ for backend in AUTH_BACKENDS_TO_USE:
                 )
             except environ.ImproperlyConfigured:
                 AUTH_LDAP_USER_SEARCH_BASE_LIST = env.str(
-                    'AUTH_LDAP_USER_SEARCH_BASE_LIST'
+                    'AUTH_LDAP_USER_SEARCH_BASE_LIST',
                 ).split(';')
                 searches = [
                     LDAPSearch(
@@ -169,16 +203,16 @@ for backend in AUTH_BACKENDS_TO_USE:
 # CAS
 MAMA_CAS_SERVICES = [
     {
-        'SERVICE': fr'^http[s]?://{re.escape(urlparse(SITE_URL).hostname)}',
+        'SERVICE': rf'^http[s]?://{re.escape(urlparse(SITE_URL).hostname)}',
         'CALLBACKS': ['core.utils.get_attributes'],
         'LOGOUT_ALLOW': True,
         # 'LOGOUT_URL': '',
-    }
+    },
 ]
 
 MAMA_CAS_ENABLE_SINGLE_SIGN_OUT = True
 """Email settings."""
-SERVER_EMAIL = 'error@%s' % urlparse(SITE_URL).hostname
+SERVER_EMAIL = f'error@{urlparse(SITE_URL).hostname}'
 
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', default='')
@@ -188,14 +222,14 @@ EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=False)
 EMAIL_USE_LOCALTIME = env.bool('EMAIL_USE_LOCALTIME', default=True)
 
 EMAIL_SUBJECT_PREFIX = '{} '.format(
-    env.str('EMAIL_SUBJECT_PREFIX', default='[CAS]').strip()
+    env.str('EMAIL_SUBJECT_PREFIX', default='[baseauth]').strip(),
 )
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, '..', 'tmp', 'emails')
+    EMAIL_FILE_PATH = BASE_DIR / '..' / 'tmp' / 'emails'
 
-    if not os.path.exists(EMAIL_FILE_PATH):
-        os.makedirs(EMAIL_FILE_PATH)
+    if not EMAIL_FILE_PATH.exists():
+        EMAIL_FILE_PATH.mkdir(parents=True)
 
 """ Https settings """
 if SITE_URL.startswith('https'):
@@ -207,6 +241,7 @@ if SITE_URL.startswith('https'):
 X_FRAME_OPTIONS = 'DENY'
 
 MIDDLEWARE = [
+    'base_common.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -219,12 +254,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
 ]
+if 'cas' in AUTH_BACKENDS_TO_USE:
+    MIDDLEWARE.append('django_cas_ng.middleware.CASMiddleware')
 
 AXES_LOCKOUT_URL = reverse_lazy('locked_out')
 AXES_VERBOSE = DEBUG
 
 if BEHIND_PROXY:
-    MIDDLEWARE += ['general.middleware.SetRemoteAddrFromForwardedFor']
+    MIDDLEWARE += ['base_common.middleware.SetRemoteAddrFromForwardedFor']
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -233,7 +270,7 @@ ROOT_URLCONF = f'{PROJECT_NAME}.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -245,7 +282,7 @@ TEMPLATES = [
             'debug': DEBUG,
             'string_if_invalid': "[invalid variable '%s'!]" if DEBUG else '',
         },
-    }
+    },
 ]
 
 WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
@@ -254,15 +291,16 @@ WSGI_APPLICATION = f'{PROJECT_NAME}.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+POSTGRES_HOST_DEFAULT = f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env.str('POSTGRES_DB', default=f'django_{PROJECT_NAME}'),
         'USER': env.str('POSTGRES_USER', default=f'django_{PROJECT_NAME}'),
-        'PASSWORD': env.str('POSTGRES_PASSWORD', default=f'password_{PROJECT_NAME}'),
-        'HOST': f'{PROJECT_NAME}-postgres' if DOCKER else 'localhost',
+        'PASSWORD': env.str('POSTGRES_PASSWORD'),
+        'HOST': env.str('POSTGRES_HOST', default=POSTGRES_HOST_DEFAULT),
         'PORT': env.str('POSTGRES_PORT', default='5432'),
-    }
+    },
 }
 
 
@@ -273,7 +311,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': (
             'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
-        )
+        ),
     },
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
@@ -295,24 +333,27 @@ LANGUAGES = (('de', _('German')), ('en', _('English')))
 LANGUAGES_DICT = dict(LANGUAGES)
 
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
-    os.path.join(BASE_DIR, 'locale_mama_cas'),
+    BASE_DIR / 'locale',
+    BASE_DIR / 'locale_mama_cas',
 ]
+
+get_language_lazy = lazy(get_language, str)
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATICFILES_DIRS = (
-    '{}{}'.format(os.path.normpath(os.path.join(BASE_DIR, 'static')), os.sep),
-)
+STATICFILES_DIRS = ('{}{}'.format(os.path.normpath(BASE_DIR / 'static'), os.sep),)
 STATIC_URL = '{}/s/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 STATIC_ROOT = '{}{}'.format(
-    os.path.normpath(os.path.join(BASE_DIR, 'assets', 'static')), os.sep
+    os.path.normpath(BASE_DIR / 'assets' / 'static'),
+    os.sep,
 )
 
 MEDIA_URL = '{}/m/'.format(FORCE_SCRIPT_NAME if FORCE_SCRIPT_NAME else '')
 MEDIA_ROOT = '{}{}'.format(
-    os.path.normpath(os.path.join(BASE_DIR, 'assets', 'media')), os.sep
+    os.path.normpath(BASE_DIR / 'assets' / 'media'),
+    os.sep,
 )
 
 FILE_UPLOAD_PERMISSIONS = 0o644
@@ -320,11 +361,13 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 if FORCE_SCRIPT_NAME:
     WHITENOISE_STATIC_PREFIX = '/s/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-"""Logging."""
-LOG_DIR = os.path.join(BASE_DIR, '..', 'logs')
 
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
+
+# Logging
+LOG_DIR = BASE_DIR / '..' / 'logs'
+
+if not LOG_DIR.exists():
+    LOG_DIR.mkdir(parents=True)
 
 LOGGING = {
     'version': 1,
@@ -334,7 +377,7 @@ LOGGING = {
             'format': (
                 '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d '
                 '%(message)s'
-            )
+            ),
         },
         'simple': {'format': '%(levelname)s %(message)s'},
         'simple_with_time': {'format': '%(levelname)s %(asctime)s %(message)s'},
@@ -348,12 +391,11 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'application.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'class': 'concurrent_log_handler.ConcurrentTimedRotatingFileHandler',
+            'filename': LOG_DIR / 'application.log',
+            'when': 'midnight',
             'backupCount': 1000,
             'use_gzip': True,
-            'delay': True,
             'formatter': 'verbose',
         },
         'mail_admins': {
@@ -390,7 +432,9 @@ LOGGING = {
         },
     },
 }
-"""Cache settings."""
+
+
+# Cache settings
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -399,9 +443,25 @@ CACHES = {
             env.str('REDIS_PORT', default='6379'),
         ),
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
-    }
+    },
 }
-"""Session settings."""
+
+
+# RQ worker settings
+RQ_QUEUES = {
+    'default': {'USE_REDIS_CACHE': 'default', 'DEFAULT_TIMEOUT': 500},
+}
+
+if DEBUG or TESTING:
+    for queue_config in iter(RQ_QUEUES.values()):
+        queue_config['ASYNC'] = False
+
+RQ_EXCEPTION_HANDLERS = ['core.rq.handlers.exception_handler']
+
+RQ_FAILURE_TTL = 2628288  # approx. 3 month
+
+
+# Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 SESSION_COOKIE_NAME = f'sessionid_{PROJECT_NAME}'
@@ -418,6 +478,7 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 
 HOME_REDIRECT = reverse_lazy('cas_login')
 
+
 # Axes settings
 AXES_FAILURE_LIMIT = 3
 AXES_COOLOFF_TIME = 1  # number in hours
@@ -425,11 +486,6 @@ AXES_COOLOFF_TIME = 1  # number in hours
 CAPTCHA_FLITE_PATH = '/usr/bin/flite'
 
 if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE.insert(
-        MIDDLEWARE.index('django.contrib.sessions.middleware.SessionMiddleware'),
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
     INTERNAL_IPS = ('127.0.0.1',)
 
     if 'ldap' in AUTH_BACKENDS_TO_USE:
@@ -437,3 +493,196 @@ if DEBUG:
             'level': 'DEBUG',
             'handlers': ['console'],
         }
+
+
+# User profile picture thumbnail settings
+THUMBNAIL_NAMER = 'easy_thumbnails.namers.hashed'
+THUMBNAIL_DIR = 'tn'
+THUMBNAIL_MEDIA_ROOT = f'{os.path.normpath(Path(MEDIA_ROOT) / THUMBNAIL_DIR)}{os.sep}'
+THUMBNAIL_MEDIA_URL = f'{MEDIA_URL}/{THUMBNAIL_DIR}/'
+THUMBNAIL_QUALITY = 95
+THUMBNAIL_OPTIONS = {
+    'size': (625, 625),
+    'crop': 'smart',
+}
+
+MAX_IMAGE_SIZE = 10485760  # 10mb
+
+
+# User preferences settings profiles for apps
+SETTINGS_DATA = {
+    'showroom': {
+        'title': 'Showroom',
+        'icon': 'https://base.uni-ak.ac.at/bs/img/icons/showroom.svg',
+        'settings': {
+            'activate_profile': {
+                'title': {
+                    'de': 'Aktivieren Sie Ihre persönliche Showroom Seite',
+                    'en': 'Activate your personal Showroom page',
+                },
+                'type': 'boolean',
+                'default_value': False,
+            },
+        },
+    },
+}
+
+
+# API specific settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'X-Api-Key': {'type': 'apiKey', 'in': 'header', 'name': 'X-Api-Key'},
+    },
+}
+
+API_KEY_CUSTOM_HEADER = 'HTTP_X_API_KEY'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ORDERING_PARAM': 'sort',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'baseauth',
+    'DESCRIPTION': """Provides authenticated access only to a user's preferences and
+    profile data, as well as API-Key based authenticated access to user data for user
+    data agents (e.g. in Showroom). The repo and further documentation are at
+    [https://github.com/base-angewandte/baseauth](https://github.com/base-angewandte/baseauth).
+    """,
+    'VERSION': '1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'TAGS': ['autosuggest', 'user', 'users'],
+    'SERVERS': [
+        {
+            'url': env.str(
+                'OPENAPI_SERVER_URL',
+                default=f'{SITE_URL.rstrip("/")}{FORCE_SCRIPT_NAME}',
+            ),
+            'description': env.str(
+                'OPENAPI_SERVER_DESCRIPTION',
+                default='baseauth / User Preferences',
+            ),
+        },
+    ],
+    # available SwaggerUI configuration parameters
+    # https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
+    'SWAGGER_UI_SETTINGS': {
+        'displayOperationId': True,
+    },
+}
+
+
+# Autosuggest
+SKOSMOS_API = 'https://voc.uni-ak.ac.at/skosmos/rest/v1/'
+TAX_ID = 'potax'
+TAX_GRAPH = 'http://base.uni-ak.ac.at/portfolio/taxonomy/'
+VOC_ID = 'povoc'
+VOC_GRAPH = 'http://base.uni-ak.ac.at/portfolio/vocabulary/'
+LANGUAGES_VOCID = 'languages'
+
+ACCEPT_LANGUAGE_HEADER = {'Accept-Language': get_language_lazy()}
+
+SOURCES = {
+    'GND_PERSON': {
+        apiconfig.URL: 'https://lobid.org/gnd/search',
+        apiconfig.QUERY_FIELD: 'q',
+        apiconfig.PAYLOAD: {'format': 'json:suggest', 'filter': 'type:Person'},
+        apiconfig.HEADER: ACCEPT_LANGUAGE_HEADER,
+    },
+    'VIAF_PERSON': {
+        apiconfig.URL: 'http://www.viaf.org/viaf/AutoSuggest',
+        apiconfig.QUERY_FIELD: 'query',
+        apiconfig.PAYLOAD: None,
+    },
+}
+
+GND_MAPPING = {
+    'source': 'id',  # common_schema: GND schema
+    'label': 'label',
+}
+
+VIAF_CONTRIBUTORS_MAPPING = {
+    'label': 'displayForm',
+}
+
+RESPONSE_MAPS = {
+    'GND_PERSON': {
+        apiconfig.DIRECT: GND_MAPPING,
+        apiconfig.RULES: {'source_name': {apiconfig.RULE: '"GND"'}},
+    },
+    'VIAF_PERSON': {
+        apiconfig.RESULT: 'result',
+        apiconfig.FILTER: {'nametype': 'personal'},
+        apiconfig.DIRECT: VIAF_CONTRIBUTORS_MAPPING,
+        apiconfig.RULES: {
+            'source_name': {apiconfig.RULE: '"VIAF"'},
+            'source': {
+                apiconfig.RULE: '"http://www.viaf.org/viaf/{p1}"',
+                apiconfig.FIELDS: {'p1': 'viafid'},
+            },
+        },
+    },
+}
+
+CONTRIBUTORS = (
+    'GND_PERSON',
+    'VIAF_PERSON',
+)
+
+# if an autosuggest endpoint is not a key in this dict then the response of the API will be empty
+ACTIVE_SOURCES = {
+    # 'contributors': CONTRIBUTORS,  # GND, VIAF
+    'expertise': {
+        'all': 'core.skosmos.get_base_keywords',
+        'search': 'core.skosmos.get_skills',
+    },
+}
+
+REQUESTS_TIMEOUT = 60
+
+
+# Showroom connection settings
+SYNC_TO_SHOWROOM = env.bool('SYNC_TO_SHOWROOM', default=False)
+SHOWROOM_BASE_URL = env.str('SHOWROOM_BASE_URL', default=f'{SITE_URL}showroom/')
+SHOWROOM_API_PATH = env.str('SHOWROOM_API_PATH', default='api/v1/')
+SHOWROOM_API_BASE = f'{SHOWROOM_BASE_URL}{SHOWROOM_API_PATH}'
+SHOWROOM_API_KEY = env.str('SHOWROOM_API_KEY', default=None)
+WORKER_DELAY = 3
+
+
+# Sentry
+SENTRY_DSN = env.str('SENTRY_DSN', default=None)
+SENTRY_ENVIRONMENT = env.str(
+    'SENTRY_ENVIRONMENT',
+    default='development'
+    if any(i in SITE_URL for i in ['dev', 'localhost', '127.0.0.1'])
+    else 'production',
+)
+SENTRY_TRACES_SAMPLE_RATE = env.float('SENTRY_TRACES_SAMPLE_RATE', default=0.2)
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
+    from sentry_sdk.integrations.rq import RqIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        integrations=[
+            DjangoIntegration(),
+            RedisIntegration(),
+            RqIntegration(),
+        ],
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        send_default_pii=True,
+    )
