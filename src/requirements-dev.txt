@@ -25,7 +25,7 @@ charset-normalizer==3.4.9
     # via requests
 click==8.4.2
     # via rq
-concurrent-log-handler==0.9.28
+concurrent-log-handler==0.9.29
     # via -r src/requirements.in
 croniter==6.2.4
     # via rq
@@ -50,15 +50,15 @@ django==5.2.17
     #   easy-thumbnails
 django-auth-ldap==5.3.0
     # via -r src/requirements.in
-django-axes==8.3.0
+django-axes==8.3.1
     # via -r src/requirements.in
-django-cas-ng==5.1.0
+django-cas-ng==5.1.1
     # via -r src/requirements.in
 django-cors-headers==4.9.0
     # via -r src/requirements.in
-django-environ==0.12.0
+django-environ==0.14.0
     # via -r src/requirements.in
-django-filter==25.1
+django-filter==26.1
     # via -r src/requirements.in
 django-ipware==7.0.1
     # via django-axes
@@ -66,30 +66,30 @@ django-mama-cas==2.5.0
     # via -r src/requirements.in
 django-ranged-response==0.2.0
     # via django-simple-captcha
-django-redis==6.0.0
+django-redis==7.0.0
     # via -r src/requirements.in
-django-rq==3.2.2
+django-rq==4.1.1
     # via -r src/requirements.in
-django-simple-captcha==0.6.3
+django-simple-captcha==0.7.0
     # via -r src/requirements.in
-djangorestframework==3.16.1
+djangorestframework==3.18.0
     # via
     #   -r src/requirements.in
     #   base-common-drf
     #   drf-spectacular
 djangorestframework-api-key==3.1.0
     # via -r src/requirements.in
-drf-spectacular==0.29.0
+drf-spectacular==0.30.0
     # via
     #   -r src/requirements.in
     #   base-common-drf
 easy-thumbnails==2.10.1
     # via -r src/requirements.in
-gevent==25.9.1
+gevent==26.7.0
     # via -r src/requirements.in
 greenlet==3.5.4
     # via gevent
-gunicorn==25.0.3
+gunicorn==26.0.0
     # via -r src/requirements.in
 idna==3.18
     # via requests
@@ -107,7 +107,7 @@ packaging==26.3
     # via
     #   djangorestframework-api-key
     #   gunicorn
-pillow==12.1.1
+pillow==12.3.0
     # via
     #   -r src/requirements.in
     #   django-simple-captcha
@@ -116,9 +116,9 @@ portalocker==4.1.0
     # via concurrent-log-handler
 psutil==7.2.2
     # via rainbow-saddle
-psycopg==3.3.2
+psycopg==3.3.4
     # via -r src/requirements.in
-psycopg-binary==3.3.2
+psycopg-binary==3.3.4
     # via psycopg
 pyasn1==0.6.4
     # via
@@ -151,7 +151,7 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.5
+requests==2.34.2
     # via
     #   -r src/requirements.in
     #   apimapper
@@ -178,6 +178,7 @@ sqlparse==0.5.5
     # via django
 typing-extensions==4.16.0
     # via
+    #   django-redis
     #   psycopg
     #   referencing
 uritemplate==4.2.0
@@ -186,7 +187,7 @@ urllib3==2.7.0
     # via
     #   requests
     #   sentry-sdk
-whitenoise==6.11.0
+whitenoise==6.12.0
     # via -r src/requirements.in
 zope-event==6.2
     # via gevent
