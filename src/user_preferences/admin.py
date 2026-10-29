@@ -8,6 +8,7 @@ from .models import (
 )
 
 
+@admin.register(UserPreferencesData)
 class UserPreferencesDataAdmin(admin.ModelAdmin):
     list_display = (
         'user',
@@ -20,19 +21,16 @@ class UserPreferencesDataAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(UserSettingsApp)
 class UserSettingsAppAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'icon')
 
 
+@admin.register(UserSettings)
 class UserSettingsAdmin(admin.ModelAdmin):
     list_display = ('id', 'app', 'title', 'value_type', 'default_value')
 
 
+@admin.register(UserSettingsValue)
 class UserSettingsValueAdmin(admin.ModelAdmin):
     list_display = ('value', 'user_settings', 'user')
-
-
-admin.site.register(UserPreferencesData, UserPreferencesDataAdmin)
-admin.site.register(UserSettingsApp, UserSettingsAppAdmin)
-admin.site.register(UserSettings, UserSettingsAdmin)
-admin.site.register(UserSettingsValue, UserSettingsValueAdmin)

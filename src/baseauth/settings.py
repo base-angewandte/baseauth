@@ -325,7 +325,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'Europe/Vienna'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = (('de', _('German')), ('en', _('English')))
@@ -360,7 +359,15 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 
 if FORCE_SCRIPT_NAME:
     WHITENOISE_STATIC_PREFIX = '/s/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 
 # Logging
