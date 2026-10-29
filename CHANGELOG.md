@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3
+## 0.4
 
 ### Added
 
@@ -15,6 +15,17 @@
 ### Removed
 
 - delete deprecated symlinks from old setup
+
+### Security
+
+- upgraded Django for recent security releases
+- upgraded other external dependencies
+
+## 0.3
+
+### Security
+
+- upgraded brotli to 1.2.1 due to [CVE-2026-111497](https://euvd.enisa.europa.eu/vulnerability/CVE-2026-111497)
 
 ## 0.2
 
